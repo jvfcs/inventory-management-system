@@ -44,25 +44,26 @@
         <button class="btn btn-outline-danger btn-sm" onclick="signOut()">Sign Out</button>
       </div>
       <p>Welcome, <strong id="userEmailDisplay"></strong>!</p>
-      <p class="text-muted">Your frontend is authenticated. The next step is wiring this up to your Google Apps Script database.</p>
+      
+      <div id="apiResponseArea" class="p-3 bg-light border rounded mt-3">
+        <em>Waiting for authentication...</em>
+      </div>
     </div>
   </div>
 
   <script>
+    // PASTE YOUR NEW WEB APP URL HERE (Keep the quotes)
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxRM7pblum2TVubgCvVQBRWF6FWKkHhtT-2pJuA8kCueVGo8izlXv6BCbNOQPzOH9PqCA/exec";
+
     // 1. Function triggered automatically when Google Sign-In is successful
     function handleCredentialResponse(response) {
-      // The response.credential is a JWT (JSON Web Token) containing the user info
       const jwt = response.credential;
-      
-      // Decode the JWT to get the user's email
       const payload = JSON.parse(atob(jwt.split('.')[1]));
       const userEmail = payload.email;
 
-      // Save email and token to localStorage for future API requests
       localStorage.setItem('ims_user_email', userEmail);
       localStorage.setItem('ims_google_token', jwt);
 
-      // Update UI
       showApp(userEmail);
     }
 
@@ -72,6 +73,9 @@
       document.getElementById('appView').classList.remove('hidden');
       document.getElementById('appView').style.display = 'flex';
       document.getElementById('userEmailDisplay').innerText = email;
+
+      // Trigger the backend fetch now that we know who is logged in
+      fetchInventoryData(email);
     }
 
     // 3. Handle Sign Out
@@ -79,7 +83,6 @@
       localStorage.removeItem('ims_user_email');
       localStorage.removeItem('ims_google_token');
       
-      // Reset UI
       document.getElementById('appView').classList.add('hidden');
       document.getElementById('appView').style.display = 'none';
       document.getElementById('loginView').classList.remove('hidden');
@@ -92,6 +95,48 @@
         showApp(savedEmail);
       }
     };
+
+    // 5. NEW: Fetch data from the Google Apps Script Backend
+    async function fetchInventoryData(email) {
+      const responseArea = document.getElementById('apiResponseArea');
+      responseArea.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading data from backend...';
+
+      try {
+        const response = await fetch(GAS_URL, {
+          method: 'POST',
+          // text/plain prevents CORS preflight errors with Google Apps Script
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8', 
+          },
+          body: JSON.stringify({
+            action: 'getInitialData',
+            userEmail: email
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // Temporarily just print the counts to prove it worked!
+          const data = result.data;
+          console.log("Full Database Object:", data);
+          responseArea.innerHTML = `
+            <span class="text-success fw-bold">Success! Connection established.</span><br>
+            <strong>Role:</strong> ${data.users ? data.users.length > 0 ? 'Confirmed' : 'No Users Array' : 'Loaded'}<br>
+            <strong>Items Loaded:</strong> ${data.items.length}<br>
+            <strong>Locations Loaded:</strong> ${data.locations.length}<br>
+            <strong>Logs Loaded:</strong> ${data.logs.length}
+          `;
+        } else {
+          // Backend gracefully rejected the request (e.g., unauthorized email)
+          responseArea.innerHTML = `<span class="text-danger fw-bold">Backend Error:</span> ${result.error}`;
+        }
+
+      } catch (error) {
+        // Network crash or bad URL
+        responseArea.innerHTML = `<span class="text-danger fw-bold">Network Error:</span> ${error.message}`;
+      }
+    }
   </script>
 </body>
 </html>
