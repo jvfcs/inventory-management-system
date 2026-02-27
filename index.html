@@ -1,12 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Management System</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <title>Inventory Management System</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  
+  <style>
+    body { background: #f4f7f6; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+    .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; max-width: 400px; width: 100%; }
+    .hidden { display: none !important; }
+  </style>
 </head>
 <body>
-    <h1>Inventory Management System</h1>
-    <p>Frontend is successfully hosted on GitHub Pages!</p>
+
+  <div id="loginView" class="login-card">
+    <h3 class="fw-bold text-primary mb-3">IMS Login</h3>
+    <p class="text-muted mb-4">Please sign in with your authorized Google account to access the inventory.</p>
+    
+    <div id="g_id_onload"
+         data-client_id="950754972661-o30t3svi49fjpj9f4rg64dctcm3m8jb8.apps.googleusercontent.com"
+         data-context="signin"
+         data-ux_mode="popup"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="outline"
+         data-text="sign_in_with"
+         data-size="large"
+         data-logo_alignment="left">
+    </div>
+  </div>
+
+  <div id="appView" class="hidden" style="width: 100%; height: 100%; align-items:flex-start; justify-content:center; padding: 20px;">
+    <div class="card p-4 shadow-sm w-100" style="max-width: 800px;">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold m-0 text-primary">Inventory Dashboard</h4>
+        <button class="btn btn-outline-danger btn-sm" onclick="signOut()">Sign Out</button>
+      </div>
+      <p>Welcome, <strong id="userEmailDisplay"></strong>!</p>
+      <p class="text-muted">Your frontend is authenticated. The next step is wiring this up to your Google Apps Script database.</p>
+    </div>
+  </div>
+
+  <script>
+    // 1. Function triggered automatically when Google Sign-In is successful
+    function handleCredentialResponse(response) {
+      // The response.credential is a JWT (JSON Web Token) containing the user info
+      const jwt = response.credential;
+      
+      // Decode the JWT to get the user's email
+      const payload = JSON.parse(atob(jwt.split('.')[1]));
+      const userEmail = payload.email;
+
+      // Save email and token to localStorage for future API requests
+      localStorage.setItem('ims_user_email', userEmail);
+      localStorage.setItem('ims_google_token', jwt);
+
+      // Update UI
+      showApp(userEmail);
+    }
+
+    // 2. Toggle UI from Login to App
+    function showApp(email) {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('appView').classList.remove('hidden');
+      document.getElementById('appView').style.display = 'flex';
+      document.getElementById('userEmailDisplay').innerText = email;
+    }
+
+    // 3. Handle Sign Out
+    function signOut() {
+      localStorage.removeItem('ims_user_email');
+      localStorage.removeItem('ims_google_token');
+      
+      // Reset UI
+      document.getElementById('appView').classList.add('hidden');
+      document.getElementById('appView').style.display = 'none';
+      document.getElementById('loginView').classList.remove('hidden');
+    }
+
+    // 4. Check if user is already logged in on page load
+    window.onload = function() {
+      const savedEmail = localStorage.getItem('ims_user_email');
+      if (savedEmail) {
+        showApp(savedEmail);
+      }
+    };
+  </script>
 </body>
 </html>
