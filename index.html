@@ -121,7 +121,7 @@
   <div class="card p-4 shadow-sm text-center" style="max-width: 400px; width: 90%;">
     <img src="https://lh3.googleusercontent.com/d/1xgvAKlvNOYd02pJ24G7Uxv2KS3McRcvk" alt="Logo" style="width:80px; height:80px; object-fit:contain; margin: 0 auto;" class="mb-3">
     <h3 class="fw-bold text-primary mb-3">IMS Login</h3>
-    <p class="text-muted mb-4 small">Please sign in with your authorized Google account to access the inventory.</p>
+    <p class="text-muted mb-4 small">Please sign in with your FOX Google Workspace account to access the inventory.</p>
     
     <div id="g_id_onload"
          data-client_id="950754972661-o30t3svi49fjpj9f4rg64dctcm3m8jb8.apps.googleusercontent.com"
@@ -130,7 +130,9 @@
          data-callback="handleCredentialResponse"
          data-auto_prompt="false">
     </div>
-    <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="sign_in_with" data-size="large" data-logo_alignment="center"></div>
+    <div class="d-flex justify-content-center">
+        <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="sign_in_with" data-size="large" data-logo_alignment="left"></div>
+    </div>
   </div>
 </div>
 <div id="loadingOverlay">
@@ -171,6 +173,8 @@
          <button id="btnNavInventory" class="btn btn-sm btn-outline-dark d-none" onclick="showView('inventory')">Inventory</button>
          <button id="btnNavManagement" class="btn btn-sm btn-outline-primary d-none" onclick="showView('management')">Management</button>
          <button id="themeToggleBtn" class="btn btn-sm btn-outline-secondary rounded-circle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">☀️</button>
+         
+         <button class="btn btn-sm btn-outline-danger fw-bold" onclick="signOut()">Sign Out</button>
       </div>
     </div>
   </div>
@@ -750,7 +754,7 @@
 
   const GAS_URL = "https://script.google.com/macros/s/AKfycbxRM7pblum2TVubgCvVQBRWF6FWKkHhtT-2pJuA8kCueVGo8izlXv6BCbNOQPzOH9PqCA/exec";
 
-  // 1. Google Auth Callback
+// 1. Google Auth Callback
   function handleCredentialResponse(response) {
     const jwt = response.credential;
     const payload = JSON.parse(atob(jwt.split('.')[1]));
@@ -760,6 +764,13 @@
     localStorage.setItem('ims_google_token', jwt);
     
     bootApp(userEmail);
+  }
+
+  // NEW: Sign Out Function
+  function signOut() {
+    localStorage.removeItem('ims_user_email');
+    localStorage.removeItem('ims_google_token');
+    window.location.reload(); 
   }
 
 // NEW: Restored Scanner Logic Function
@@ -2571,6 +2582,13 @@ async function fetchData(callback) {
   // --- FORM SAVING LOGIC (ITEMS, LOCATIONS, USERS) ---
 
   async function saveOrUpdateItem(mode) {
+      // NEW: Check for barcode before doing anything else!
+      const barcodeVal = document.getElementById('mBc').value.trim();
+      if (!barcodeVal) {
+          alert("Error: Barcode is a required field.");
+          return; // Stop the script here
+      }
+
       const btn = document.getElementById('btnSaveItem');
       const originalText = btn.innerText;
       btn.disabled = true;
@@ -2581,7 +2599,7 @@ async function fetchData(callback) {
       let cleanPrice = document.getElementById('mPrice').value.replace(/[^0-9.-]+/g,"");
 
       let payload = {
-          barcode: document.getElementById('mBc').value,
+          barcode: barcodeVal, // Use our validated variable
           make: document.getElementById('mMake').value,
           model: document.getElementById('mModel').value,
           category: document.getElementById('mCat').value,
