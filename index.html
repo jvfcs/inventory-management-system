@@ -907,7 +907,7 @@
       }
   }
 
-  function toggleTheme() {
+  async function toggleTheme() {
     const root = document.documentElement;
     const currentTheme = root.getAttribute('data-bs-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -916,7 +916,6 @@
     localStorage.setItem('theme', newTheme);
     document.getElementById('themeToggleBtn').innerText = newTheme === 'dark' ? '☀️' : '🌙';
     
-    // Dynamically swap any visible placeholder images
     const lightImg = 'https://dummyimage.com/400x400/f8f9fa/adb5bd.png&text=No+Image';
     const darkImg = 'https://dummyimage.com/400x400/1e1e1e/adb5bd.png&text=No+Image';
     
@@ -925,7 +924,10 @@
       if (newTheme === 'light' && img.src === darkImg) img.src = lightImg;
     });
     
-    google.script.run.saveUserThemeBackend(newTheme);
+    // NEW: API Call
+    try {
+      apiCall('saveUserTheme', { data: { theme: newTheme } });
+    } catch(e) { console.error("Could not save theme to backend", e); }
   }
 
 async function fetchData(callback) {
@@ -1293,30 +1295,6 @@ async function fetchData(callback) {
   function closeSpotManager() {
       document.getElementById('spotManagerContainer').classList.add('hidden');
       document.getElementById('locTableContainer').classList.remove('hidden');
-  }
-
-  function renameSpot(locName, oldSpot) {
-      const newSpot = prompt(`Enter new name to replace "${oldSpot}":`, oldSpot);
-      if (!newSpot || newSpot.trim() === "" || newSpot === oldSpot) return;
-      
-      document.getElementById('spotManagerTitle').innerText = "Processing..."; 
-      
-      google.script.run.withSuccessHandler(res => {
-          fetchData(() => {
-              openSpotManager(locName); 
-          });
-      }).manageSpotBackend(locName, oldSpot, newSpot.trim());
-  }
-
-  function deleteSpot(locName, oldSpot) {
-      if (!confirm(`Are you sure you want to delete "${oldSpot}"?\n\nAny items currently in this spot will be moved to the Default (blank) spot for ${locName}.`)) return;
-      
-      document.getElementById('spotManagerTitle').innerText = "Processing...";
-      google.script.run.withSuccessHandler(res => {
-          fetchData(() => {
-              openSpotManager(locName);
-          });
-      }).manageSpotBackend(locName, oldSpot, "");
   }
 
   function startAudit(locName) {
@@ -1739,10 +1717,6 @@ async function fetchData(callback) {
     document.getElementById('btnCancelEditUser').classList.add('hidden');
   }
 
-  function updateMinVal(bc, val) {
-    google.script.run.withSuccessHandler(() => fetchData()).updateMinStock(bc, val);
-  }
-
   function sortMgmt(type, colIdx) {
     if (currentSort[type].col === colIdx) {
       currentSort[type].asc = !currentSort[type].asc;
@@ -1762,26 +1736,6 @@ async function fetchData(callback) {
       currentSerialSort.asc = true;
     }
     refreshItemStockBadges(activeBc);
-  }
-
-  function toggleStatusI(bc, current) {
-    const next = current === 'Active' ? 'Inactive' : 'Active';
-    if (next === 'Inactive' && getStockBalance(bc) !== 0) return alert("Safety Net: Cannot disable while stock remains.");
-    google.script.run.withSuccessHandler(() => fetchData()).toggleItemStatus(bc, next);
-  }
-
-  function toggleStatusL(name, type, current) {
-    const next = current === 'Active' ? 'Inactive' : 'Active';
-    let total = 0;
-    db.logs.forEach(l => { if(l.toLoc === name) total += l.quantity; if(l.fromLoc === name) total -= Math.abs(l.quantity); });
-    if (next === 'Inactive' && total !== 0) return alert("Safety Net: Cannot disable while location contains items.");
-    google.script.run.withSuccessHandler(() => fetchData()).toggleLocStatus(name, type, next);
-  }
-  
-  function toggleStatusU(email, current) {
-    const next = current === 'Active' ? 'Inactive' : 'Active';
-    if (email.toLowerCase() === currentUserEmail.toLowerCase()) return alert("Safety Net: You cannot disable your own account.");
-    google.script.run.withSuccessHandler(() => fetchData()).toggleUserStatusBackend(email, next);
   }
 
   function runSearch(e) {
@@ -2549,144 +2503,201 @@ async function fetchData(callback) {
     updateAvailableSpots('to');
   }
   
-  function saveOrUpdateItem(mode) {
-    const btn = document.getElementById('btnSaveItem');
-    const originalText = btn.innerText;
-    btn.disabled = true;
-    btn.innerText = "Processing Data...";
+// --- MANAGEMENT & STATUS TOGGLES ---
 
-    const fileInput = document.getElementById('mImgFile');
-    const file = fileInput.files[0];
-    
-    let cleanPrice = document.getElementById('mPrice').value.replace(/[^0-9.-]+/g,"");
+  async function renameSpot(locName, oldSpot) {
+      const newSpot = prompt(`Enter new name to replace "${oldSpot}":`, oldSpot);
+      if (!newSpot || newSpot.trim() === "" || newSpot === oldSpot) return;
+      document.getElementById('spotManagerTitle').innerText = "Processing..."; 
+      try {
+          await apiCall('manageSpot', { data: { locName: locName, oldSpot: oldSpot, newSpot: newSpot.trim() } });
+          fetchData(() => openSpotManager(locName));
+      } catch (err) {
+          alert("Error renaming spot: " + err.message);
+          document.getElementById('spotManagerTitle').innerText = `Manage Spots: ${locName}`;
+      }
+  }
 
-    let payload = {
-      barcode: document.getElementById('mBc').value,
-      make: document.getElementById('mMake').value,
-      model: document.getElementById('mModel').value,
-      category: document.getElementById('mCat').value,
-      description: document.getElementById('mDesc').value,
-      price: cleanPrice,
-      minStock: document.getElementById('mMin').value,
-      specs: document.getElementById('mSpecs').value,
-      img: document.getElementById('mImg').value,
-      notes: document.getElementById('mNotes').value,
-      serialized: document.getElementById('mSerialized').value
-    };
+  async function deleteSpot(locName, oldSpot) {
+      if (!confirm(`Are you sure you want to delete "${oldSpot}"?\n\nAny items currently in this spot will be moved to the Default (blank) spot for ${locName}.`)) return;
+      document.getElementById('spotManagerTitle').innerText = "Processing...";
+      try {
+          await apiCall('manageSpot', { data: { locName: locName, oldSpot: oldSpot, newSpot: "" } });
+          fetchData(() => openSpotManager(locName));
+      } catch (err) {
+          alert("Error deleting spot: " + err.message);
+          document.getElementById('spotManagerTitle').innerText = `Manage Spots: ${locName}`;
+      }
+  }
 
-    if (file) {
-      btn.innerText = "Uploading Image...";
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        payload.imgBase64 = e.target.result.split(',')[1];
-        payload.imgName = file.name;
-        payload.imgMime = file.type;
-        executeSaveBackend(payload, mode, btn, originalText);
+  async function updateMinVal(bc, val) {
+      try {
+          await apiCall('updateMinStock', { data: { barcode: bc, newVal: val } });
+          fetchData();
+      } catch (err) { alert("Error: " + err.message); }
+  }
+
+  async function toggleStatusI(bc, current) {
+      const next = current === 'Active' ? 'Inactive' : 'Active';
+      if (next === 'Inactive' && getStockBalance(bc) !== 0) return alert("Safety Net: Cannot disable while stock remains.");
+      try {
+          await apiCall('toggleItemStatus', { data: { barcode: bc, newStatus: next } });
+          fetchData();
+      } catch (err) { alert("Error: " + err.message); }
+  }
+
+  async function toggleStatusL(name, type, current) {
+      const next = current === 'Active' ? 'Inactive' : 'Active';
+      let total = 0;
+      db.logs.forEach(l => { if(l.toLoc === name) total += l.quantity; if(l.fromLoc === name) total -= Math.abs(l.quantity); });
+      if (next === 'Inactive' && total !== 0) return alert("Safety Net: Cannot disable while location contains items.");
+      try {
+          await apiCall('toggleLocStatus', { data: { name: name, type: type, newStatus: next } });
+          fetchData();
+      } catch (err) { alert("Error: " + err.message); }
+  }
+
+  async function toggleStatusU(email, current) {
+      const next = current === 'Active' ? 'Inactive' : 'Active';
+      if (email.toLowerCase() === currentUserEmail.toLowerCase()) return alert("Safety Net: You cannot disable your own account.");
+      try {
+          await apiCall('toggleUserStatus', { data: { email: email, newStatus: next } });
+          fetchData();
+      } catch (err) { alert("Error: " + err.message); }
+  }
+
+  // --- FORM SAVING LOGIC (ITEMS, LOCATIONS, USERS) ---
+
+  async function saveOrUpdateItem(mode) {
+      const btn = document.getElementById('btnSaveItem');
+      const originalText = btn.innerText;
+      btn.disabled = true;
+      btn.innerText = "Processing Data...";
+
+      const fileInput = document.getElementById('mImgFile');
+      const file = fileInput.files[0];
+      let cleanPrice = document.getElementById('mPrice').value.replace(/[^0-9.-]+/g,"");
+
+      let payload = {
+          barcode: document.getElementById('mBc').value,
+          make: document.getElementById('mMake').value,
+          model: document.getElementById('mModel').value,
+          category: document.getElementById('mCat').value,
+          description: document.getElementById('mDesc').value,
+          price: cleanPrice,
+          minStock: document.getElementById('mMin').value,
+          specs: document.getElementById('mSpecs').value,
+          img: document.getElementById('mImg').value,
+          notes: document.getElementById('mNotes').value,
+          serialized: document.getElementById('mSerialized').value
       };
-      reader.readAsDataURL(file);
-    } else {
-      executeSaveBackend(payload, mode, btn, originalText);
-    }
-  }
 
-  function executeSaveBackend(payload, mode, btn, originalText) {
-    if (mode === 'edit') {
-      google.script.run.withSuccessHandler(() => {
-        fetchData();
-        cancelEditItem();
-        btn.disabled = false;
-        btn.innerText = originalText;
-      }).updateExistingItem(payload);
-    } else {
-      google.script.run.withSuccessHandler(() => {
-        fetchData();
-        cancelEditItem();
-        btn.disabled = false;
-        btn.innerText = originalText;
-      }).addNewItem(payload);
-    }
-  }
-
-  function saveOrUpdateLoc(mode) {
-    const btn = document.getElementById('btnSaveLoc');
-    const originalText = btn.innerText;
-    btn.disabled = true;
-    btn.innerText = "Processing Data...";
-
-    const fileInput = document.getElementById('mLImgFile');
-    const file = fileInput.files[0];
-
-    let payload = {
-      name: document.getElementById('mLname').value,
-      type: document.getElementById('mLtype').value,
-      deployType: document.getElementById('mDeployType').value,
-      deployLoc: document.getElementById('mDeployLoc').value,
-      description: document.getElementById('mLDesc').value,
-      img: document.getElementById('mLImg').value,
-      notes: document.getElementById('mLNotes').value
-    };
-
-    if (file) {
-      btn.innerText = "Uploading Image...";
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        payload.imgBase64 = e.target.result.split(',')[1];
-        payload.imgName = file.name;
-        payload.imgMime = file.type;
-        executeLocBackend(payload, mode, btn, originalText);
+      const executeItem = async () => {
+          try {
+              if (mode === 'edit') await apiCall('updateExistingItem', { data: payload });
+              else await apiCall('addNewItem', { data: payload });
+              await fetchData();
+              cancelEditItem();
+          } catch (err) {
+              alert("Error saving item: " + err.message);
+          } finally {
+              btn.disabled = false;
+              btn.innerText = originalText;
+          }
       };
-      reader.readAsDataURL(file);
-    } else {
-      executeLocBackend(payload, mode, btn, originalText);
-    }
+
+      if (file) {
+          btn.innerText = "Uploading Image...";
+          const reader = new FileReader();
+          reader.onload = function(e) {
+              payload.imgBase64 = e.target.result.split(',')[1];
+              payload.imgName = file.name;
+              payload.imgMime = file.type;
+              executeItem();
+          };
+          reader.readAsDataURL(file);
+      } else {
+          executeItem();
+      }
   }
 
-  function executeLocBackend(payload, mode, btn, originalText) {
-    if (mode === 'edit') {
-      google.script.run.withSuccessHandler(() => {
-        fetchData();
-        cancelEditLoc();
-        btn.disabled = false;
-        btn.innerText = originalText;
-      }).updateExistingLocation(payload);
-    } else {
-      google.script.run.withSuccessHandler(() => {
-        fetchData();
-        cancelEditLoc();
-        btn.disabled = false;
-        btn.innerText = originalText;
-      }).addNewLocation(payload);
-    }
+  async function saveOrUpdateLoc(mode) {
+      const btn = document.getElementById('btnSaveLoc');
+      const originalText = btn.innerText;
+      btn.disabled = true;
+      btn.innerText = "Processing Data...";
+
+      const fileInput = document.getElementById('mLImgFile');
+      const file = fileInput.files[0];
+
+      let payload = {
+          name: document.getElementById('mLname').value,
+          type: document.getElementById('mLtype').value,
+          deployType: document.getElementById('mDeployType').value,
+          deployLoc: document.getElementById('mDeployLoc').value,
+          description: document.getElementById('mLDesc').value,
+          img: document.getElementById('mLImg').value,
+          notes: document.getElementById('mLNotes').value
+      };
+
+      const executeLoc = async () => {
+          try {
+              if (mode === 'edit') await apiCall('updateExistingLocation', { data: payload });
+              else await apiCall('addNewLocation', { data: payload });
+              await fetchData();
+              cancelEditLoc();
+          } catch (err) {
+              alert("Error saving location: " + err.message);
+          } finally {
+              btn.disabled = false;
+              btn.innerText = originalText;
+          }
+      };
+
+      if (file) {
+          btn.innerText = "Uploading Image...";
+          const reader = new FileReader();
+          reader.onload = function(e) {
+              payload.imgBase64 = e.target.result.split(',')[1];
+              payload.imgName = file.name;
+              payload.imgMime = file.type;
+              executeLoc();
+          };
+          reader.readAsDataURL(file);
+      } else {
+          executeLoc();
+      }
   }
-  
-  function saveOrUpdateUser(mode) {
-    const btn = document.getElementById('btnSaveUser');
-    const originalText = btn.innerText;
-    btn.disabled = true;
-    btn.innerText = "Processing Data...";
 
-    let payload = {
-      name: document.getElementById('uName').value,
-      email: document.getElementById('uEmail').value,
-      role: document.getElementById('uRole').value
-    };
-    
-    if (!payload.email || !payload.role) {
-       alert("Please provide both an email and a role.");
-       btn.disabled = false; btn.innerText = originalText;
-       return;
-    }
+  async function saveOrUpdateUser(mode) {
+      const btn = document.getElementById('btnSaveUser');
+      const originalText = btn.innerText;
+      btn.disabled = true;
+      btn.innerText = "Processing Data...";
 
-    google.script.run.withSuccessHandler(() => {
-      fetchData();
-      cancelEditUser();
-      btn.disabled = false;
-      btn.innerText = originalText;
-    }).withFailureHandler((err) => {
-      alert("Error: " + err.message);
-      btn.disabled = false;
-      btn.innerText = originalText;
-    }).saveOrUpdateUserBackend(payload, mode);
+      let payload = {
+          name: document.getElementById('uName').value,
+          email: document.getElementById('uEmail').value,
+          role: document.getElementById('uRole').value,
+          mode: mode
+      };
+      
+      if (!payload.email || !payload.role) {
+         alert("Please provide both an email and a role.");
+         btn.disabled = false; btn.innerText = originalText;
+         return;
+      }
+
+      try {
+          await apiCall('saveOrUpdateUser', { data: payload });
+          await fetchData();
+          cancelEditUser();
+      } catch (err) {
+          alert("Error saving user: " + err.message);
+      } finally {
+          btn.disabled = false;
+          btn.innerText = originalText;
+      }
   }
 
 </script>
