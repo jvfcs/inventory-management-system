@@ -21,6 +21,7 @@
   </script>
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
   <style>
     body { background: #f4f7f6; padding-bottom: 50px; font-family: sans-serif; transition: background-color 0.3s ease; -webkit-touch-callout: none; }
@@ -114,9 +115,18 @@
     .table-warning { transition: background-color 0.3s ease; }
   </style>
 </head>
-
 <body>
-
+<div id="cameraOverlay" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10500; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: background-color 0.2s ease;">
+    <div class="bg-white p-3 rounded shadow-lg" style="width: 90%; max-width: 500px; text-align: center;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold m-0 text-primary" id="cameraModalTitle">Scan Barcode</h5>
+            <button class="btn-close" onclick="stopCamera()" aria-label="Close"></button>
+        </div>
+        <div id="reader" style="width: 100%; min-height: 300px; background: #000; border-radius: 8px; overflow: hidden;"></div>
+        <p class="small text-muted mt-3 mb-3 fw-bold" id="cameraModalInstructions">Point camera at a barcode.</p>
+        <button class="btn btn-danger fw-bold w-100" onclick="stopCamera()">Close Camera</button>
+    </div>
+</div>
 <div id="loginOverlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 10000; display: flex; align-items: center; justify-content: center;">
   <div class="card p-4 shadow-sm text-center" style="max-width: 400px; width: 90%;">
     <img src="https://lh3.googleusercontent.com/d/1xgvAKlvNOYd02pJ24G7Uxv2KS3McRcvk" alt="Logo" style="width:80px; height:80px; object-fit:contain; margin: 0 auto;" class="mb-3">
@@ -182,6 +192,7 @@
     <div id="searchContainer" class="position-relative mb-4">
       <div class="input-group shadow-sm">
         <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Search Barcode, Serial, Make, or Model...">
+	<button class="btn btn-outline-primary px-3 fs-5" type="button" onclick="startCamera('searchInput')" title="Scan with Camera">📷</button>
         <button class="btn btn-outline-secondary" onclick="clearSearch()">Clear</button>
       </div>
       <div id="searchResults" class="list-group hidden"></div>
@@ -334,7 +345,10 @@
 
             <div class="col-md-12 hidden" id="serialContainer">
               <div class="card p-3 border shadow-sm mb-1 mt-3">
-                <label class="small fw-bold text-primary mb-1">Scan or Type Serials (All Actions)</label>
+                <div class="d-flex justify-content-between align-items-end mb-1">
+  		<label class="small fw-bold text-primary mb-0">Scan or Type Serials (All Actions)</label>
+  		<button class="btn btn-sm btn-outline-primary py-0 px-2 fw-bold" type="button" onclick="startCamera('actSerialsIn')">📷 Live Scan</button>
+		</div>
                 <textarea id="actSerialsIn" class="form-control mb-3" rows="2" placeholder="Scan or type serials here... (Comma or Newline separated)"></textarea>
 
                 <label class="small fw-bold text-secondary mb-1">Or Select Available Serials (For 'REMOVE' / 'MOVE')</label>
@@ -446,7 +460,10 @@
         <div class="row">
           <div class="col-lg-4 mb-4">
             <h6 class="fw-bold mb-3" id="catalogFormTitle">Add to Catalog</h6>
-            <input type="text" id="mBc" class="form-control mb-2" placeholder="Barcode">
+            <div class="input-group mb-2">
+ 	    <input type="text" id="mBc" class="form-control" placeholder="Barcode (Required)">
+  	    <button class="btn btn-outline-primary px-3 fs-5" type="button" onclick="startCamera('mBc')" title="Scan Barcode">📷</button>
+	    </div>
             <input type="text" id="mMake" class="form-control mb-2" placeholder="Make">
             <input type="text" id="mModel" class="form-control mb-2" placeholder="Model">
             <select id="mCat" class="form-select mb-2">
@@ -658,7 +675,10 @@
        <h5 class="fw-bold mb-1" id="saTitle">Audit Serials</h5>
        <p class="small text-muted mb-3">Scan physical serials below, then click Verify to compare against expected inventory.</p>
        
-       <label class="small fw-bold text-primary mb-1">1. Scan All Serials Here</label>
+       <div class="d-flex justify-content-between align-items-end mb-1">
+       <label class="small fw-bold text-primary mb-0">1. Scan All Serials Here</label>
+       <button class="btn btn-sm btn-outline-primary py-0 px-2 fw-bold" type="button" onclick="startCamera('saScanInput')">📷 Live Scan</button>
+       </div>
        <textarea id="saScanInput" class="form-control mb-2" rows="3" style="text-transform:uppercase;" placeholder="Scan or type serials here..."></textarea>
        <button class="btn btn-sm btn-info w-100 fw-bold mb-3 text-dark" onclick="verifyScannedSerials()">↻ Verify Scans</button>
        
@@ -2717,6 +2737,99 @@ async function fetchData(callback) {
           btn.disabled = false;
           btn.innerText = originalText;
       }
+  }
+
+// --- HTML5-QRCODE LIVE CAMERA LOGIC ---
+  
+  let html5QrCode;
+  let currentTargetInput = "";
+
+  function playBeep() {
+      try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          const ctx = new AudioContext();
+          const osc = ctx.createOscillator();
+          const gainNode = ctx.createGain();
+          osc.connect(gainNode);
+          gainNode.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(800, ctx.currentTime);
+          gainNode.gain.setValueAtTime(0.1, ctx.currentTime); 
+          osc.start();
+          osc.stop(ctx.currentTime + 0.15); 
+      } catch (e) { console.warn("Beep audio not supported on this browser."); }
+  }
+
+  function startCamera(targetId) {
+      currentTargetInput = targetId;
+      document.getElementById('cameraOverlay').classList.remove('hidden');
+      
+      if (targetId === 'actSerialsIn' || targetId === 'saScanInput') {
+          document.getElementById('cameraModalTitle').innerText = "Continuous Serial Scan";
+          document.getElementById('cameraModalInstructions').innerText = "Scan serials one by one. They will be added automatically.";
+      } else {
+          document.getElementById('cameraModalTitle').innerText = "Scan Barcode";
+          document.getElementById('cameraModalInstructions').innerText = "Point camera at a barcode. It will close automatically.";
+      }
+
+      html5QrCode = new Html5Qrcode("reader");
+      html5QrCode.start(
+          { facingMode: "environment" }, 
+          { fps: 10, qrbox: { width: 250, height: 150 } },
+          onScanSuccess,
+          onScanFailure
+      ).catch(err => {
+          alert("Unable to start camera. Please ensure camera permissions are granted.");
+          stopCamera();
+      });
+  }
+
+  function stopCamera() {
+      if (html5QrCode) {
+          html5QrCode.stop().then(() => {
+              html5QrCode.clear();
+              document.getElementById('cameraOverlay').classList.add('hidden');
+          }).catch(err => {
+              document.getElementById('cameraOverlay').classList.add('hidden');
+          });
+      } else {
+          document.getElementById('cameraOverlay').classList.add('hidden');
+      }
+  }
+
+  let lastScannedText = "";
+  let lastScanTime = 0;
+
+  function onScanSuccess(decodedText, decodedResult) {
+      const now = Date.now();
+      if (decodedText === lastScannedText && (now - lastScanTime) < 1500) return; 
+      
+      lastScannedText = decodedText;
+      lastScanTime = now;
+      playBeep(); 
+
+      const inputEl = document.getElementById(currentTargetInput);
+      if (!inputEl) return;
+
+      if (currentTargetInput === 'actSerialsIn' || currentTargetInput === 'saScanInput') {
+          let currentVal = inputEl.value;
+          if (currentVal.length > 0 && !currentVal.endsWith('\n')) currentVal += '\n'; 
+          
+          inputEl.value = currentVal + decodedText + '\n';
+          
+          const overlay = document.getElementById('cameraOverlay');
+          overlay.style.backgroundColor = "rgba(40, 167, 69, 0.9)";
+          setTimeout(() => overlay.style.backgroundColor = "rgba(0,0,0,0.85)", 300);
+      } else {
+          inputEl.value = decodedText;
+          if (currentTargetInput === 'searchInput') runSearch(decodedText); 
+          stopCamera();
+      }
+  }
+
+  function onScanFailure(error) {
+      // Ignored to prevent console spam
   }
 
 </script>
