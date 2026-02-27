@@ -764,6 +764,35 @@
     bootApp(userEmail);
   }
 
+// NEW: Restored Scanner Logic Function
+  const attachScannerLogic = (inputId) => {
+    const serialInput = document.getElementById(inputId);
+    if (!serialInput) return;
+    let rapidStrokeCount = 0;
+    let lastKeyTime = Date.now();
+    let scanTimer;
+
+    serialInput.addEventListener('keydown', function(e) {
+      let currentTime = Date.now();
+      if (e.key !== 'Enter') {
+        if (currentTime - lastKeyTime < 50) rapidStrokeCount++;
+        else rapidStrokeCount = 0; 
+      }
+      lastKeyTime = currentTime;
+    });
+
+    serialInput.addEventListener('keyup', function(e) {
+      clearTimeout(scanTimer);
+      scanTimer = setTimeout(() => {
+        if (rapidStrokeCount >= 2) {
+          let val = serialInput.value;
+          if (val.length > 0 && !val.endsWith('\n')) serialInput.value = val + '\n';
+        }
+        rapidStrokeCount = 0; 
+      }, 150); 
+    });
+  };
+
 // 2. Check Login on Load (Instantly, instead of waiting for images)
   document.addEventListener("DOMContentLoaded", function() {
     const savedTheme = localStorage.getItem('theme') || 'light';
