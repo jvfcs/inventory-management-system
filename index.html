@@ -2325,7 +2325,7 @@ async function fetchData(callback) {
     }
   }
 
-  function submitInline(action) {
+  async function submitInline(action) {
     document.getElementById('errorMsg').classList.add('hidden');
     document.getElementById('successMsg').classList.add('hidden');
     
@@ -2447,11 +2447,12 @@ async function fetchData(callback) {
       serials: serialsArray 
     };
 
-    google.script.run.withSuccessHandler(() => {
+    try {
+      await apiCall('processTransaction', { data: payload });
       setTimeout(silentSync, 2000);
-    }).withFailureHandler(() => {
-      showError("Background Sync Failed. Your connection may have dropped. Please refresh the page.");
-    }).processTransaction(payload);
+    } catch (err) {
+      showError("Transaction Failed: " + err.message);
+    }
   }
 
   function showError(msg) {
