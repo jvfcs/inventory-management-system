@@ -885,8 +885,13 @@
   }
 
   function applyRolePermissions() {
+      // Check if the user is currently looking at the Management view
+      const isMgmtActive = !document.getElementById('viewManagement').classList.contains('hidden');
+      
       if (currentUserRole === 'Admin' || currentUserRole === 'Manager') {
-          document.getElementById('btnNavManagement').classList.remove('d-none');
+          // Hide Mgmt button if they are ALREADY on the Mgmt page
+          document.getElementById('btnNavManagement').classList.toggle('d-none', isMgmtActive);
+          
           document.getElementById('btnEditLocInner').classList.remove('hidden');
           document.getElementById('btnEditItemInner').classList.remove('hidden');
           document.getElementById('btnAuditLocInner').classList.remove('hidden');
@@ -2480,11 +2485,8 @@ async function fetchData(callback) {
     
     document.getElementById('btnNavInventory').classList.toggle('d-none', v === 'inventory');
     
-    if (v === 'management' || currentUserRole === 'Operator' || currentUserRole === 'Viewer') {
-      document.getElementById('btnNavManagement').classList.add('d-none');
-    } else {
-      document.getElementById('btnNavManagement').classList.remove('d-none');
-    }
+    // Let the master permission function handle the Management button visibility!
+    applyRolePermissions();
     
     if(v === 'inventory') {
       showGrid(); 
