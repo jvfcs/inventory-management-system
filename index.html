@@ -803,6 +803,10 @@
     if(document.getElementById('actSerialsIn')) attachScannerLogic('actSerialsIn');
     if(document.getElementById('saScanInput')) attachScannerLogic('saScanInput');
 
+    // NEW: Restore the Search Listener!
+    const searchInput = document.getElementById('searchInput');
+    if(searchInput) searchInput.addEventListener('input', runSearch);
+
     const savedEmail = localStorage.getItem('ims_user_email');
     if (savedEmail) {
       // User is remembered! Boot straight into the app.
