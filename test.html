@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Camera Test</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; text-align: center; max-width: 500px; margin: 0 auto; background: #f9f9f9; }
+    .btn { background: #0b5394; color: white; border: none; padding: 15px 20px; font-size: 18px; border-radius: 8px; cursor: pointer; margin: 20px 0; width: 100%; box-sizing: border-box; font-weight: bold; }
+    #reader { width: 100%; margin: 0 auto; border-radius: 8px; overflow: hidden; background: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    #result { margin-top: 20px; font-size: 18px; font-weight: bold; color: #274e13; padding: 15px; border-radius: 5px; background: #e2f0d9; display: none; word-break: break-all; }
+  </style>
+</head>
+<body>
+
+  <h2>Live Camera Scanner</h2>
+  <p>Running natively on GitHub Pages!</p>
+
+  <button id="start-btn" class="btn">📹 Start Live Scanner</button>
+  
+  <div id="reader"></div>
+  <div id="result"></div>
+
+  <script>
+    const startBtn = document.getElementById('start-btn');
+    const resultDiv = document.getElementById('result');
+    let html5QrCode;
+
+    startBtn.addEventListener('click', () => {
+      // Hide the start button and clear previous results
+      startBtn.style.display = 'none';
+      resultDiv.style.display = 'none';
+      
+      // Initialize the scanner on the 'reader' div
+      html5QrCode = new Html5Qrcode("reader");
+      
+      // Configure the scanner: 
+      // fps = frames per second. 10 is a good balance for mobile battery/performance.
+      // qrbox = creates a rectangular targeting box perfect for 1D barcodes.
+      const config = { fps: 10, qrbox: { width: 250, height: 100 } };
+      
+      // Start the environment (rear) camera
+      html5QrCode.start(
+        { facingMode: "environment" }, 
+        config, 
+        (decodedText) => {
+          // --- SUCCESS CALLBACK ---
+          // Stop the camera immediately to save battery
+          html5QrCode.stop().then(() => {
+            document.getElementById('reader').innerHTML = ""; // Clear the video feed UI
+            
+            // Show the result
+            resultDiv.style.display = 'block';
+            resultDiv.innerText = "✅ Scanned: " + decodedText;
+            
+            // Bring the button back so you can scan another
+            startBtn.style.display = 'block';
+            startBtn.innerText = "Scan Another Item";
+            
+            // Optional: Play a tiny beep sound
+            playBeep(); 
+          });
+        },
+        (errorMessage) => {
+          // --- ERROR CALLBACK ---
+          // The scanner throws an error on every single frame that doesn't contain a barcode.
+          // We leave this empty so it doesn't spam your console.
+        }
+      ).catch((err) => {
+        alert("Camera Permission Denied or Error: " + err);
+        startBtn.style.display = 'block';
+      });
+    });
+
+    // A simple web audio beep for that authentic scanner feel
+    function playBeep() {
+      const context = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = context.createOscillator();
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(800, context.currentTime);
+      oscillator.connect(context.destination);
+      oscillator.start();
+      oscillator.stop(context.currentTime + 0.1);
+    }
+  </script>
+</body>
+</html>
