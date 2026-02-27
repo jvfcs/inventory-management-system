@@ -1,24 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <title>Inventory Management System</title>
+  <base target="_top">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="IMS">
+  <meta name="theme-color" content="#2c3e50">
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="https://dummyimage.com/180x180/2c3e50/ffffff.png&text=IMS">
+  <link rel="manifest" href='data:application/manifest+json;utf8,{"name":"Inventory Management","short_name":"IMS","start_url":"/","display":"standalone","background_color":"#f4f7f6","theme_color":"#2c3e50","icons":[{"src":"https://dummyimage.com/512x512/2c3e50/ffffff.png&text=IMS","sizes":"512x512","type":"image/png"}]}'>
+
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-bs-theme', savedTheme);
+  </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  
+
   <style>
-    body { background: #f4f7f6; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-    .login-card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center; max-width: 400px; width: 100%; }
+    body { background: #f4f7f6; padding-bottom: 50px; font-family: sans-serif; transition: background-color 0.3s ease; -webkit-touch-callout: none; }
+    .card { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; margin-bottom: 15px; }
+    .dynamic-grid { display: grid; gap: 15px; grid-template-columns: repeat(2, 1fr); }
+    @media (min-width: 768px) { .dynamic-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (min-width: 1200px) { .dynamic-grid { grid-template-columns: repeat(6, 1fr); } }
+    
+    .loc-card, .item-card { background: white; padding: 15px; border-radius: 12px; border: 1px solid #eee; cursor: pointer; transition: 0.2s; }
+    .loc-card:hover, .item-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+    .loc-card h6 { margin: 0; font-weight: 700; color: #2c3e50; font-size: 0.95rem; }
+    .meta-text { font-size: 0.7rem; color: #7f8c8d; margin-top: 5px; line-height: 1.3; }
+    
+    .cat-badge { font-size: 0.6rem; background: #eef2f3; color: #34495e; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; font-weight: 800; display: inline-block; }
+    .serial-badge { background: #d1e7dd; color: #0f5132; margin-left: 5px; }
+    
+    .loc-card img, .item-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; background: #f8f9fa; margin-bottom: 10px; }
+    .search-thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+    
+    .item-row { display: flex; align-items: center; gap: 15px; background: white; padding: 12px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 8px; cursor: pointer; }
+    .item-row img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
     .hidden { display: none !important; }
+    #searchResults { position: absolute; top: 100%; left: 0; right: 0; z-index: 2000; background: white; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-radius: 0 0 10px 10px; max-height: 400px; overflow-y: auto; }
+    .qty-bubble { font-weight: bold; background: #2c3e50; color: white; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; width: fit-content; }
+    .nav-link { cursor: pointer; font-weight: bold; }
+    .scroll-area { overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
+    th.sortable { cursor: pointer; color: #0d6efd; text-decoration: underline; }
+    .centered-col { text-align: center; vertical-align: middle; }
+    .stock-critical { background-color: #f8d7da !important; }
+    
+    .switch-container { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; font-weight: bold; color: #666; }
+    .toggle-switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: #2196F3; }
+    input:checked + .slider:before { transform: translateX(26px); }
+
+    .stock-badge { background: #eef2f3; color: #2c3e50; border: 1px solid #dee2e6; cursor: pointer; transition: 0.2s; }
+    .stock-badge:hover { background: #dfe6e9; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+    .notes-block { background-color: #f8f9fa; border-left: 3px solid #0d6efd; color: #495057; }
+
+    .stat-card { border-radius: 12px; padding: 20px; color: white; }
+    .stat-card h3 { font-weight: 800; font-size: 2rem; margin: 0; }
+    .stat-card p { margin: 0; font-weight: 600; opacity: 0.9; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+    .stat-bg-1 { background: linear-gradient(135deg, #0d6efd, #0b5ed7); }
+    .stat-bg-2 { background: linear-gradient(135deg, #198754, #157347); }
+    .stat-bg-3 { background: linear-gradient(135deg, #6c757d, #5c636a); }
+    .stat-bg-4 { background: linear-gradient(135deg, #0dcaf0, #0aa2c0); color: #000; } 
+    .stat-bg-5 { background: linear-gradient(135deg, #fd7e14, #e35d00); } 
+
+    #actSerialsIn, #saScanInput { text-transform: uppercase; }
+
+    /* Dark Mode Custom Overrides */
+    [data-bs-theme="dark"] body { background-color: #121212; color: #e0e0e0; }
+    [data-bs-theme="dark"] .app-logo { filter: invert(1) brightness(10); }
+    [data-bs-theme="dark"] .card, [data-bs-theme="dark"] .loc-card, [data-bs-theme="dark"] .item-card, [data-bs-theme="dark"] .item-row { background-color: #1e1e1e; border-color: #333; }
+    [data-bs-theme="dark"] .loc-card h6, [data-bs-theme="dark"] #detName, [data-bs-theme="dark"] .text-primary { color: #58a6ff !important; }
+    [data-bs-theme="dark"] .meta-text, [data-bs-theme="dark"] .text-muted { color: #adb5bd !important; }
+    [data-bs-theme="dark"] .cat-badge { background-color: #333; color: #e0e0e0; }
+    [data-bs-theme="dark"] .serial-badge { background-color: #0f5132; color: #d1e7dd; border: 1px solid #198754; }
+    [data-bs-theme="dark"] .qty-bubble { background-color: #0d6efd; color: #fff; } 
+    [data-bs-theme="dark"] .bg-white { background-color: #1e1e1e !important; }
+    [data-bs-theme="dark"] .bg-light { background-color: #2a2a2a !important; }
+    [data-bs-theme="dark"] .table { color: #e0e0e0; }
+    [data-bs-theme="dark"] .table-light { background-color: #2a2a2a; color: #fff; border-bottom: 1px solid #444; }
+    [data-bs-theme="dark"] .table-secondary { background-color: #333 !important; color: #888; }
+    [data-bs-theme="dark"] .stock-critical { background-color: #4a191e !important; color: #fff; }
+    [data-bs-theme="dark"] .border, [data-bs-theme="dark"] .border-top, [data-bs-theme="dark"] .border-bottom { border-color: #333 !important; }
+    [data-bs-theme="dark"] #searchResults { background-color: #1e1e1e; border-color: #333; }
+    [data-bs-theme="dark"] .list-group-item { background-color: #1e1e1e; border-color: #333; color: #e0e0e0; }
+    [data-bs-theme="dark"] .list-group-item:hover { background-color: #2a2a2a; }
+    [data-bs-theme="dark"] .btn-outline-dark { color: #e0e0e0; border-color: #e0e0e0; }
+    [data-bs-theme="dark"] .btn-outline-dark:hover { background-color: #e0e0e0; color: #121212; }
+    [data-bs-theme="dark"] .stock-badge { background-color: #2a2a2a; color: #e0e0e0; border-color: #444; }
+    [data-bs-theme="dark"] .stock-badge:hover { background-color: #333; }
+    [data-bs-theme="dark"] .notes-block { background-color: #2a2a2a; color: #adb5bd; border-left: 3px solid #58a6ff; }
+    [data-bs-theme="dark"] #availableSerialsCheckboxes { background-color: #1e1e1e !important; border-color: #444 !important; }
+
+    #themeToggleBtn { font-size: 1.2rem; display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; padding: 0; line-height: 1; }
+    
+    .collapse-toggle[aria-expanded="true"] .toggle-icon { transform: rotate(180deg); }
+    .toggle-icon { display: inline-block; transition: transform 0.2s ease; }
+    
+    #syncIndicator { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.75); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; z-index: 9999; opacity: 0; transition: opacity 0.5s; pointer-events: none; display: flex; align-items: center; gap: 8px; }
+    
+    #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #f4f7f6; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.3s ease; }
+    [data-bs-theme="dark"] #loadingOverlay { background-color: #121212; }
+    
+    .table-warning { transition: background-color 0.3s ease; }
   </style>
 </head>
+
 <body>
 
-  <div id="loginView" class="login-card">
+<div id="loginOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 10000; display: flex; align-items: center; justify-content: center;">
+  <div class="card p-4 shadow-sm text-center" style="max-width: 400px; width: 90%;">
+    <img src="https://lh3.googleusercontent.com/d/1xgvAKlvNOYd02pJ24G7Uxv2KS3McRcvk" alt="Logo" style="width:80px; height:80px; object-fit:contain; margin: 0 auto;" class="mb-3">
     <h3 class="fw-bold text-primary mb-3">IMS Login</h3>
-    <p class="text-muted mb-4">Please sign in with your authorized Google account to access the inventory.</p>
+    <p class="text-muted mb-4 small">Please sign in with your authorized Google account to access the inventory.</p>
     
     <div id="g_id_onload"
          data-client_id="950754972661-o30t3svi49fjpj9f4rg64dctcm3m8jb8.apps.googleusercontent.com"
@@ -27,144 +132,2533 @@
          data-callback="handleCredentialResponse"
          data-auto_prompt="false">
     </div>
-    <div class="g_id_signin"
-         data-type="standard"
-         data-shape="rectangular"
-         data-theme="outline"
-         data-text="sign_in_with"
-         data-size="large"
-         data-logo_alignment="left">
+    <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="sign_in_with" data-size="large" data-logo_alignment="center"></div>
+  </div>
+</div>
+<div id="loadingOverlay">
+
+<div id="loadingOverlay">
+  <img src="https://lh3.googleusercontent.com/d/1xgvAKlvNOYd02pJ24G7Uxv2KS3McRcvk" alt="Logo" style="width:300px; height:300px; object-fit:contain;" class="mb-3 text-primary">
+  <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+  <h5 class="fw-bold text-secondary">Loading Inventory Data...</h5>
+</div>
+
+<div id="accessDenied" class="container py-5 text-center hidden">
+  <div class="card p-5 shadow-sm mx-auto mt-5" style="max-width: 500px;">
+    <h2 class="text-danger fw-bold mb-3">Access Denied</h2>
+    <p class="text-muted">You do not have permission to view the Inventory Management System. Please contact an administrator to request access.</p>
+    <p id="deniedEmail" class="fw-bold mt-3 text-secondary"></p>
+  </div>
+</div>
+
+<div id="appContainer" class="container py-3 hidden">
+
+  <div id="syncIndicator">
+    <div class="spinner-border text-light" role="status" style="width: 14px; height: 14px; border-width: 2px;"></div>
+    <span>Syncing...</span>
+  </div>
+
+  <div id="globalStockAlert" class="alert alert-danger text-center fw-bold shadow-sm mb-3 hidden" style="cursor: pointer;" onclick="showView('management'); switchMgmt('dash');">
+    ⚠️ Low Stock Warning: Click here to view the Dashboard for details.
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center">
+      <img src="https://lh3.googleusercontent.com/d/1xgvAKlvNOYd02pJ24G7Uxv2KS3McRcvk" alt="Logo" style="width:30px; height:30px; object-fit:contain;" class="me-2 text-primary">
+      <div>
+        <h5 class="fw-bold m-0 mt-1 text-primary d-none d-sm-block">Inventory Management System</h5>
+        <h5 class="fw-bold m-0 mt-1 text-primary d-block d-sm-none">IMS</h5>
+      </div>
+    </div>
+    <div class="text-end">
+      <div class="d-flex gap-2 justify-content-end">
+         <button id="btnNavInventory" class="btn btn-sm btn-outline-dark d-none" onclick="showView('inventory')">Inventory</button>
+         <button id="btnNavManagement" class="btn btn-sm btn-outline-primary d-none" onclick="showView('management')">Management</button>
+         <button id="themeToggleBtn" class="btn btn-sm btn-outline-secondary rounded-circle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">☀️</button>
+      </div>
     </div>
   </div>
 
-  <div id="appView" class="hidden" style="width: 100%; height: 100%; align-items:flex-start; justify-content:center; padding: 20px;">
-    <div class="card p-4 shadow-sm w-100" style="max-width: 800px;">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold m-0 text-primary">Inventory Dashboard</h4>
-        <button class="btn btn-outline-danger btn-sm" onclick="signOut()">Sign Out</button>
+  <div id="viewInventory">
+    <div id="searchContainer" class="position-relative mb-4">
+      <div class="input-group shadow-sm">
+        <input type="text" id="searchInput" class="form-control form-control-lg" placeholder="Search Barcode, Serial, Make, or Model...">
+        <button class="btn btn-outline-secondary" onclick="clearSearch()">Clear</button>
       </div>
-      <p>Welcome, <strong id="userEmailDisplay"></strong>!</p>
+      <div id="searchResults" class="list-group hidden"></div>
+    </div>
+
+    <div id="mainContent">
+      <div id="gridView">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold text-muted m-0 text-uppercase letter-spacing-1">Locations Overview</h6>
+          <select id="sortSelect" class="form-select form-select-sm w-auto" onchange="renderGrid()">
+            <option value="az">Name A-Z</option>
+            <option value="qtyDesc">Qty High-Low</option>
+            <option value="qtyAsc">Qty Low-High</option>
+          </select>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-center mt-2 mb-3 border-bottom pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapsePhysical" aria-expanded="true">
+            <h6 class="fw-bold text-secondary m-0">Physical Spaces & Global</h6>
+            <span class="text-secondary fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapsePhysical" class="collapse show">
+            <div id="locationGridPhysical" class="dynamic-grid mb-4"></div>
+        </div>
+        
+        <div id="deployableSection" class="hidden">
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-3 border-bottom border-info pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDeployable" aria-expanded="true">
+              <h6 class="fw-bold text-info m-0">Deployable Locations</h6>
+              <span class="text-info fw-bold toggle-icon">▼</span>
+          </div>
+          <div id="collapseDeployable" class="collapse show">
+              <div id="locationGridDeployable" class="dynamic-grid"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="locationDetail" class="hidden">
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold text-uppercase" onclick="showGrid()">← Back</button>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-warning hidden fw-bold" id="btnAuditLocInner" onclick="startAudit(currentLocName)">Audit</button>
+              <button class="btn btn-sm btn-success" id="btnCsvLoc" onclick="exportCsv()">Download CSV</button>
+            </div>
+          </div>
+          
+          <div id="locInfoHeader" class="d-flex flex-row gap-3 my-3 hidden border-bottom pb-3">
+             <div class="d-flex flex-column gap-2" style="width: 100px; flex-shrink: 0;">
+                 <img id="locDetImg" style="width:100%; height:100px; border-radius:10px; object-fit:cover; background:#eee;">
+                 <div id="locDetEmoji" class="d-flex align-items-center justify-content-center bg-light text-secondary rounded hidden" style="width:100%; height:100px; font-size:3rem; border: 1px solid #eee;"></div>
+                 <button class="btn btn-sm btn-outline-primary hidden w-100 fw-bold" id="btnEditLocInner" onclick="editLoc(currentLocName)">✎ Edit</button>
+             </div>
+             <div class="flex-grow-1">
+                <h4 id="selectedLocTitle" class="fw-bold mb-1"></h4>
+                <div class="mb-2">
+                    <span id="locDetType" class="cat-badge"></span>
+                    <span id="locDetDeploy" class="cat-badge bg-info text-dark"></span>
+                </div>
+                <p id="locDetDesc" class="small mb-1 mt-1 text-muted"></p>
+                <p id="locDetNotes" class="small mb-0 text-muted fst-italic"></p>
+              </div>
+           </div>
+
+           <div class="d-flex justify-content-between align-items-center mt-2 mb-4" id="locControlsContainer">
+             <select id="itemSortSelect" class="form-select form-select-sm w-auto" onchange="renderItems(currentLocName)">
+               <option value="cat_az">Category A-Z</option>
+               <option value="cat_za">Category Z-A</option>
+               <option value="make_az">Make A-Z</option>
+               <option value="make_za">Make Z-A</option>
+               <option value="model_az">Model A-Z</option>
+               <option value="model_za">Model Z-A</option>
+               <option value="qty_desc">QTY High-Low</option>
+               <option value="qty_asc">QTY Low-High</option>
+             </select>
+             <div class="switch-container">
+               <span>GRID</span>
+               <label class="toggle-switch">
+                 <input type="checkbox" id="layoutToggle" onchange="toggleLayout()" checked>
+                 <span class="slider"></span>
+               </label>
+               <span>LIST</span>
+             </div>
+           </div>
+         </div>
+        
+        <div id="itemsContainer"></div>
+        <div id="auditContainer" class="hidden mt-3"></div>
+      </div>
+
+      <div id="itemDetail" class="card p-4 hidden">
+        <div class="mb-3">
+          <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold text-uppercase" onclick="showGrid()">← Back</button>
+        </div>
+        
+        <div class="d-flex flex-column flex-md-row gap-4">
+          <div class="d-flex flex-column gap-2" style="max-width: 140px; flex-shrink: 0;">
+              <img id="detImg" style="width:100%; height:140px; border-radius:15px; object-fit:cover; background:#eee;">
+              <button class="btn btn-sm btn-outline-primary hidden w-100 fw-bold" id="btnEditItemInner" onclick="editItem(activeBc)">✎ Edit</button>
+          </div>
+          <div class="flex-grow-1">
+            <div>
+              <span id="detCat" class="cat-badge"></span>
+              <span id="detSerialized" class="cat-badge serial-badge hidden">Serialized</span>
+            </div>
+            <h3 id="detName" class="fw-bold mt-1 mb-0"></h3>
+            <p id="detBc" class="text-muted mb-1"></p>
+            <div id="detPrice" class="fw-bold text-success mb-2 small"></div>
+            <p id="detDesc" class="small mb-2"></p>
+            <div id="detSpecsArea" class="mb-2"></div>
+            <div id="detNotes" class="notes-block small p-2 rounded mb-2 hidden"></div>
+            <div id="detUpdate" class="meta-text border-top pt-2 mt-2"></div>
+          </div>
+        </div>
+        
+        <div id="detStock" class="mt-4 mb-2 d-flex flex-wrap gap-2"></div>
+        <div id="detSerialList" class="mb-4 hidden"></div>
+        
+        <div id="inlineActionForm" class="mt-4 border-top pt-3 hidden">
+          <div id="errorMsg" class="alert alert-danger py-2 px-3 small mb-3 hidden fw-bold"></div>
+          <div id="successMsg" class="alert alert-success py-2 px-3 small mb-3 hidden fw-bold"></div>
+          
+          <div class="row g-2 align-items-end mb-3">
+            <div class="col-md-6">
+              <label class="small fw-bold">Location</label>
+              <select id="actLoc" class="form-select" onchange="updateAvailableSpots('from'); updateAvailableSerials();"></select>
+            </div>
+            <div class="col-md-6">
+              <label class="small fw-bold">Spot / Bin</label>
+              <select id="actSubLoc" class="form-select" onchange="checkNewSpot('from'); updateAvailableSerials();"></select>
+            </div>
+            <div class="col-md-12 hidden" id="newSpotContainer">
+              <input type="text" id="actNewSpot" class="form-control border-primary shadow-sm mt-1" placeholder="Type new Spot/Bin name (e.g., Shelf 30)">
+            </div>
+
+            <div class="col-md-6 hidden" id="toLocContainer">
+              <label class="small fw-bold text-primary mt-2">Destination Location</label>
+              <select id="actToLoc" class="form-select border-primary" onchange="updateAvailableSpots('to')"></select>
+            </div>
+            <div class="col-md-6 hidden" id="toSubLocContainer">
+              <label class="small fw-bold text-primary mt-2">Destination Spot / Bin</label>
+              <select id="actToSubLoc" class="form-select border-primary" onchange="checkNewSpot('to')"></select>
+            </div>
+            <div class="col-md-12 hidden" id="newToSpotContainer">
+              <input type="text" id="actNewToSpot" class="form-control border-primary shadow-sm mt-1" placeholder="Type new Spot/Bin name (e.g., Storage Case 3)">
+            </div>
+            
+            <div class="col-md-12" id="qtyContainer">
+              <label class="small fw-bold mt-2">Quantity</label>
+              <input type="number" id="actQty" class="form-control form-control-lg" value="1" min="1">
+            </div>
+
+            <div class="col-md-12 hidden" id="serialContainer">
+              <div class="card p-3 border shadow-sm mb-1 mt-3">
+                <label class="small fw-bold text-primary mb-1">Scan or Type Serials (All Actions)</label>
+                <textarea id="actSerialsIn" class="form-control mb-3" rows="2" placeholder="Scan or type serials here... (Comma or Newline separated)"></textarea>
+
+                <label class="small fw-bold text-secondary mb-1">Or Select Available Serials (For 'REMOVE' / 'MOVE')</label>
+                <div id="availableSerialsCheckboxes" class="border rounded p-2" style="max-height: 150px; overflow-y: auto; background: #fff;">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-2 mt-1">
+            <div class="col-4"><button class="btn btn-success py-2 w-100 fw-bold" id="btnIn" onclick="submitInline('In')">ADD</button></div>
+            <div class="col-4"><button class="btn btn-danger py-2 w-100 fw-bold" id="btnOut" onclick="submitInline('Out')">REMOVE</button></div>
+            <div class="col-4"><button class="btn btn-primary py-2 w-100 fw-bold" id="btnMove" onclick="handleMoveClick()">MOVE</button></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="viewManagement" class="hidden">
+    <div class="card p-4">
+      <ul class="nav nav-tabs mb-4">
+        <li class="nav-item"><a class="nav-link active" id="t0" onclick="switchMgmt('dash')">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" id="t1" onclick="switchMgmt('item')">Item Master</a></li>
+        <li class="nav-item"><a class="nav-link" id="t2" onclick="switchMgmt('loc')">Location Master</a></li>
+        <li class="nav-item"><a class="nav-link" id="t3" onclick="switchMgmt('log')">Transaction Log</a></li>
+        <li class="nav-item d-none" id="tabUserAccess"><a class="nav-link" id="t4" onclick="switchMgmt('user')">User Access</a></li>
+      </ul>
       
-      <div id="apiResponseArea" class="p-3 bg-light border rounded mt-3">
-        <em>Waiting for authentication...</em>
+      <div id="mDash">
+        <div id="dashAlertsArea" class="hidden mb-4">
+          <div class="card border-danger shadow-sm">
+            <div class="card-header bg-danger text-white fw-bold">
+              ⚠️ Low Stock Warning
+            </div>
+            <div class="card-body p-0">
+              <table class="table table-sm table-hover m-0">
+                <thead class="table-light">
+                  <tr><th>Category</th><th>Item</th><th>Stock</th><th>Min</th></tr>
+                </thead>
+                <tbody id="dashAlertsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashGlobal" aria-expanded="true">
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-muted small m-0">Global Snapshot</h6>
+            <span class="text-muted fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseDashGlobal" class="collapse show">
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-1 shadow-sm h-100">
+                  <p>Unique Active Items</p>
+                  <h3 id="statUnique">0</h3>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-2 shadow-sm h-100">
+                  <p>Total Units on Hand</p>
+                  <h3 id="statTotalUnits">0</h3>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-3 shadow-sm h-100">
+                  <p>Total Inventory Value</p>
+                  <h3 id="statTotalValue">$0.00</h3>
+                </div>
+              </div>
+            </div>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <div class="stat-card stat-bg-4 shadow-sm h-100">
+                  <p>Physical Spaces Value</p>
+                  <h3 id="statPhysValue">$0.00</h3>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="stat-card stat-bg-5 shadow-sm h-100">
+                  <p>Deployable Assets Value</p>
+                  <h3 id="statDepValue">$0.00</h3>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashPhys" aria-expanded="true">
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-muted small m-0">Physical Spaces</h6>
+            <span class="text-muted fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseDashPhys" class="collapse show">
+            <div class="row g-3 mb-4" id="dashLocationCardsPhysical"></div>
+        </div>
+
+        <div id="dashDeployableSection" class="hidden">
+          <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom border-info pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashDep" aria-expanded="true">
+              <h6 class="fw-bold text-uppercase letter-spacing-1 text-info small m-0">Deployable Locations</h6>
+              <span class="text-info fw-bold toggle-icon">▼</span>
+          </div>
+          <div id="collapseDashDep" class="collapse show">
+              <div class="row g-3" id="dashLocationCardsDeployable"></div>
+          </div>
+        </div>
       </div>
+
+      <div id="mItem" class="hidden">
+        <div class="row">
+          <div class="col-lg-4 mb-4">
+            <h6 class="fw-bold mb-3" id="catalogFormTitle">Add to Catalog</h6>
+            <input type="text" id="mBc" class="form-control mb-2" placeholder="Barcode">
+            <input type="text" id="mMake" class="form-control mb-2" placeholder="Make">
+            <input type="text" id="mModel" class="form-control mb-2" placeholder="Model">
+            <select id="mCat" class="form-select mb-2">
+              <option value="" disabled selected>Select Category</option>
+              <option value="Access Control">Access Control</option>
+              <option value="Accessories">Accessories</option>
+              <option value="Cable">Cable</option>
+              <option value="CCTV">CCTV</option>
+              <option value="Intrusion">Intrusion</option>
+              <option value="Office Supplies">Office Supplies</option>
+              <option value="Tools">Tools</option>
+              <option value="Other">Other</option>
+            </select>
+            
+            <select id="mSerialized" class="form-select mb-2 text-primary fw-bold">
+              <option value="No">Tracking: Bulk Quantity</option>
+              <option value="Yes">Tracking: Individual Serials</option>
+            </select>
+
+            <textarea id="mDesc" class="form-control mb-2" placeholder="Description" rows="2"></textarea>
+            <input type="text" id="mPrice" class="form-control mb-2" placeholder="Unit Price (e.g. $1,500.00)" onblur="formatCurrencyInput(this)">
+            <input type="number" id="mMin" class="form-control mb-2" placeholder="Min Stock">
+            <input type="text" id="mSpecs" class="form-control mb-2" placeholder="Tech Specs URL">
+            <input type="text" id="mImg" class="form-control mb-2" placeholder="Image URL (Optional)">
+            
+            <label class="small fw-bold mb-0">Image Upload (Overrides URL)</label>
+            <small class="text-muted d-block mb-1" style="font-size: 0.7rem;">PNG, JPG, or JPEG only</small>
+            <img id="mImgPreview" class="hidden mb-2 border rounded shadow-sm" style="max-width: 100px; max-height: 100px; object-fit: cover;">
+            <input type="file" id="mImgFile" class="form-control mb-2" accept=".png, .jpg, .jpeg">
+            
+            <textarea id="mNotes" class="form-control mb-3" placeholder="Notes" rows="2"></textarea>
+            
+            <button class="btn btn-primary w-100 mb-2" id="btnSaveItem" onclick="saveOrUpdateItem('add')">Save Item</button>
+            <button class="btn btn-outline-secondary w-100 hidden" id="btnCancelEdit" onclick="cancelEditItem()">Cancel Edit</button>
+          </div>
+          <div class="col-lg-8">
+            <h6 class="fw-bold mb-3">Catalog (Click Headers to Sort)</h6>
+            <div class="bg-light p-2 rounded border">
+               <table class="table table-sm table-hover bg-white m-0">
+                 <thead>
+                   <tr>
+                     <th class="sortable" onclick="sortMgmt('item', 0)">Barcode</th>
+                     <th class="sortable" onclick="sortMgmt('item', 1)">Item</th>
+                     <th>Total</th>
+                     <th class="sortable centered-col" onclick="sortMgmt('item', 7)">Actions</th>
+                   </tr>
+                 </thead>
+                 <tbody id="bodyItems"></tbody>
+               </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="mLoc" class="hidden">
+        <div class="row">
+          <div class="col-lg-4 mb-4">
+            <h6 class="fw-bold mb-3" id="locFormTitle">Add New Location</h6>
+            <input type="text" id="mLname" class="form-control mb-2" placeholder="Location Name">
+            <select id="mLtype" class="form-select mb-3">
+              <option value="" disabled selected>Select Category</option>
+              <option value="Events">Events</option>
+              <option value="Golf Cart">Golf Cart</option>
+              <option value="Office">Office</option>
+              <option value="Storage Case">Storage Case</option>
+              <option value="Storage Room">Storage Room</option>
+              <option value="Other">Other</option>
+            </select>
+            
+            <select id="mDeployType" class="form-select mb-2 text-primary fw-bold" onchange="toggleDeployLoc()">
+              <option value="Physical Space">Type: Physical Space</option>
+              <option value="Deployable">Type: Deployable</option>
+            </select>
+            <input type="text" id="mDeployLoc" class="form-control mb-2 hidden" placeholder="Deployment Location (e.g. Site Name)">
+
+            <textarea id="mLDesc" class="form-control mb-2" placeholder="Description" rows="2"></textarea>
+            <input type="text" id="mLImg" class="form-control mb-2" placeholder="Image URL (Optional)">
+            <label class="small fw-bold mb-0">Image Upload (Overrides URL)</label>
+            <small class="text-muted d-block mb-1" style="font-size: 0.7rem;">PNG, JPG, or JPEG only</small>
+            <img id="mLImgPreview" class="hidden mb-2 border rounded shadow-sm" style="max-width: 100px; max-height: 100px; object-fit: cover;">
+            <input type="file" id="mLImgFile" class="form-control mb-2" accept=".png, .jpg, .jpeg">
+            <textarea id="mLNotes" class="form-control mb-3" placeholder="Notes" rows="2"></textarea>
+            
+            <button class="btn btn-primary w-100 mb-2" id="btnSaveLoc" onclick="saveOrUpdateLoc('add')">Create Location</button>
+            <button class="btn btn-outline-secondary w-100 hidden" id="btnCancelEditLoc" onclick="cancelEditLoc()">Cancel Edit</button>
+          </div>
+          
+          <div class="col-lg-8">
+            <div id="locTableContainer">
+                <h6 class="fw-bold mb-3">Locations (Click Headers to Sort)</h6>
+                <div class="table-responsive bg-light p-2 rounded border">
+                   <table class="table table-sm table-hover bg-white m-0">
+                     <thead>
+                       <tr>
+                         <th class="sortable" onclick="sortMgmt('loc', 0)">Type</th>
+                         <th class="sortable" onclick="sortMgmt('loc', 1)">Name</th>
+                         <th class="sortable centered-col" onclick="sortMgmt('loc', 2)">Status</th>
+                       </tr>
+                     </thead>
+                     <tbody id="bodyLocs"></tbody>
+                   </table>
+                </div>
+            </div>
+            
+            <div id="spotManagerContainer" class="hidden">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h6 class="fw-bold m-0" id="spotManagerTitle">Manage Spots</h6>
+                  <button class="btn btn-sm btn-outline-secondary" onclick="closeSpotManager()">← Back to Locations</button>
+              </div>
+              <div class="table-responsive bg-light p-2 rounded border">
+                  <table class="table table-sm table-hover bg-white m-0">
+                      <thead>
+                          <tr><th>Spot / Bin Name</th><th class="text-end">Actions</th></tr>
+                      </thead>
+                      <tbody id="bodySpots"></tbody>
+                  </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="mLog" class="hidden">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold m-0">Full Transaction History</h6>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-success text-nowrap" onclick="exportLogCsv()">Download CSV</button>
+            <input type="number" id="exportLogRows" class="form-control form-control-sm" placeholder="Rows to DL" value="100" style="width:100px;"> rows
+          </div>
+        </div>
+
+        <div class="table-responsive bg-white p-2 border rounded">
+           <table class="table table-sm table-hover m-0 text-nowrap" style="font-size:0.85rem">
+             <thead class="table-light"><tr>
+               <th>#</th>
+               <th>Date</th>
+               <th>User</th>
+               <th>Item</th>
+               <th>From</th>
+               <th>To</th>
+               <th>Qty</th>
+             </tr></thead>
+             <tbody id="bodyLogs"></tbody>
+           </table>
+        </div>
+        <div class="text-center mt-3">
+          <button id="btnLoadMore" class="btn btn-outline-primary btn-sm px-4" onclick="loadMoreLogs()">Load More Activities</button>
+        </div>
+      </div>
+
+      <div id="mUser" class="hidden">
+        <div class="row">
+          <div class="col-lg-4 mb-4">
+            <h6 class="fw-bold mb-3" id="userFormTitle">Add New User</h6>
+            <input type="text" id="uName" class="form-control mb-2" placeholder="Full Name (Optional)">
+            <input type="email" id="uEmail" class="form-control mb-2" placeholder="User Email Address">
+            
+            <select id="uRole" class="form-select mb-2" onchange="updateRoleDescription()">
+              <option value="" disabled selected>Select Access Role</option>
+              <option value="Admin">Admin</option>
+              <option value="Manager">Manager</option>
+              <option value="Operator">Operator</option>
+              <option value="Viewer">Viewer</option>
+            </select>
+            
+            <div id="roleDesc" class="small text-muted mb-3 p-2 bg-light rounded border border-light hidden"></div>
+            
+            <button class="btn btn-primary w-100 mb-2" id="btnSaveUser" onclick="saveOrUpdateUser('add')">Add User</button>
+            <button class="btn btn-outline-secondary w-100 hidden" id="btnCancelEditUser" onclick="cancelEditUser()">Cancel Edit</button>
+            
+            <div class="mt-4 p-3 bg-light rounded border small text-muted">
+              <h6 class="fw-bold mb-2">Role Permissions</h6>
+              <strong>Admin:</strong> Full access to inventory, locations, settings, and user management.<br>
+              <strong>Manager:</strong> Full access to manage inventory and locations. Cannot manage users.<br>
+              <strong>Operator:</strong> Can check-in, check-out, and move items. No access to the management dashboard.<br>
+              <strong>Viewer:</strong> Read-only access. Can browse and view inventory levels only.
+            </div>
+          </div>
+          <div class="col-lg-8">
+            <h6 class="fw-bold mb-3">System Access Management</h6>
+            <div class="table-responsive bg-light p-2 rounded border">
+               <table class="table table-sm table-hover bg-white m-0">
+                 <thead>
+                   <tr>
+                     <th class="sortable" onclick="sortMgmt('user', 0)">Name</th>
+                     <th class="sortable" onclick="sortMgmt('user', 1)">Role</th>
+                     <th class="sortable" onclick="sortMgmt('user', 2)">Last Login</th>
+                     <th class="sortable centered-col" onclick="sortMgmt('user', 3)">Actions</th>
+                   </tr>
+                 </thead>
+                 <tbody id="bodyUsers"></tbody>
+               </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
     </div>
   </div>
 
-  <script>
-    // PASTE YOUR NEW WEB APP URL HERE (Keep the quotes)
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxRM7pblum2TVubgCvVQBRWF6FWKkHhtT-2pJuA8kCueVGo8izlXv6BCbNOQPzOH9PqCA/exec";
+  <div class="mt-5 pt-4 border-top text-center text-muted" style="font-size: 0.75rem; line-height: 1.5;">
+    <p class="mb-1">Developed by Jack Vu for FOX Corporate Security.</p>
+  </div>
 
-    // Universal API Caller to replace google.script.run
-async function apiCall(actionName, payloadData = {}) {
-  const email = localStorage.getItem('ims_user_email');
-  if (!email) throw new Error("Not logged in");
+</div>
 
-  // Package the request
-  const requestBody = {
-    action: actionName,
-    userEmail: email,
-    ...payloadData // Spread the rest of the payload variables into the request
+<div id="serialAuditModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; display:flex; justify-content:center; align-items:center;">
+   <div class="card p-4 shadow-lg" style="width:90%; max-width:500px; max-height:90vh; overflow-y:auto;">
+       <h5 class="fw-bold mb-1" id="saTitle">Audit Serials</h5>
+       <p class="small text-muted mb-3">Scan physical serials below, then click Verify to compare against expected inventory.</p>
+       
+       <label class="small fw-bold text-primary mb-1">1. Scan All Serials Here</label>
+       <textarea id="saScanInput" class="form-control mb-2" rows="3" style="text-transform:uppercase;" placeholder="Scan or type serials here..."></textarea>
+       <button class="btn btn-sm btn-info w-100 fw-bold mb-3 text-dark" onclick="verifyScannedSerials()">↻ Verify Scans</button>
+       
+       <label class="small fw-bold text-secondary mb-1">2. Expected Inventory (Uncheck if missing)</label>
+       <div id="saExpectedList" class="mb-4 border rounded p-2 bg-light" style="max-height: 180px; overflow-y: auto;"></div>
+       
+       <div class="d-flex justify-content-end gap-2 mt-2">
+           <button class="btn btn-outline-secondary" onclick="closeSerialAudit()">Cancel</button>
+           <button class="btn btn-warning fw-bold" onclick="saveSerialAudit()">Save Counts</button>
+       </div>
+   </div>
+</div>
+
+<script>
+  let db = { items: [], locations: [], logs: [], users: [] };
+  let layout = "list";
+  let activeBc = "";
+  let currentLocName = "";
+  let logLimit = 20;
+  
+  let currentSort = {
+    item: { col: -1, asc: true },
+    loc: { col: -1, asc: true },
+    user: { col: -1, asc: true }
+  };
+  
+  let currentSerialSort = { col: 'serial', asc: true };
+  
+  let currentUserEmail = "You"; 
+  let currentUserRole = "Viewer"; 
+  let isSyncing = false;
+
+  function getPlaceholder() {
+    const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    return isDark 
+      ? 'https://dummyimage.com/400x400/1e1e1e/adb5bd.png&text=No+Image' 
+      : 'https://dummyimage.com/400x400/f8f9fa/adb5bd.png&text=No+Image';
+  }
+
+  const roleDescriptions = {
+      'Admin': 'Full system access, including User Access management.',
+      'Manager': 'Can manage Items, Locations, and view Logs. Cannot manage Users.',
+      'Operator': 'Can Check-In, Check-Out, and Move inventory. No access to the Management dashboard.',
+      'Viewer': 'Read-only access to view inventory and locations.'
   };
 
-  const response = await fetch(GAS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify(requestBody)
-  });
+  function updateRoleDescription() {
+      const val = document.getElementById('uRole').value;
+      const descEl = document.getElementById('roleDesc');
+      if(val && roleDescriptions[val]) {
+          descEl.innerText = roleDescriptions[val];
+          descEl.classList.remove('hidden');
+      } else {
+          descEl.classList.add('hidden');
+      }
+  }
 
-  const result = await response.json();
-  
-  // If the backend threw an error (like Access Denied), throw it to the frontend
-  if (result.error) {
-    throw new Error(result.error);
+  function fmtTime(ts) {
+    if(!ts) return "N/A";
+    const d = new Date(ts);
+    return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  }
+
+  function getUserDisplayName(email) {
+    if (!email) return "Unknown";
+    if (email === "You") return "You";
+    
+    if (db.users && db.users.length > 0) {
+        const u = db.users.find(x => x.email.toLowerCase() === email.toLowerCase());
+        if (u && u.name && u.name.trim() !== "") return u.name;
+    }
+    
+    let namePart = email.split('@')[0];
+    return namePart.split('.').map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
+  }
+
+  function getLocLabel(locName) {
+    if (!locName || locName === "External" || locName === "Deployed" || locName === "Transit") return locName;
+    if (locName === "Everywhere") return "Global - Everywhere";
+    const loc = db.locations.find(l => l.locationName === locName);
+    return loc ? `${loc.type} - ${loc.locationName}` : locName;
   }
   
-  return result.data;
-}
+  function formatCurrencyInput(input) {
+    let val = input.value.replace(/[^0-9.-]+/g,"");
+    if(val) {
+      input.value = "$" + parseFloat(val).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    } else {
+      input.value = "";
+    }
+  }
 
-    // 1. Function triggered automatically when Google Sign-In is successful
-    function handleCredentialResponse(response) {
-      const jwt = response.credential;
-      const payload = JSON.parse(atob(jwt.split('.')[1]));
-      const userEmail = payload.email;
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbxRM7pblum2TVubgCvVQBRWF6FWKkHhtT-2pJuA8kCueVGo8izlXv6BCbNOQPzOH9PqCA/exec";
 
-      localStorage.setItem('ims_user_email', userEmail);
-      localStorage.setItem('ims_google_token', jwt);
+  // 1. Google Auth Callback
+  function handleCredentialResponse(response) {
+    const jwt = response.credential;
+    const payload = JSON.parse(atob(jwt.split('.')[1]));
+    const userEmail = payload.email;
 
-      showApp(userEmail);
+    localStorage.setItem('ims_user_email', userEmail);
+    localStorage.setItem('ims_google_token', jwt);
+    
+    bootApp(userEmail);
+  }
+
+  // 2. Check Login on Load
+  window.onload = function() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-bs-theme', savedTheme);
+    document.getElementById('themeToggleBtn').innerText = savedTheme === 'dark' ? '☀️' : '🌙';
+
+    attachScannerLogic('actSerialsIn');
+    attachScannerLogic('saScanInput');
+
+    const savedEmail = localStorage.getItem('ims_user_email');
+    if (savedEmail) {
+      bootApp(savedEmail);
+    } else {
+      // Hide loading, show login
+      document.getElementById('loadingOverlay').classList.add('hidden');
+    }
+  };
+
+  function bootApp(email) {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('loadingOverlay').classList.remove('hidden');
+    document.getElementById('loadingOverlay').style.opacity = '1';
+    fetchData(); // Kick off the data load
+  }
+
+  // 3. Universal API Caller
+  async function apiCall(actionName, payloadData = {}) {
+    const email = localStorage.getItem('ims_user_email');
+    if (!email) {
+      document.getElementById('loginOverlay').classList.remove('hidden');
+      throw new Error("Session expired. Please log in.");
     }
 
-    // 2. Toggle UI from Login to App
-    function showApp(email) {
-      document.getElementById('loginView').classList.add('hidden');
-      document.getElementById('appView').classList.remove('hidden');
-      document.getElementById('appView').style.display = 'flex';
-      document.getElementById('userEmailDisplay').innerText = email;
+    const response = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: actionName, userEmail: email, ...payloadData })
+    });
 
-      // Trigger the backend fetch now that we know who is logged in
-      fetchInventoryData(email);
-    }
+    const result = await response.json();
+    if (result.error) throw new Error(result.error);
+    return result.data;
+  }
 
-    // 3. Handle Sign Out
-    function signOut() {
-      localStorage.removeItem('ims_user_email');
-      localStorage.removeItem('ims_google_token');
-      
-      document.getElementById('appView').classList.add('hidden');
-      document.getElementById('appView').style.display = 'none';
-      document.getElementById('loginView').classList.remove('hidden');
-    }
-
-    // 4. Check if user is already logged in on page load
-    window.onload = function() {
-      const savedEmail = localStorage.getItem('ims_user_email');
-      if (savedEmail) {
-        showApp(savedEmail);
+  function applyRolePermissions() {
+      if (currentUserRole === 'Admin' || currentUserRole === 'Manager') {
+          document.getElementById('btnNavManagement').classList.remove('d-none');
+          document.getElementById('btnEditLocInner').classList.remove('hidden');
+          document.getElementById('btnEditItemInner').classList.remove('hidden');
+          document.getElementById('btnAuditLocInner').classList.remove('hidden');
+      } else {
+          document.getElementById('btnNavManagement').classList.add('d-none');
+          document.getElementById('btnEditLocInner').classList.add('hidden');
+          document.getElementById('btnEditItemInner').classList.add('hidden');
+          document.getElementById('btnAuditLocInner').classList.add('hidden');
       }
-    };
 
-    // 5. NEW: Fetch data from the Google Apps Script Backend
-    async function fetchInventoryData(email) {
-      const responseArea = document.getElementById('apiResponseArea');
-      responseArea.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> Loading data from backend...';
+      if (currentUserRole === 'Admin') {
+          document.getElementById('tabUserAccess').classList.remove('d-none');
+      } else {
+          document.getElementById('tabUserAccess').classList.add('d-none');
+      }
+      
+      if (currentUserRole === 'Viewer') {
+          document.getElementById('inlineActionForm').classList.add('hidden');
+      } else {
+          document.getElementById('inlineActionForm').classList.remove('hidden');
+      }
+  }
 
-      try {
-        const response = await fetch(GAS_URL, {
-          method: 'POST',
-          // text/plain prevents CORS preflight errors with Google Apps Script
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8', 
-          },
-          body: JSON.stringify({
-            action: 'getInitialData',
-            userEmail: email
-          })
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") silentSync();
+  });
+
+  async function silentSync() {
+    if (isSyncing) return;
+    isSyncing = true;
+    
+    const ind = document.getElementById('syncIndicator');
+    if (ind) ind.style.opacity = 1;
+
+    try {
+      const d = await apiCall('getInitialData');
+      db = d; 
+      applySorts();
+      softRefreshUI();
+    } catch (e) {
+      console.warn("Silent sync failed:", e);
+    } finally {
+      isSyncing = false;
+      if (ind) ind.style.opacity = 0;
+    }
+  }
+
+  function softRefreshUI() {
+      if (!document.getElementById('viewInventory').classList.contains('hidden')) {
+          if (!document.getElementById('gridView').classList.contains('hidden')) renderGrid();
+          if (!document.getElementById('locationDetail').classList.contains('hidden') && document.getElementById('auditContainer').classList.contains('hidden')) {
+              renderItems(currentLocName);
+          }
+          if (!document.getElementById('itemDetail').classList.contains('hidden')) refreshItemStockBadges(activeBc);
+      }
+      if (!document.getElementById('viewManagement').classList.contains('hidden')) {
+          if (!document.getElementById('mDash').classList.contains('hidden')) renderDashboard();
+          if (!document.getElementById('mItem').classList.contains('hidden')) updateMgmtTables();
+          if (!document.getElementById('mLoc').classList.contains('hidden')) updateMgmtTables();
+          if (!document.getElementById('mUser').classList.contains('hidden')) updateMgmtTables();
+          if (!document.getElementById('mLog').classList.contains('hidden')) renderLogs();
+      }
+  }
+
+  function toggleTheme() {
+    const root = document.documentElement;
+    const currentTheme = root.getAttribute('data-bs-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    root.setAttribute('data-bs-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.getElementById('themeToggleBtn').innerText = newTheme === 'dark' ? '☀️' : '🌙';
+    
+    // Dynamically swap any visible placeholder images
+    const lightImg = 'https://dummyimage.com/400x400/f8f9fa/adb5bd.png&text=No+Image';
+    const darkImg = 'https://dummyimage.com/400x400/1e1e1e/adb5bd.png&text=No+Image';
+    
+    document.querySelectorAll('img').forEach(img => {
+      if (newTheme === 'dark' && img.src === lightImg) img.src = darkImg;
+      if (newTheme === 'light' && img.src === darkImg) img.src = lightImg;
+    });
+    
+    google.script.run.saveUserThemeBackend(newTheme);
+  }
+
+async function fetchData(callback) {
+    try {
+      const data = await apiCall('getInitialData');
+      
+      db = data; 
+      // Set the user context from the backend userAuth check
+      const currentUser = data.users.find(u => u.email.toLowerCase() === localStorage.getItem('ims_user_email').toLowerCase());
+      if (currentUser) {
+        currentUserEmail = currentUser.email;
+        currentUserRole = currentUser.role;
+      } else {
+        currentUserRole = 'Admin'; // Fallback if it's the very first user created by the script
+      }
+
+      document.getElementById('appContainer').classList.remove('hidden');
+      applyRolePermissions();
+      applySorts();
+      renderGrid(); 
+      fillSelects(); 
+      updateMgmtTables();
+      renderLogs();
+      renderDashboard(); 
+
+      document.getElementById('loadingOverlay').style.opacity = '0';
+      setTimeout(() => document.getElementById('loadingOverlay').classList.add('hidden'), 300);
+      if (callback) callback(); 
+      
+      setInterval(silentSync, 15000); // Start silent sync loop
+    } catch (err) {
+      document.getElementById('loadingOverlay').classList.add('hidden');
+      document.getElementById('accessDenied').classList.remove('hidden');
+      document.getElementById('deniedEmail').innerText = err.message;
+    }
+  }
+  
+  function applySorts() {
+    if (currentSort.item.col !== -1) {
+      const key = ["barcode", "make", "model", "category", "minStock", "specs", "img", "status"][currentSort.item.col];
+      db.items.sort((a,b) => {
+        let valA = String(a[key] || "").toLowerCase();
+        let valB = String(b[key] || "").toLowerCase();
+        if(!isNaN(valA) && !isNaN(valB) && valA !== "" && valB !== "") {
+           return currentSort.item.asc ? Number(valA) - Number(valB) : Number(valB) - Number(valA);
+        }
+        let cmp = valA.localeCompare(valB);
+        return currentSort.item.asc ? cmp : -cmp;
+      });
+    } else {
+      db.items.sort((a, b) => {
+        let cmp = (a.make + " " + a.model).trim().toLowerCase().localeCompare((b.make + " " + b.model).trim().toLowerCase());
+        if (cmp !== 0) return cmp;
+        return a.barcode.localeCompare(b.barcode);
+      });
+    }
+
+    if (currentSort.loc.col !== -1) {
+      const key = ["type", "locationName", "status"][currentSort.loc.col];
+      db.locations.sort((a,b) => {
+        let cmp = String(a[key] || "").toLowerCase().localeCompare(String(b[key] || "").toLowerCase());
+        return currentSort.loc.asc ? cmp : -cmp;
+      });
+    } else {
+      db.locations.sort((a, b) => {
+        let cmp = a.locationName.localeCompare(b.locationName);
+        if (cmp !== 0) return cmp;
+        return a.type.localeCompare(b.type);
+      });
+    }
+
+    if (db.users) {
+      if (currentSort.user.col !== -1) {
+        const key = ["name", "role", "lastLogin", "status"][currentSort.user.col];
+        db.users.sort((a,b) => {
+          let valA = key === 'name' ? getUserDisplayName(a.email) : String(a[key] || "");
+          let valB = key === 'name' ? getUserDisplayName(b.email) : String(b[key] || "");
+          let cmp = valA.toLowerCase().localeCompare(valB.toLowerCase());
+          return currentSort.user.asc ? cmp : -cmp;
         });
+      } else {
+        db.users.sort((a,b) => getUserDisplayName(a.email).localeCompare(getUserDisplayName(b.email)));
+      }
+    }
+  }
 
-        const result = await response.json();
-
-        if (result.success) {
-          // Temporarily just print the counts to prove it worked!
-          const data = result.data;
-          console.log("Full Database Object:", data);
-          responseArea.innerHTML = `
-            <span class="text-success fw-bold">Success! Connection established.</span><br>
-            <strong>Role:</strong> ${data.users ? data.users.length > 0 ? 'Confirmed' : 'No Users Array' : 'Loaded'}<br>
-            <strong>Items Loaded:</strong> ${data.items.length}<br>
-            <strong>Locations Loaded:</strong> ${data.locations.length}<br>
-            <strong>Logs Loaded:</strong> ${data.logs.length}
-          `;
+  function getStockBalance(barcode, location = null, subLocation = null) {
+    let balance = 0;
+    db.logs.forEach(l => {
+      if (l.barcode === barcode) {
+        if (!location) {
+          balance += l.quantity;
         } else {
-          // Backend gracefully rejected the request (e.g., unauthorized email)
-          responseArea.innerHTML = `<span class="text-danger fw-bold">Backend Error:</span> ${result.error}`;
+          if (l.toLoc === location && (!subLocation || l.subLoc === subLocation)) balance += l.quantity;
+          if (l.fromLoc === location && (!subLocation || l.subLoc === subLocation)) balance -= Math.abs(l.quantity);
+        }
+      }
+    });
+    return balance;
+  }
+
+  function renderDashboard() {
+    let globalUnits = 0;
+    let globalValue = 0;
+    let physValue = 0;
+    let depValue = 0;
+    const lowStockAlerts = [];
+    const locationStats = {};
+
+    db.locations.filter(l => l.status === 'Active').forEach(l => {
+      locationStats[l.locationName] = { type: l.type, units: 0, value: 0, deployType: l.deployType || 'Physical Space' };
+    });
+
+    const activeItems = db.items.filter(i => i.status === 'Active');
+    
+    activeItems.forEach(itm => {
+      const price = parseFloat(itm.price) || 0;
+      let itemGlobalStock = 0;
+
+      for (const locName in locationStats) {
+        const stockAtLoc = getStockBalance(itm.barcode, locName); 
+        if (stockAtLoc > 0) {
+          locationStats[locName].units += stockAtLoc;
+          let val = stockAtLoc * price;
+          locationStats[locName].value += val;
+          itemGlobalStock += stockAtLoc;
+          
+          if (locationStats[locName].deployType === 'Deployable') {
+              depValue += val;
+          } else {
+              physValue += val;
+          }
+        }
+      }
+
+      globalUnits += itemGlobalStock;
+      globalValue += (itemGlobalStock * price);
+
+      if (itemGlobalStock <= parseFloat(itm.minStock)) {
+        lowStockAlerts.push({
+          bc: itm.barcode,
+          category: itm.category,
+          name: `${itm.make} ${itm.model}`,
+          onHand: itemGlobalStock,
+          min: itm.minStock
+        });
+      }
+    });
+
+    document.getElementById('statUnique').innerText = activeItems.length;
+    document.getElementById('statTotalUnits').innerText = globalUnits.toLocaleString('en-US');
+    document.getElementById('statTotalValue').innerText = "$" + globalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    
+    document.getElementById('statPhysValue').innerText = "$" + physValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('statDepValue').innerText = "$" + depValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    const globalAlertBanner = document.getElementById('globalStockAlert');
+    const alertArea = document.getElementById('dashAlertsArea');
+    const alertBody = document.getElementById('dashAlertsBody');
+    
+    if (lowStockAlerts.length > 0) {
+      alertBody.innerHTML = lowStockAlerts.map(a => `
+        <tr onclick="showView('inventory'); viewItem('${a.bc}')" style="cursor: pointer;" title="Click to view item details">
+          <td><small class="text-uppercase fw-bold text-muted" style="font-size:0.65rem">${a.category}</small></td>
+          <td class="fw-bold">${a.name}</td>
+          <td class="text-danger fw-bold">${a.onHand}</td>
+          <td>${a.min}</td>
+        </tr>
+      `).join('');
+      alertArea.classList.remove('hidden');
+      globalAlertBanner.classList.remove('hidden');
+    } else {
+      alertArea.classList.add('hidden');
+      globalAlertBanner.classList.add('hidden');
+    }
+
+    const buildDashCard = (locName, stat) => `
+      <div class="col-md-6 col-lg-4">
+        <div class="card p-3 border h-100 mb-0 shadow-sm" style="cursor:pointer;" onclick="showView('inventory'); viewLoc('${locName}', '${stat.type}')">
+          <h6 class="fw-bold mb-1">${stat.type} - ${locName}</h6>
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+              <small class="text-muted d-block">Items</small>
+              <span class="fw-bold fs-5">${stat.units.toLocaleString('en-US')}</span>
+            </div>
+            <div class="text-end">
+              <small class="text-muted d-block">Value</small>
+              <span class="fw-bold fs-5 text-success">$${stat.value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const physKeys = Object.keys(locationStats).filter(k => locationStats[k].deployType !== 'Deployable').sort();
+    const depKeys = Object.keys(locationStats).filter(k => locationStats[k].deployType === 'Deployable').sort();
+
+    document.getElementById('dashLocationCardsPhysical').innerHTML = physKeys.map(k => buildDashCard(k, locationStats[k])).join('');
+    
+    const depSec = document.getElementById('dashDeployableSection');
+    if (depKeys.length > 0) {
+      depSec.classList.remove('hidden');
+      document.getElementById('dashLocationCardsDeployable').innerHTML = depKeys.map(k => buildDashCard(k, locationStats[k])).join('');
+    } else {
+      depSec.classList.add('hidden');
+    }
+  }
+
+  function exportLogCsv() {
+    const limit = parseInt(document.getElementById('exportLogRows').value) || 100;
+    const sortedLogs = [...db.logs].reverse().slice(0, limit);
+    let csv = "Date,User,Barcode,Item,Serial,From,To,Quantity\n";
+    
+    sortedLogs.forEach(l => {
+      const itm = db.items.find(i => i.barcode === l.barcode);
+      const itemName = itm ? `${itm.make} ${itm.model}` : l.barcode;
+      const fSpot = l.fromLoc && l.subLoc ? ` (${l.subLoc})` : "";
+      const tSpot = l.toLoc && l.subLoc ? ` (${l.subLoc})` : "";
+      
+      const fromFull = `${getLocLabel(l.fromLoc)}${fSpot}`;
+      const toFull = `${getLocLabel(l.toLoc)}${tSpot}`;
+      
+      const cleanUser = getUserDisplayName(l.userEmail).replace(/"/g, '""');
+      const cleanItem = itemName.replace(/"/g, '""');
+      const cleanFrom = fromFull.replace(/"/g, '""');
+      const cleanTo = toFull.replace(/"/g, '""');
+      const cleanSerial = l.serial.replace(/"/g, '""');
+      
+      csv += `"${fmtTime(l.timestamp)}","${cleanUser}","${l.barcode}","${cleanItem}","${cleanSerial}","${cleanFrom}","${cleanTo}",${Math.abs(l.quantity)}\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Transaction_Logs_${limit}_Rows.csv`;
+    a.click();
+  }
+
+  function renderLogs() {
+    const tbody = document.getElementById('bodyLogs');
+    const sortedLogs = [...db.logs].reverse();
+    const visible = sortedLogs.slice(0, logLimit);
+    // Added 'index' parameter to the map function to count rows
+    tbody.innerHTML = visible.map((l, index) => {
+      const itm = db.items.find(i => i.barcode === l.barcode);
+      const itemName = itm ? `${itm.make} ${itm.model}` : l.barcode;
+      const serialLabel = l.serial ? ` <br><small class="text-primary">SN: ${l.serial}</small>` : "";
+      
+      const fSpot = l.fromLoc && l.subLoc ? ` (${l.subLoc})` : "";
+      const tSpot = l.toLoc && l.subLoc ? ` (${l.subLoc})` : "";
+      
+      const fromFull = `${getLocLabel(l.fromLoc)}${fSpot}`;
+      const toFull = `${getLocLabel(l.toLoc)}${tSpot}`;
+      
+      return `<tr>
+          <td class="text-muted fw-bold"><small>${index + 1}</small></td>
+          <td><small class="text-muted">${fmtTime(l.timestamp)}</small></td>
+          <td><small>${getUserDisplayName(l.userEmail)}</small></td>
+          <td><strong>${itemName}</strong>${serialLabel}</td>
+          <td><small>${fromFull}</small></td>
+          <td><small>${toFull}</small></td>
+          <td><strong>${Math.abs(l.quantity)}</strong></td>
+        </tr>`;
+    }).join('');
+    document.getElementById('btnLoadMore').classList.toggle('hidden', logLimit >= sortedLogs.length);
+  }
+
+  function loadMoreLogs() { logLimit += 20; renderLogs(); }
+
+  function updateMgmtTables() {
+    const spotCounts = {};
+    db.logs.forEach(log => {
+      if (log.subLoc) {
+        if (log.toLoc) {
+          if (!spotCounts[log.toLoc]) spotCounts[log.toLoc] = new Set();
+          spotCounts[log.toLoc].add(log.subLoc);
+        }
+        if (log.fromLoc) {
+          if (!spotCounts[log.fromLoc]) spotCounts[log.fromLoc] = new Set();
+          spotCounts[log.fromLoc].add(log.subLoc);
+        }
+      }
+    });
+
+    document.getElementById('bodyItems').innerHTML = db.items.map(i => {
+      const total = getStockBalance(i.barcode);
+      const criticalClass = (total <= Number(i.minStock) && i.status === 'Active') ? 'stock-critical' : '';
+      const serialBadge = i.serialized === 'Yes' ? `<span class="badge bg-dark ms-2" style="font-size:0.6rem">SERIALIZED</span>` : '';
+      return `
+      <tr class="${i.status === 'Inactive' ? 'table-secondary text-muted' : ''} ${criticalClass}" onclick="editItem('${i.barcode}')" style="cursor: pointer;">
+        <td><small>${i.barcode}</small></td>
+        <td><strong>${i.make}</strong> ${i.model} ${serialBadge}</td>
+        <td><strong>${total}</strong></td>
+        <td class="centered-col text-nowrap">
+          <button class="btn btn-sm ${i.status === 'Active' ? 'btn-outline-danger' : 'btn-outline-success'}" onclick="event.stopPropagation(); toggleStatusI('${i.barcode}', '${i.status}')">
+            ${i.status === 'Active' ? 'Disable' : 'Enable'}
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
+    
+    document.getElementById('bodyLocs').innerHTML = db.locations.map(l => {
+      const sCount = spotCounts[l.locationName] ? spotCounts[l.locationName].size : 0;
+      const spotBtnText = sCount > 0 ? `Spots (${sCount})` : `Spots (0)`;
+      
+      return `
+      <tr class="${l.status === 'Inactive' ? 'table-secondary text-muted' : ''}" onclick="editLoc('${l.locationName}')" style="cursor: pointer;">
+        <td><span class="badge bg-secondary">${l.type}</span></td>
+        <td>${l.locationName}</td>
+        <td class="centered-col text-nowrap">
+          <button class="btn btn-sm btn-outline-info me-1" onclick="event.stopPropagation(); openSpotManager('${l.locationName}')">${spotBtnText}</button>
+          <button class="btn btn-sm ${l.status === 'Active' ? 'btn-outline-danger' : 'btn-outline-success'}" onclick="event.stopPropagation(); toggleStatusL('${l.locationName}', '${l.type}', '${l.status}')">
+            ${l.status === 'Active' ? 'Disable' : 'Enable'}
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
+      
+    if (db.users && db.users.length > 0) {
+        document.getElementById('bodyUsers').innerHTML = db.users.map(u => `
+          <tr class="${u.status === 'Inactive' ? 'table-secondary text-muted' : ''}" onclick="editUser('${u.email}')" style="cursor: pointer;">
+            <td><div class="fw-bold">${getUserDisplayName(u.email)}</div><small class="text-muted">${u.email}</small></td>
+            <td><span class="badge bg-primary">${u.role}</span></td>
+            <td><small>${fmtTime(u.lastLogin)}</small></td>
+            <td class="centered-col text-nowrap">
+              <button class="btn btn-sm ${u.status === 'Active' ? 'btn-outline-danger' : 'btn-outline-success'}" onclick="event.stopPropagation(); toggleStatusU('${u.email}', '${u.status}')">
+                ${u.status === 'Active' ? 'Disable' : 'Enable'}
+              </button>
+            </td>
+          </tr>`).join('');
+    }
+  }
+  
+  function openSpotManager(locName) {
+      const spots = new Set();
+      db.logs.forEach(l => {
+        if (l.toLoc === locName && l.subLoc) spots.add(l.subLoc);
+        if (l.fromLoc === locName && l.subLoc) spots.add(l.subLoc);
+      });
+
+      const spotList = Array.from(spots).sort();
+
+      document.getElementById('locTableContainer').classList.add('hidden');
+      document.getElementById('spotManagerContainer').classList.remove('hidden');
+      document.getElementById('spotManagerTitle').innerText = `Manage Spots: ${locName}`;
+      
+      const tbody = document.getElementById('bodySpots');
+      
+      if (spotList.length === 0) {
+         tbody.innerHTML = `<tr><td colspan="2" class="text-center text-muted">No custom spots found for this location.</td></tr>`;
+      } else {
+         tbody.innerHTML = spotList.map(s => {
+             return `<tr>
+                 <td class="fw-bold align-middle">${s}</td>
+                 <td class="text-end text-nowrap">
+                     <button class="btn btn-sm btn-outline-primary me-1" onclick="renameSpot('${locName.replace(/'/g, "\\'")}', '${s.replace(/'/g, "\\'")}')">Rename</button>
+                     <button class="btn btn-sm btn-outline-danger" onclick="deleteSpot('${locName.replace(/'/g, "\\'")}', '${s.replace(/'/g, "\\'")}')">Delete</button>
+                 </td>
+             </tr>`;
+         }).join('');
+      }
+  }
+
+  function closeSpotManager() {
+      document.getElementById('spotManagerContainer').classList.add('hidden');
+      document.getElementById('locTableContainer').classList.remove('hidden');
+  }
+
+  function renameSpot(locName, oldSpot) {
+      const newSpot = prompt(`Enter new name to replace "${oldSpot}":`, oldSpot);
+      if (!newSpot || newSpot.trim() === "" || newSpot === oldSpot) return;
+      
+      document.getElementById('spotManagerTitle').innerText = "Processing..."; 
+      
+      google.script.run.withSuccessHandler(res => {
+          fetchData(() => {
+              openSpotManager(locName); 
+          });
+      }).manageSpotBackend(locName, oldSpot, newSpot.trim());
+  }
+
+  function deleteSpot(locName, oldSpot) {
+      if (!confirm(`Are you sure you want to delete "${oldSpot}"?\n\nAny items currently in this spot will be moved to the Default (blank) spot for ${locName}.`)) return;
+      
+      document.getElementById('spotManagerTitle').innerText = "Processing...";
+      google.script.run.withSuccessHandler(res => {
+          fetchData(() => {
+              openSpotManager(locName);
+          });
+      }).manageSpotBackend(locName, oldSpot, "");
+  }
+
+  function startAudit(locName) {
+      if(locName === 'Everywhere') return alert('Cannot audit the Global view. Please select a specific physical location.');
+      
+      document.getElementById('itemsContainer').classList.add('hidden');
+      document.getElementById('locControlsContainer').classList.add('hidden');
+      document.getElementById('auditContainer').classList.remove('hidden');
+      
+      let auditList = [];
+      
+      db.items.filter(i => i.status === 'Active').forEach(itm => {
+          const spots = new Set();
+          db.logs.filter(l => l.barcode === itm.barcode).forEach(l => {
+              if (l.toLoc === locName && l.subLoc) spots.add(l.subLoc);
+              if (l.fromLoc === locName && l.subLoc) spots.add(l.subLoc);
+          });
+          
+          let defaultQ = getStockBalance(itm.barcode, locName, "");
+          if (defaultQ > 0) auditList.push({ item: itm, spot: "Default", expected: defaultQ, missingSerials: [], foundSerials: [] });
+          
+          spots.forEach(s => {
+              let q = getStockBalance(itm.barcode, locName, s);
+              if (q > 0) auditList.push({ item: itm, spot: s, expected: q, missingSerials: [], foundSerials: [] });
+          });
+      });
+      
+      let h = `
+      <div class="alert alert-warning small border-warning">
+          <strong>Audit Mode Active:</strong> Verify physical counts. If tracking serials, click 'Audit Serials'.
+      </div>
+      <div class="scroll-area bg-white border mb-3" style="max-height: 55vh;">
+        <table class="table table-sm table-hover m-0 align-middle">
+          <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+            <tr>
+              <th>Item</th>
+              <th>Spot</th>
+              <th class="text-center">Expected</th>
+              <th class="text-center" style="width: 110px;">Actual</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      if (auditList.length === 0) {
+          h += `<tr><td colspan="4" class="text-center text-muted py-4">No items currently recorded in this location.</td></tr>`;
+      } else {
+          auditList.forEach((row, idx) => {
+              let spotLabel = row.spot === "Default" ? `<span class="text-muted fst-italic small">Default</span>` : `<span class="badge bg-secondary">${row.spot}</span>`;
+              let serialBadge = row.item.serialized === 'Yes' ? `<span class="badge bg-dark ms-1" style="font-size:0.5rem">SER</span>` : '';
+              
+              let actionHTML = '';
+              if (row.item.serialized === 'Yes') {
+                  let actVal = row.actual !== undefined ? row.actual : row.expected;
+                  let btnClass = row.actual !== undefined ? 'btn-primary' : 'btn-outline-primary';
+                  actionHTML = `<button id="actBtn_${idx}" class="btn btn-sm ${btnClass} fw-bold w-100" onclick="openSerialAudit(${idx})">Audit (${actVal})</button>`;
+              } else {
+                  actionHTML = `<input type="number" id="act_${idx}" class="form-control form-control-sm text-center fw-bold" value="${row.expected}" min="0" oninput="checkAuditDiff(${idx})">`;
+              }
+
+              h += `
+              <tr id="auditRow_${idx}">
+                  <td>
+                    <div class="fw-bold" style="font-size:0.85rem">${row.item.make} ${row.item.model} ${serialBadge}</div>
+                    <small class="text-muted">${row.item.barcode}</small>
+                  </td>
+                  <td>${spotLabel}</td>
+                  <td class="text-center fw-bold text-secondary" id="exp_${idx}">${row.expected}</td>
+                  <td>${actionHTML}</td>
+              </tr>
+              `;
+          });
+      }
+      
+      h += `</tbody></table></div>
+      <div class="d-flex justify-content-between mb-4">
+         <button class="btn btn-outline-secondary fw-bold" onclick="cancelAudit()">Cancel</button>
+         <button class="btn btn-warning fw-bold px-4" onclick="submitAudit('${locName}')">Submit True-Up</button>
+      </div>
+      `;
+      
+      document.getElementById('auditContainer').innerHTML = h;
+      window.currentAuditList = auditList;
+  }
+
+  let currentSerialAuditIdx = -1;
+
+  function openSerialAudit(idx) {
+      currentSerialAuditIdx = idx;
+      const row = window.currentAuditList[idx];
+      document.getElementById('saTitle').innerText = `${row.item.make} ${row.item.model}`;
+      
+      const expectedSerials = getAvailableSerials(row.item.barcode, currentLocName, row.spot === "Default" ? "" : row.spot);
+      
+      let html = '';
+      if(expectedSerials.length === 0) {
+         html += '<div class="small text-muted fst-italic py-2">No specific serials recorded here.</div>';
+      } else {
+         expectedSerials.forEach(s => {
+            let isChecked = !row.missingSerials.includes(s) ? 'checked' : '';
+            html += `
+            <div class="form-check border-bottom py-1">
+              <input class="form-check-input sa-check" type="checkbox" value="${s}" id="sa_${s}" ${isChecked}>
+              <label class="form-check-label small fw-bold sa-label" for="sa_${s}">${s}</label>
+            </div>`;
+         });
+      }
+      document.getElementById('saExpectedList').innerHTML = html;
+      document.getElementById('saScanInput').value = row.foundSerials.join('\n');
+      
+      document.getElementById('serialAuditModal').classList.remove('hidden');
+  }
+
+  function verifyScannedSerials() {
+      const rawIn = document.getElementById('saScanInput').value;
+      if (!rawIn.trim()) return alert("No serials scanned to verify.");
+      
+      let scanned = rawIn.split(/[\n,]+/).map(s => s.trim().toUpperCase()).filter(s => s !== "");
+      
+      const checkboxes = document.querySelectorAll('.sa-check');
+      checkboxes.forEach(cb => cb.checked = false); 
+      
+      document.querySelectorAll('.sa-label').forEach(lbl => lbl.classList.remove('text-success'));
+
+      let unmatched = [];
+      let matchedCount = 0;
+      
+      scanned.forEach(s => {
+          let cb = document.getElementById('sa_' + s);
+          if (cb) {
+              cb.checked = true;
+              cb.nextElementSibling.classList.add('text-success');
+              matchedCount++;
+          } else {
+              unmatched.push(s);
+          }
+      });
+      
+      document.getElementById('saScanInput').value = unmatched.join('\n');
+      
+      let missingCount = checkboxes.length - matchedCount;
+      alert(`Verification Complete:\n\n- ${matchedCount} matched expected inventory.\n- ${missingCount} expected serial(s) are missing (now unchecked).\n- ${unmatched.length} extra/unexpected serial(s) found in scanner text box.`);
+  }
+
+  function closeSerialAudit() {
+      document.getElementById('serialAuditModal').classList.add('hidden');
+  }
+
+  function saveSerialAudit() {
+      const row = window.currentAuditList[currentSerialAuditIdx];
+      const expectedSerials = getAvailableSerials(row.item.barcode, currentLocName, row.spot === "Default" ? "" : row.spot);
+      
+      let missing = [];
+      document.querySelectorAll('.sa-check').forEach(cb => {
+          if(!cb.checked) missing.push(cb.value);
+      });
+      row.missingSerials = missing;
+      
+      let rawFound = document.getElementById('saScanInput').value;
+      let foundArr = rawFound.split(/[\n,]+/).map(s => s.trim().toUpperCase()).filter(s => s !== "");
+      row.foundSerials = [...new Set(foundArr)]; 
+      
+      let newActual = expectedSerials.length - missing.length + row.foundSerials.length;
+      row.actual = newActual;
+      
+      document.getElementById(`actBtn_${currentSerialAuditIdx}`).innerText = `Audited (${newActual})`;
+      document.getElementById(`actBtn_${currentSerialAuditIdx}`).classList.remove('btn-outline-primary');
+      document.getElementById(`actBtn_${currentSerialAuditIdx}`).classList.add('btn-primary'); 
+      
+      closeSerialAudit();
+      checkAuditDiff(currentSerialAuditIdx);
+  }
+
+  function checkAuditDiff(idx) {
+      const row = window.currentAuditList[idx];
+      let act = 0;
+      if (row.item.serialized === 'Yes') {
+          act = row.actual !== undefined ? row.actual : row.expected;
+      } else {
+          act = parseInt(document.getElementById(`act_${idx}`).value) || 0;
+          row.actual = act;
+      }
+      
+      const tr = document.getElementById(`auditRow_${idx}`);
+      if (act !== row.expected) {
+          tr.classList.add('table-warning');
+      } else {
+          tr.classList.remove('table-warning');
+      }
+  }
+
+  function cancelAudit() {
+      document.getElementById('auditContainer').classList.add('hidden');
+      document.getElementById('locControlsContainer').classList.remove('hidden');
+      document.getElementById('itemsContainer').classList.remove('hidden');
+  }
+
+  function submitAudit(locName) {
+      let adjustments = [];
+      
+      window.currentAuditList.forEach((row, idx) => {
+          let act = row.item.serialized === 'Yes' ? (row.actual !== undefined ? row.actual : row.expected) : (parseInt(document.getElementById(`act_${idx}`).value) || 0);
+          
+          if (row.item.serialized === 'Yes') {
+              if ((row.missingSerials && row.missingSerials.length > 0) || (row.foundSerials && row.foundSerials.length > 0)) {
+                  adjustments.push({
+                      barcode: row.item.barcode,
+                      spot: row.spot,
+                      loc: locName,
+                      serialized: 'Yes',
+                      missingSerials: row.missingSerials || [],
+                      foundSerials: row.foundSerials || [],
+                      diff: row.foundSerials.length - row.missingSerials.length
+                  });
+              }
+          } else {
+              if (act !== row.expected) {
+                  adjustments.push({
+                      barcode: row.item.barcode,
+                      spot: row.spot,
+                      loc: locName,
+                      serialized: 'No',
+                      expected: row.expected,
+                      actual: act,
+                      diff: act - row.expected
+                  });
+              }
+          }
+      });
+      
+      if (adjustments.length === 0) {
+          alert("All counts match expected inventory. Audit complete!");
+          cancelAudit();
+          return;
+      }
+      
+      if (!confirm(`You have recorded ${adjustments.length} discrepancy(ies). Submitting this will automatically log Adjustment records to correct your inventory.\n\nProceed?`)) return;
+      
+      const timestamp = new Date().toISOString();
+      adjustments.forEach(adj => {
+           const subL = adj.spot === "Default" ? "" : adj.spot;
+           
+           if (adj.serialized === 'Yes') {
+               adj.missingSerials.forEach(s => {
+                   db.logs.unshift({ timestamp: timestamp, userEmail: currentUserEmail, barcode: adj.barcode, fromLoc: adj.loc, toLoc: "Lost/Audit", quantity: 1, type: "Audit-Out", serial: s, subLoc: subL });
+               });
+               adj.foundSerials.forEach(s => {
+                   db.logs.unshift({ timestamp: timestamp, userEmail: currentUserEmail, barcode: adj.barcode, fromLoc: "Found/Audit", toLoc: adj.loc, quantity: 1, type: "Audit-In", serial: s, subLoc: subL });
+               });
+           } else {
+               const logType = adj.diff > 0 ? "Audit-In" : "Audit-Out";
+               const fLoc = adj.diff > 0 ? "Found/Audit" : adj.loc;
+               const tLoc = adj.diff > 0 ? adj.loc : "Lost/Audit";
+               const qty = Math.abs(adj.diff);
+               db.logs.unshift({ timestamp: timestamp, userEmail: currentUserEmail, barcode: adj.barcode, fromLoc: fLoc, toLoc: tLoc, quantity: qty, type: logType, serial: "", subLoc: subL });
+           }
+      });
+      
+      cancelAudit();
+      renderItems(locName); 
+      showSuccess(`Audit submitted successfully. Adjustments logged.`);
+      
+      google.script.run.withSuccessHandler(() => {
+          setTimeout(silentSync, 2000);
+      }).withFailureHandler((err) => {
+          showError("Audit sync failed. Please refresh page.");
+      }).submitAuditBackend(adjustments);
+  }
+
+  function editItem(bc) {
+    const itm = db.items.find(i => i.barcode === bc);
+    if(!itm) return;
+    
+    document.getElementById('catalogFormTitle').innerText = "Edit Item: " + bc;
+    document.getElementById('mBc').value = itm.barcode;
+    document.getElementById('mBc').disabled = true; 
+    document.getElementById('mMake').value = itm.make;
+    document.getElementById('mModel').value = itm.model;
+    document.getElementById('mCat').value = itm.category;
+    document.getElementById('mSerialized').value = itm.serialized || "No";
+    document.getElementById('mDesc').value = itm.description;
+    
+    document.getElementById('mPrice').value = itm.price ? "$" + parseFloat(itm.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : "";
+    
+    document.getElementById('mMin').value = itm.minStock;
+    document.getElementById('mSpecs').value = itm.specs;
+    document.getElementById('mImg').value = itm.img;
+    document.getElementById('mNotes').value = itm.notes;
+    
+    const preview = document.getElementById('mImgPreview');
+    if (itm.imgFile || itm.img) {
+      preview.src = itm.imgFile || itm.img;
+      preview.classList.remove('hidden');
+    } else {
+      preview.classList.add('hidden');
+    }
+    
+    const saveBtn = document.getElementById('btnSaveItem');
+    saveBtn.innerText = "Update Item";
+    saveBtn.setAttribute('onclick', "saveOrUpdateItem('edit')");
+    document.getElementById('btnCancelEdit').classList.remove('hidden');
+    
+    showView('management');
+    switchMgmt('item');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function cancelEditItem() {
+    document.getElementById('catalogFormTitle').innerText = "Add to Catalog";
+    document.getElementById('mBc').value = "";
+    document.getElementById('mBc').disabled = false;
+    document.getElementById('mMake').value = "";
+    document.getElementById('mModel').value = "";
+    document.getElementById('mCat').value = "";
+    document.getElementById('mSerialized').value = "No";
+    document.getElementById('mDesc').value = "";
+    document.getElementById('mPrice').value = "";
+    document.getElementById('mMin').value = "";
+    document.getElementById('mSpecs').value = "";
+    document.getElementById('mImg').value = "";
+    document.getElementById('mImgFile').value = "";
+    document.getElementById('mNotes').value = "";
+    document.getElementById('mImgPreview').classList.add('hidden');
+    document.getElementById('mImgPreview').src = "";
+    
+    const saveBtn = document.getElementById('btnSaveItem');
+    saveBtn.innerText = "Save Item";
+    saveBtn.setAttribute('onclick', "saveOrUpdateItem('add')");
+    document.getElementById('btnCancelEdit').classList.add('hidden');
+  }
+
+  function toggleDeployLoc() {
+    const type = document.getElementById('mDeployType').value;
+    document.getElementById('mDeployLoc').classList.toggle('hidden', type !== 'Deployable');
+  }
+
+  function editLoc(name) {
+    const loc = db.locations.find(l => l.locationName === name);
+    if(!loc) return;
+    
+    document.getElementById('locFormTitle').innerText = "Edit Location: " + name;
+    document.getElementById('mLname').value = loc.locationName;
+    document.getElementById('mLname').disabled = true; 
+    document.getElementById('mLtype').value = loc.type;
+    document.getElementById('mDeployType').value = loc.deployType || "Physical Space";
+    document.getElementById('mDeployLoc').value = loc.deployLoc || "";
+    document.getElementById('mLDesc').value = loc.description || "";
+    document.getElementById('mLImg').value = loc.img || "";
+    document.getElementById('mLNotes').value = loc.notes || "";
+    
+    const previewLoc = document.getElementById('mLImgPreview');
+    if (loc.imgFile || loc.img) {
+      previewLoc.src = loc.imgFile || loc.img;
+      previewLoc.classList.remove('hidden');
+    } else {
+      previewLoc.classList.add('hidden');
+    }
+    
+    toggleDeployLoc();
+    
+    const btn = document.getElementById('btnSaveLoc');
+    btn.innerText = "Update Location";
+    btn.setAttribute('onclick', "saveOrUpdateLoc('edit')");
+    document.getElementById('btnCancelEditLoc').classList.remove('hidden');
+    
+    showView('management');
+    switchMgmt('loc');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function cancelEditLoc() {
+    document.getElementById('locFormTitle').innerText = "Add New Location";
+    document.getElementById('mLname').value = "";
+    document.getElementById('mLname').disabled = false;
+    document.getElementById('mLtype').value = "";
+    document.getElementById('mDeployType').value = "Physical Space";
+    document.getElementById('mDeployLoc').value = "";
+    document.getElementById('mLDesc').value = "";
+    document.getElementById('mLImg').value = "";
+    document.getElementById('mLImgFile').value = "";
+    document.getElementById('mLNotes').value = "";
+    document.getElementById('mLImgPreview').classList.add('hidden');
+    document.getElementById('mLImgPreview').src = "";
+    toggleDeployLoc();
+    
+    const btn = document.getElementById('btnSaveLoc');
+    btn.innerText = "Create Location";
+    btn.setAttribute('onclick', "saveOrUpdateLoc('add')");
+    document.getElementById('btnCancelEditLoc').classList.add('hidden');
+  }
+  
+  function editUser(email) {
+    const u = db.users.find(x => x.email === email);
+    if(!u) return;
+    document.getElementById('userFormTitle').innerText = "Edit User";
+    document.getElementById('uName').value = u.name || "";
+    document.getElementById('uEmail').value = u.email;
+    document.getElementById('uEmail').disabled = true;
+    document.getElementById('uRole').value = u.role;
+    updateRoleDescription();
+    
+    const btn = document.getElementById('btnSaveUser');
+    btn.innerText = "Update User";
+    btn.setAttribute('onclick', "saveOrUpdateUser('edit')");
+    document.getElementById('btnCancelEditUser').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  
+  function cancelEditUser() {
+    document.getElementById('userFormTitle').innerText = "Add New User";
+    document.getElementById('uName').value = "";
+    document.getElementById('uEmail').value = "";
+    document.getElementById('uEmail').disabled = false;
+    document.getElementById('uRole').value = "";
+    updateRoleDescription();
+    
+    const btn = document.getElementById('btnSaveUser');
+    btn.innerText = "Add User";
+    btn.setAttribute('onclick', "saveOrUpdateUser('add')");
+    document.getElementById('btnCancelEditUser').classList.add('hidden');
+  }
+
+  function updateMinVal(bc, val) {
+    google.script.run.withSuccessHandler(() => fetchData()).updateMinStock(bc, val);
+  }
+
+  function sortMgmt(type, colIdx) {
+    if (currentSort[type].col === colIdx) {
+      currentSort[type].asc = !currentSort[type].asc;
+    } else {
+      currentSort[type].col = colIdx;
+      currentSort[type].asc = true;
+    }
+    applySorts();
+    updateMgmtTables();
+  }
+  
+  function sortSerials(col) {
+    if (currentSerialSort.col === col) {
+      currentSerialSort.asc = !currentSerialSort.asc;
+    } else {
+      currentSerialSort.col = col;
+      currentSerialSort.asc = true;
+    }
+    refreshItemStockBadges(activeBc);
+  }
+
+  function toggleStatusI(bc, current) {
+    const next = current === 'Active' ? 'Inactive' : 'Active';
+    if (next === 'Inactive' && getStockBalance(bc) !== 0) return alert("Safety Net: Cannot disable while stock remains.");
+    google.script.run.withSuccessHandler(() => fetchData()).toggleItemStatus(bc, next);
+  }
+
+  function toggleStatusL(name, type, current) {
+    const next = current === 'Active' ? 'Inactive' : 'Active';
+    let total = 0;
+    db.logs.forEach(l => { if(l.toLoc === name) total += l.quantity; if(l.fromLoc === name) total -= Math.abs(l.quantity); });
+    if (next === 'Inactive' && total !== 0) return alert("Safety Net: Cannot disable while location contains items.");
+    google.script.run.withSuccessHandler(() => fetchData()).toggleLocStatus(name, type, next);
+  }
+  
+  function toggleStatusU(email, current) {
+    const next = current === 'Active' ? 'Inactive' : 'Active';
+    if (email.toLowerCase() === currentUserEmail.toLowerCase()) return alert("Safety Net: You cannot disable your own account.");
+    google.script.run.withSuccessHandler(() => fetchData()).toggleUserStatusBackend(email, next);
+  }
+
+  function runSearch(e) {
+    const q = e.target.value.toLowerCase().trim();
+    const res = document.getElementById('searchResults');
+    if (q.length < 1) { res.classList.add('hidden'); return; }
+    
+    const matches = db.items.filter(i => {
+       if (i.status !== 'Active') return false;
+       
+       const basicMatch = i.barcode.toLowerCase().includes(q) || 
+                          i.make.toLowerCase().includes(q) || 
+                          i.model.toLowerCase().includes(q) || 
+                          i.description.toLowerCase().includes(q);
+                          
+       if (basicMatch) return true;
+       
+       const serialMatch = db.logs.some(l => l.barcode === i.barcode && l.serial && l.serial.toLowerCase().includes(q));
+       return serialMatch;
+    });
+    
+    res.innerHTML = matches.map(i => {
+      const total = getStockBalance(i.barcode);
+      const imgSrc = i.imgFile || i.img || '';
+      const imgHtml = imgSrc ? `<img src="${imgSrc}" class="search-thumb me-3">` : `<div class="search-thumb me-3 d-flex align-items-center justify-content-center bg-light text-secondary border fs-4">📦</div>`;
+      
+      return `<button class="list-group-item list-group-item-action py-2 px-3" onclick="viewItem('${i.barcode}')">
+          <div class="d-flex justify-content-between align-items-center">
+             <div class="d-flex align-items-center">
+               ${imgHtml}
+               <div>
+                 <small class="text-uppercase fw-bold text-muted" style="font-size:0.65rem">${i.category}</small>
+                 <div class="fw-bold">${i.make} ${i.model}</div>
+                 <small class="text-muted">Barcode: ${i.barcode}</small>
+               </div>
+             </div>
+             <div class="text-end ms-2">
+               <span class="badge ${total > 0 ? 'bg-primary' : 'bg-secondary'}">Stock: ${total}</span>
+             </div>
+          </div>
+        </button>`;
+    }).join('');
+    res.classList.remove('hidden');
+  }
+
+  function exportCsv() {
+    const isG = (currentLocName === "Everywhere");
+    let csv = "Barcode,Make,Model,Category,Location,Spot,Type,Quantity,Price\n";
+    db.items.filter(i => i.status === 'Active').forEach(i => {
+      db.locations.forEach(loc => {
+        const spotsUsed = new Set();
+        db.logs.filter(l => l.barcode === i.barcode).forEach(l => {
+          if (l.toLoc === loc.locationName && l.subLoc) spotsUsed.add(l.subLoc);
+          if (l.fromLoc === loc.locationName && l.subLoc) spotsUsed.add(l.subLoc);
+        });
+        
+        let defaultQ = getStockBalance(i.barcode, loc.locationName, "");
+        if (defaultQ > 0 && (isG || loc.locationName === currentLocName)) {
+           csv += `"${i.barcode}","${i.make}","${i.model}","${i.category}","${loc.locationName}","Default","${loc.type}",${defaultQ},${i.price}\n`;
         }
 
-      } catch (error) {
-        // Network crash or bad URL
-        responseArea.innerHTML = `<span class="text-danger fw-bold">Network Error:</span> ${error.message}`;
+        spotsUsed.forEach(spot => {
+          let q = getStockBalance(i.barcode, loc.locationName, spot);
+          if (q > 0 && (isG || loc.locationName === currentLocName)) {
+             csv += `"${i.barcode}","${i.make}","${i.model}","${i.category}","${loc.locationName}","${spot}","${loc.type}",${q},${i.price}\n`;
+          }
+        });
+      });
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Inventory_${currentLocName.replace(/\s/g, '_')}.csv`;
+    a.click();
+  }
+
+  function renderGrid() {
+    const sort = document.getElementById('sortSelect').value;
+    
+    let data = db.locations.filter(loc => loc.status === 'Active').map(loc => {
+      let qty = 0, last = null;
+      db.logs.forEach(l => {
+        if (l.toLoc === loc.locationName) { qty += l.quantity; last = l; }
+        if (l.fromLoc === loc.locationName) { qty -= Math.abs(l.quantity); last = l; }
+      });
+      return { ...loc, qty, last };
+    });
+    
+    let evQty = 0, evLast = null;
+    db.logs.forEach(l => {
+        const itm = db.items.find(itm => itm.barcode === l.barcode);
+        if (itm && itm.status === 'Active') {
+          if (l.type === "In" || l.type === "Move-In") evQty += Math.abs(l.quantity);
+          if (l.type === "Out" || l.type === "Move-Out") evQty -= Math.abs(l.quantity);
+          evLast = l;
+        }
+    });
+    data.push({ locationName: "Everywhere", type: "Global", deployType: "Physical Space", qty: evQty, last: evLast });
+
+    if (sort === "az") {
+      data.sort((a,b) => a.locationName.localeCompare(b.locationName));
+    }
+    if (sort === "qtyDesc") data.sort((a,b) => b.qty - a.qty);
+    if (sort === "qtyAsc") data.sort((a,b) => a.qty - b.qty);
+    
+    const buildCard = (l) => {
+      let meta = l.last ? `${(l.last.toLoc === l.locationName || l.locationName === "Everywhere") ? "Added" : "Removed"} ${fmtTime(l.last.timestamp)}<br>by ${getUserDisplayName(l.last.userEmail)}` : "No activity";
+      
+      let imgHtml = (l.imgFile || l.img) ? `<img src="${l.imgFile || l.img}">` : `<div class="d-flex align-items-center justify-content-center bg-light text-secondary rounded mb-2" style="height:120px; font-size:3rem;">${l.deployType==='Deployable'?'🧰':'🏢'}</div>`;
+      if (l.locationName === "Everywhere") imgHtml = `<div class="d-flex align-items-center justify-content-center bg-light text-primary rounded mb-2" style="height:120px; font-size:3rem;">🌎</div>`;
+
+      let deployTag = l.deployType === 'Deployable' ? `<div class="cat-badge bg-info text-dark mt-1 mb-2">Deployed: ${l.deployLoc || 'Not Deployed'}</div>` : '';
+
+      return `<div class="loc-card" onclick="viewLoc('${l.locationName}', '${l.type}')">
+                  ${imgHtml}
+                  <h6 class="mb-1">${l.locationName}</h6>
+                  <div class="mb-2"><span class="cat-badge">${l.type}</span></div>
+                  ${deployTag}
+                  <div class="qty-bubble my-2">${l.qty.toLocaleString('en-US')} Units</div>
+                  <div class="meta-text">${meta}</div>
+                </div>`;
+      };
+
+    const physicalData = data.filter(l => l.deployType !== 'Deployable');
+    const deployableData = data.filter(l => l.deployType === 'Deployable');
+
+    document.getElementById('locationGridPhysical').innerHTML = physicalData.map(buildCard).join('');
+    
+    const deployableSection = document.getElementById('deployableSection');
+    if (deployableData.length > 0) {
+       deployableSection.classList.remove('hidden');
+       document.getElementById('locationGridDeployable').innerHTML = deployableData.map(buildCard).join('');
+    } else {
+       deployableSection.classList.add('hidden');
+    }
+  }
+
+  function viewLoc(n, t) { 
+    hideAll(); 
+    document.getElementById('locationDetail').classList.remove('hidden'); 
+    
+    const isGlobal = (n === "Everywhere");
+    document.getElementById('selectedLocTitle').innerText = isGlobal ? "Global - Everywhere" : n;
+    
+    if (isGlobal || currentUserRole === 'Operator' || currentUserRole === 'Viewer') {
+        document.getElementById('btnEditLocInner').classList.add('hidden');
+        document.getElementById('btnAuditLocInner').classList.add('hidden');
+    } else {
+        document.getElementById('btnEditLocInner').classList.remove('hidden');
+        document.getElementById('btnAuditLocInner').classList.remove('hidden');
+    }
+
+    const locInfo = db.locations.find(l => l.locationName === n);
+    if (locInfo && !isGlobal) {
+       document.getElementById('locInfoHeader').classList.remove('hidden');
+       
+       const imgEl = document.getElementById('locDetImg');
+       const emojiEl = document.getElementById('locDetEmoji');
+       
+       if (locInfo.imgFile || locInfo.img) {
+         imgEl.src = locInfo.imgFile || locInfo.img;
+         imgEl.classList.remove('hidden');
+         emojiEl.classList.add('hidden');
+       } else {
+         imgEl.classList.add('hidden');
+         emojiEl.innerText = locInfo.deployType === 'Deployable' ? '🧰' : '🏢';
+         emojiEl.classList.remove('hidden');
+       }
+       
+       document.getElementById('locDetType').innerText = locInfo.type;
+       
+       const deployBadge = document.getElementById('locDetDeploy');
+       if (locInfo.deployType === 'Deployable') {
+         deployBadge.innerText = `Deployed to: ${locInfo.deployLoc || 'Unknown'}`;
+         deployBadge.classList.remove('hidden');
+       } else {
+         deployBadge.classList.add('hidden');
+       }
+       
+       document.getElementById('locDetDesc').innerText = locInfo.description || "No description provided.";
+       
+       const notesEl = document.getElementById('locDetNotes');
+       if (locInfo.notes) {
+         notesEl.innerText = `Notes: ${locInfo.notes}`;
+         notesEl.classList.remove('hidden');
+       } else {
+         notesEl.classList.add('hidden');
+       }
+    } else {
+       document.getElementById('locInfoHeader').classList.add('hidden');
+    }
+
+    renderItems(n); 
+  }
+
+  function renderItems(locName) {
+    currentLocName = locName;
+    const isG = (locName === "Everywhere");
+    const itemSort = document.getElementById('itemSortSelect').value;
+    
+    const stockMap = [];
+    db.items.filter(i => i.status === 'Active').forEach(itm => {
+      if (isG) {
+        let totalQ = 0;
+        let locDetails = [];
+        db.locations.forEach(loc => {
+          let q = getStockBalance(itm.barcode, loc.locationName); 
+          if (q > 0) {
+            totalQ += q;
+            locDetails.push(`${getLocLabel(loc.locationName)}: ${q.toLocaleString('en-US')}`);
+          }
+        });
+        if (totalQ > 0) {
+          stockMap.push({ barcode: itm.barcode, locName: "Everywhere", qty: totalQ, item: itm, locDetails: locDetails });
+        }
+      } else {
+        let q = getStockBalance(itm.barcode, locName); 
+        if (q > 0) {
+          stockMap.push({ barcode: itm.barcode, locName: locName, qty: q, item: itm });
+        }
+      }
+    });
+
+    stockMap.sort((a, b) => {
+      switch(itemSort) {
+        case 'cat_az': return a.item.category.localeCompare(b.item.category);
+        case 'cat_za': return b.item.category.localeCompare(a.item.category);
+        case 'make_az': return a.item.make.localeCompare(b.item.make);
+        case 'make_za': return b.item.make.localeCompare(a.item.make);
+        case 'model_az': return a.item.model.localeCompare(b.item.model);
+        case 'model_za': return b.item.model.localeCompare(a.item.model);
+        case 'qty_desc': return b.qty - a.qty;
+        case 'qty_asc': return a.qty - b.qty;
+        default: return 0;
+      }
+    });
+
+    const cont = document.getElementById('itemsContainer');
+    cont.className = (layout === "grid") ? "dynamic-grid" : "";
+    let html = "";
+    
+    stockMap.forEach(entry => {
+      const itm = entry.item;
+      const bc = entry.barcode;
+      const sub = entry.locName;
+      
+      const locLabel = isG ? entry.locDetails.join('<br>') : getLocLabel(sub);
+      const displayImg = itm.imgFile || itm.img || getPlaceholder(); 
+      
+      const last = [...db.logs].reverse().find(l => l.barcode === bc && (isG || l.toLoc === sub || l.fromLoc === sub));
+      let itemMeta = "No record";
+      if (last) {
+        if (isG) {
+          itemMeta = `Last: ${Math.abs(last.quantity)} units moved ${fmtTime(last.timestamp)}`;
+        } else {
+          itemMeta = `${Math.abs(last.quantity)} ${last.toLoc === sub ? "added" : "removed"} ${fmtTime(last.timestamp)} by ${getUserDisplayName(last.userEmail)}`;
+        }
+      }
+      
+      if (layout === "grid") {
+        html += `<div class="item-card" onclick="viewItem('${bc}')"><img src="${displayImg}"><span class="cat-badge">${itm.category}</span><h6 class="fw-bold mt-2 mb-1">${itm.make} ${itm.model}</h6><div class="qty-bubble mb-2">${entry.qty.toLocaleString('en-US')} Units</div><div class="meta-text">Barcode: ${bc}<br>${itemMeta}</div>${isG ? `<div class="meta-text text-primary fw-bold">${locLabel}</div>` : ''}</div>`;
+      } else {
+        html += `<div class="item-row" onclick="viewItem('${bc}')"><img src="${displayImg}"><div class="flex-grow-1"><span class="cat-badge">${itm.category}</span><div class="fw-bold">${itm.make} ${itm.model}</div><div class="meta-text">Barcode: ${bc}<br>${itemMeta}</div>${isG ? `<div class="meta-text text-primary mt-1">${locLabel}</div>` : ''}</div><div class="qty-bubble">${entry.qty.toLocaleString('en-US')}</div></div>`;
+      }
+    });
+
+    cont.innerHTML = html || "<p class='text-center py-5'>Empty</p>";
+  }
+
+  function updateAvailableSpots(target) {
+    const locName = document.getElementById(target === 'from' ? 'actLoc' : 'actToLoc').value;
+    const selectEl = document.getElementById(target === 'from' ? 'actSubLoc' : 'actToSubLoc');
+    
+    const currentVal = selectEl.value;
+
+    const spots = new Set();
+    const stockBySpot = {};
+    
+    db.logs.forEach(l => {
+       if (l.toLoc === locName && l.subLoc) spots.add(l.subLoc);
+       if (l.fromLoc === locName && l.subLoc) spots.add(l.subLoc);
+       
+       if (l.barcode === activeBc) {
+           const spotKey = l.subLoc || "Default";
+           if (!stockBySpot[spotKey]) stockBySpot[spotKey] = 0;
+           if (l.toLoc === locName) stockBySpot[spotKey] += l.quantity;
+           if (l.fromLoc === locName) stockBySpot[spotKey] -= Math.abs(l.quantity);
+       }
+    });
+
+    let options = "";
+    
+    let defStock = stockBySpot["Default"] || 0;
+    let defLabel = defStock > 0 ? `Default (No Specific Spot) [Stock: ${defStock}]` : `Default (No Specific Spot)`;
+    options += `<option value="Default">${defLabel}</option>`;
+
+    Array.from(spots).sort().forEach(spot => {
+        let stk = stockBySpot[spot] || 0;
+        let label = stk > 0 ? `${spot} [Stock: ${stk}]` : spot;
+        options += `<option value="${spot}">${label}</option>`;
+    });
+    
+    options += `<option value="NEW_SPOT">+ Add New Spot/Bin...</option>`;
+
+    selectEl.innerHTML = options;
+    
+    if (Array.from(selectEl.options).some(o => o.value === currentVal)) {
+        selectEl.value = currentVal;
+    } else {
+        selectEl.value = "Default";
+    }
+    
+    checkNewSpot(target); 
+  }
+
+  function checkNewSpot(target) {
+    const selectEl = document.getElementById(target === 'from' ? 'actSubLoc' : 'actToSubLoc');
+    const newSpotContainer = document.getElementById(target === 'from' ? 'newSpotContainer' : 'newToSpotContainer');
+
+    if (selectEl.value === "NEW_SPOT") {
+        newSpotContainer.classList.remove('hidden');
+    } else {
+        newSpotContainer.classList.add('hidden');
+    }
+  }
+
+  function getAvailableSerials(barcode, location, subLoc = "") {
+    const serials = {};
+    db.logs.filter(l => l.barcode === barcode && l.serial).forEach(l => {
+      const s = l.serial.toUpperCase();
+      if (!serials[s]) serials[s] = 0;
+      if (l.toLoc === location && (l.subLoc || "") === subLoc) serials[s] += l.quantity; 
+      if (l.fromLoc === location && (l.subLoc || "") === subLoc) serials[s] -= Math.abs(l.quantity);
+    });
+    return Object.keys(serials).filter(s => serials[s] > 0).sort();
+  }
+
+  function updateAvailableSerials() {
+    const itm = db.items.find(i => i.barcode === activeBc);
+    if (!itm || itm.serialized !== 'Yes') return;
+    
+    const loc = document.getElementById('actLoc').value;
+    
+    let spot = document.getElementById('actSubLoc').value;
+    if (spot === "NEW_SPOT") spot = document.getElementById('actNewSpot').value.trim();
+    if (spot === "Default") spot = "";
+
+    const avSerials = getAvailableSerials(activeBc, loc, spot);
+    const container = document.getElementById('availableSerialsCheckboxes');
+    
+    if (avSerials.length === 0) {
+      container.innerHTML = `<span class="text-muted small d-block p-2">No serials are currently available at this specific spot.</span>`;
+    } else {
+      container.innerHTML = avSerials.map(s => {
+        const upS = s.toUpperCase();
+        return `
+        <div class="form-check border-bottom py-1">
+          <input class="form-check-input serial-check" type="checkbox" value="${upS}" id="chk_${upS}">
+          <label class="form-check-label small fw-bold" for="chk_${upS}" style="cursor:pointer;">${upS}</label>
+        </div>
+      `}).join('');
+    }
+  }
+
+  function refreshItemStockBadges(bc) {
+    const itm = db.items.find(i => i.barcode === bc);
+    const locs = {};
+    db.logs.filter(l => l.barcode === bc).forEach(l => {
+      const toKey = l.toLoc + "|||" + (l.subLoc || "");
+      const fromKey = l.fromLoc + "|||" + (l.subLoc || "");
+      if(l.toLoc && !["External","Transit","Deployed"].includes(l.toLoc)) locs[toKey] = (locs[toKey] || 0) + l.quantity;
+      if(l.fromLoc && !["External","Transit","Deployed"].includes(l.fromLoc)) locs[fromKey] = (locs[fromKey] || 0) - Math.abs(l.quantity);
+    });
+    
+    let h = "";
+    for(let k in locs) {
+      if(locs[k] > 0) {
+        const parts = k.split("|||");
+        const locName = parts[0];
+        const subLoc = parts[1];
+        const locObj = db.locations.find(l => l.locationName === locName);
+        const locType = locObj ? locObj.type : '';
+        const safeK = locName.replace(/'/g, "\\'");
+        const safeType = locType.replace(/'/g, "\\'");
+        const displayLabel = subLoc ? `${getLocLabel(locName)} (${subLoc})` : getLocLabel(locName);
+        
+        h += `<span class="badge stock-badge p-2 m-1 d-flex align-items-center" onclick="viewLoc('${safeK}', '${safeType}')">
+                <span class="me-2">${displayLabel}:</span> 
+                <span class="text-primary fs-6">${locs[k].toLocaleString('en-US')}</span>
+              </span>`;
       }
     }
-  </script>
+    document.getElementById('detStock').innerHTML = h || "Out of Stock";
+
+    const serialListEl = document.getElementById('detSerialList');
+    if (itm && itm.serialized === 'Yes') {
+      const serialBalances = {};
+      db.logs.filter(l => l.barcode === bc && l.serial).forEach(l => {
+          const s = l.serial.toUpperCase();
+          if (!serialBalances[s]) serialBalances[s] = {};
+          const toKey = l.toLoc + "|||" + (l.subLoc || "");
+          const fromKey = l.fromLoc + "|||" + (l.subLoc || "");
+          
+          if(l.toLoc && !["External","Transit","Deployed"].includes(l.toLoc)) {
+              serialBalances[s][toKey] = (serialBalances[s][toKey] || 0) + l.quantity;
+          }
+          if(l.fromLoc && !["External","Transit","Deployed"].includes(l.fromLoc)) {
+              serialBalances[s][fromKey] = (serialBalances[s][fromKey] || 0) - Math.abs(l.quantity);
+          }
+      });
+      
+      let serialData = [];
+      Object.keys(serialBalances).forEach(s => {
+          for (let k in serialBalances[s]) {
+              if (serialBalances[s][k] > 0) {
+                  const parts = k.split("|||");
+                  const locName = parts[0];
+                  const subLoc = parts[1];
+                  const displayLabel = subLoc ? `${getLocLabel(locName)} (${subLoc})` : getLocLabel(locName);
+                  serialData.push({ serial: s, location: displayLabel });
+              }
+          }
+      });
+
+      if (serialData.length > 0) {
+          serialData.sort((a, b) => {
+             let valA = currentSerialSort.col === 'serial' ? a.serial : a.location;
+             let valB = currentSerialSort.col === 'serial' ? b.serial : b.location;
+             let cmp = valA.localeCompare(valB);
+             return currentSerialSort.asc ? cmp : -cmp;
+          });
+
+          let sh = `<div class="w-100 mt-3 mb-1 small fw-bold text-muted text-uppercase">Active Serial Numbers</div>
+                    <div class="scroll-area bg-white border w-100" style="max-height: 250px;">
+                      <table class="table table-sm table-hover m-0" style="font-size:0.85rem;">
+                        <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                          <tr>
+                            <th style="cursor:pointer; width: 40%;" onclick="sortSerials('serial')">Serial Number ${currentSerialSort.col === 'serial' ? (currentSerialSort.asc ? '▲' : '▼') : '↕'}</th>
+                            <th style="cursor:pointer;" onclick="sortSerials('location')">Location ${currentSerialSort.col === 'location' ? (currentSerialSort.asc ? '▲' : '▼') : '↕'}</th>
+                          </tr>
+                        </thead>
+                        <tbody>`;
+          
+          serialData.forEach(row => {
+              sh += `<tr><td class="fw-bold">${row.serial}</td><td><span class="badge bg-info text-dark">${row.location}</span></td></tr>`;
+          });
+          
+          sh += `</tbody></table></div>`;
+          serialListEl.innerHTML = sh;
+          serialListEl.classList.remove('hidden');
+      } else {
+          serialListEl.innerHTML = "";
+          serialListEl.classList.add('hidden');
+      }
+    } else {
+      serialListEl.innerHTML = "";
+      serialListEl.classList.add('hidden');
+    }
+  }
+
+  function viewItem(bc) {
+    hideAll(); 
+    activeBc = bc;
+    const itm = db.items.find(i => i.barcode === bc);
+    const last = [...db.logs].reverse().find(l => l.barcode === bc);
+    document.getElementById('itemDetail').classList.remove('hidden');
+    document.getElementById('detName').innerText = itm.make + " " + itm.model;
+    document.getElementById('detBc').innerText = "Barcode: " + bc;
+    document.getElementById('detCat').innerText = itm.category;
+    document.getElementById('detImg').src = itm.imgFile || itm.img || getPlaceholder(); 
+    document.getElementById('detSpecsArea').innerHTML = itm.specs ? `<a href="${itm.specs}" target="_blank" class="small fw-bold text-primary">View Technical Specs</a>` : "";
+    
+    if (currentUserRole === 'Admin' || currentUserRole === 'Manager') {
+        document.getElementById('btnEditItemInner').classList.remove('hidden');
+    } else {
+        document.getElementById('btnEditItemInner').classList.add('hidden');
+    }
+
+    refreshItemStockBadges(bc);
+
+    document.getElementById('toLocContainer').classList.add('hidden');
+    document.getElementById('toSubLocContainer').classList.add('hidden');
+    document.getElementById('btnMove').innerText = 'MOVE';
+    document.getElementById('actQty').value = '1';
+    
+    document.getElementById('actNewSpot').value = '';
+    document.getElementById('actNewToSpot').value = '';
+    document.getElementById('newSpotContainer').classList.add('hidden');
+    document.getElementById('newToSpotContainer').classList.add('hidden');
+    document.getElementById('errorMsg').classList.add('hidden');
+    document.getElementById('successMsg').classList.add('hidden');
+    document.getElementById('btnIn').disabled = false;
+    document.getElementById('btnOut').disabled = false;
+    document.getElementById('btnMove').disabled = false;
+    
+    updateAvailableSpots('from');
+    updateAvailableSpots('to');
+
+    if (itm.serialized === 'Yes') {
+      document.getElementById('detSerialized').classList.remove('hidden');
+      document.getElementById('qtyContainer').classList.add('hidden');
+      document.getElementById('serialContainer').classList.remove('hidden');
+      document.getElementById('actSerialsIn').value = ""; 
+      updateAvailableSerials();
+    } else {
+      document.getElementById('detSerialized').classList.add('hidden');
+      document.getElementById('qtyContainer').classList.remove('hidden');
+      document.getElementById('serialContainer').classList.add('hidden');
+    }
+
+    const stockBalance = getStockBalance(bc);
+    const unitPrice = parseFloat(itm.price) || 0;
+    const totalValue = stockBalance * unitPrice;
+    
+    document.getElementById('detDesc').innerText = itm.description || "No description provided.";
+    
+    let priceText = "";
+    if (unitPrice > 0) priceText += `Unit Price: $${unitPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    if (totalValue > 0) priceText += (priceText ? ` | ` : ``) + `Total Stock Value: $${totalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    document.getElementById('detPrice').innerText = priceText;
+    
+    const notesEl = document.getElementById('detNotes');
+    if (itm.notes) {
+       notesEl.innerText = "Notes: " + itm.notes;
+       notesEl.classList.remove('hidden');
+    } else {
+       notesEl.classList.add('hidden');
+    }
+
+    let hist = last ? `<b>Last Transaction:</b><br>${Math.abs(last.quantity)} ${last.quantity > 0 ? "added to" : "removed from"} ${last.quantity > 0 ? getLocLabel(last.toLoc) : getLocLabel(last.fromLoc)} on ${fmtTime(last.timestamp)}<br>By: ${getUserDisplayName(last.userEmail)}` : "No history.";
+    document.getElementById('detUpdate').innerHTML = hist;
+  }
+
+  function handleMoveClick() {
+    const toCont = document.getElementById('toLocContainer');
+    if (toCont.classList.contains('hidden')) {
+      toCont.classList.remove('hidden');
+      document.getElementById('toSubLocContainer').classList.remove('hidden');
+      document.getElementById('btnMove').innerText = "CONFIRM MOVE";
+    } else {
+      submitInline('Move');
+    }
+  }
+
+  function submitInline(action) {
+    document.getElementById('errorMsg').classList.add('hidden');
+    document.getElementById('successMsg').classList.add('hidden');
+    
+    const itm = db.items.find(i => i.barcode === activeBc);
+    
+    const fromLoc = document.getElementById('actLoc').value;
+    let fromSubLoc = document.getElementById('actSubLoc').value;
+    if (fromSubLoc === "NEW_SPOT") fromSubLoc = document.getElementById('actNewSpot').value.trim();
+    if (fromSubLoc === "Default") fromSubLoc = "";
+
+    const toLoc = document.getElementById('actToLoc').value;
+    let toSubLoc = document.getElementById('actToSubLoc').value;
+    if (toSubLoc === "NEW_SPOT") toSubLoc = document.getElementById('actNewToSpot').value.trim();
+    if (toSubLoc === "Default") toSubLoc = "";
+    
+    let qty = 0;
+    let serialsArray = [];
+
+    if (document.getElementById('actSubLoc').value === "NEW_SPOT" && !fromSubLoc) { showError("Please enter a name for the new From Spot/Bin."); return; }
+    if (action === 'Move' && document.getElementById('actToSubLoc').value === "NEW_SPOT" && !toSubLoc) { showError("Please enter a name for the new Destination Spot/Bin."); return; }
+
+    if (itm.serialized === 'Yes') {
+      const rawIn = document.getElementById('actSerialsIn').value;
+      const scannedSerials = rawIn.split(/[\n,]+/).map(s => s.trim().toUpperCase()).filter(s => s !== "");
+      
+      const checkboxes = document.querySelectorAll('.serial-check:checked');
+      const checkedSerials = [];
+      checkboxes.forEach(cb => checkedSerials.push(cb.value.toUpperCase()));
+
+      serialsArray = [...new Set([...scannedSerials, ...checkedSerials])];
+      qty = serialsArray.length;
+      
+      if (qty === 0) { showError(`Please scan or select at least one serial number to ${action.toUpperCase()}.`); return; }
+
+      if (action === 'In') {
+        let duplicate = false;
+        serialsArray.forEach(s => {
+           let bal = 0;
+           db.logs.filter(l => l.barcode === activeBc && l.serial.toUpperCase() === s).forEach(l => {
+             if(l.toLoc && l.toLoc !== 'External' && l.toLoc !== 'Deployed') bal += l.quantity;
+             if(l.fromLoc && l.fromLoc !== 'External' && l.fromLoc !== 'Deployed') bal -= Math.abs(l.quantity);
+           });
+           if (bal > 0) duplicate = s;
+        });
+        if (duplicate) { showError(`Serial number [${duplicate}] is already active in your inventory.`); return; }
+
+      } else { 
+        const availableAtFrom = getAvailableSerials(activeBc, fromLoc, fromSubLoc).map(s => s.toUpperCase());
+        let missing = false;
+        serialsArray.forEach(s => {
+            if (!availableAtFrom.includes(s)) missing = s;
+        });
+        
+        if (missing) {
+            const spotText = fromSubLoc ? ` (${fromSubLoc})` : "";
+            showError(`Serial number [${missing}] is not currently located at ${getLocLabel(fromLoc)}${spotText}.`);
+            return;
+        }
+      }
+    } 
+    else {
+      qty = parseFloat(document.getElementById('actQty').value);
+      if (isNaN(qty) || qty <= 0) { showError("Please enter a valid quantity greater than 0."); return; }
+    }
+
+    if (!fromLoc) { showError("Please select a location."); return; }
+    if (action === 'Move') {
+      if (!toLoc) { showError("Please select a destination location to move items to."); return; }
+      if (fromLoc === toLoc && fromSubLoc === toSubLoc) { showError("Cannot move to the exact same location and spot."); return; }
+    }
+    
+    if (action === 'Out' || action === 'Move') {
+      const available = getStockBalance(activeBc, fromLoc, fromSubLoc);
+      if (qty > available) {
+        const spotText = fromSubLoc ? ` (${fromSubLoc})` : "";
+        showError(`Quantity error: You are trying to process ${qty}, but only ${available} ${available === 1 ? 'is' : 'are'} available at ${getLocLabel(fromLoc)}${spotText}.`);
+        return;
+      }
+    }
+
+    document.getElementById('btnIn').disabled = true;
+    document.getElementById('btnOut').disabled = true;
+    document.getElementById('btnMove').disabled = true;
+    
+    const timestamp = new Date().toISOString();
+    const injectLog = (f, t, q, tx, ser, sL) => {
+      db.logs.unshift({ timestamp: timestamp, userEmail: currentUserEmail, barcode: activeBc, fromLoc: f, toLoc: t, quantity: q, type: tx, serial: ser, subLoc: sL });
+    };
+
+    if (itm.serialized === 'Yes') {
+      serialsArray.forEach(s => {
+        if (action === 'In') injectLog("External", toLoc, 1, "In", s, toSubLoc);
+        else if (action === 'Out') injectLog(fromLoc, "Deployed", -1, "Out", s, fromSubLoc);
+        else {
+          injectLog(fromLoc, "Transit", -1, "Move-Out", s, fromSubLoc);
+          injectLog("Transit", toLoc, 1, "Move-In", s, toSubLoc);
+        }
+      });
+    } else {
+      if (action === 'In') injectLog("External", toLoc, qty, "In", "", toSubLoc);
+      else if (action === 'Out') injectLog(fromLoc, "Deployed", -qty, "Out", "", fromSubLoc);
+      else {
+        injectLog(fromLoc, "Transit", -qty, "Move-Out", "", fromSubLoc);
+        injectLog("Transit", toLoc, qty, "Move-In", "", toSubLoc);
+      }
+    }
+
+    viewItem(activeBc); 
+    showSuccess(`Successfully processed ${qty} unit(s).`);
+
+    let payload = { 
+      barcode: activeBc, 
+      transactionType: action, 
+      qty: qty, 
+      fromLocation: fromLoc, 
+      fromSubLoc: fromSubLoc,
+      toLocation: (action === 'In') ? fromLoc : toLoc,
+      toSubLoc: (action === 'In') ? fromSubLoc : toSubLoc,
+      serials: serialsArray 
+    };
+
+    google.script.run.withSuccessHandler(() => {
+      setTimeout(silentSync, 2000);
+    }).withFailureHandler(() => {
+      showError("Background Sync Failed. Your connection may have dropped. Please refresh the page.");
+    }).processTransaction(payload);
+  }
+
+  function showError(msg) {
+    const err = document.getElementById('errorMsg');
+    err.innerText = msg;
+    err.classList.remove('hidden');
+  }
+
+  function showSuccess(msg) {
+    const succ = document.getElementById('successMsg');
+    succ.innerText = msg;
+    succ.classList.remove('hidden');
+    setTimeout(() => succ.classList.add('hidden'), 5000); 
+  }
+
+  function showGrid() { 
+    hideAll(); 
+    renderGrid(); 
+    document.getElementById('gridView').classList.remove('hidden'); 
+  }
+
+  function showView(v) { 
+    document.getElementById('viewInventory').classList.toggle('hidden', v !== 'inventory'); 
+    document.getElementById('viewManagement').classList.toggle('hidden', v !== 'management'); 
+    
+    document.getElementById('btnNavInventory').classList.toggle('d-none', v === 'inventory');
+    
+    if (v === 'management' || currentUserRole === 'Operator' || currentUserRole === 'Viewer') {
+      document.getElementById('btnNavManagement').classList.add('d-none');
+    } else {
+      document.getElementById('btnNavManagement').classList.remove('d-none');
+    }
+    
+    if(v === 'inventory') {
+      showGrid(); 
+    } else {
+      switchMgmt('dash');
+    }
+  }
+  
+  function switchMgmt(t) { 
+    ['mDash','mItem','mLoc','mLog', 'mUser'].forEach(id => document.getElementById(id).classList.add('hidden'));
+    ['t0','t1','t2','t3', 't4'].forEach(id => document.getElementById(id).classList.remove('active'));
+    
+    if(t === 'dash') { 
+      document.getElementById('mDash').classList.remove('hidden'); 
+      document.getElementById('t0').classList.add('active'); 
+      renderDashboard(); 
+    }
+    if(t === 'item') { 
+      document.getElementById('mItem').classList.remove('hidden'); 
+      document.getElementById('t1').classList.add('active'); 
+      updateMgmtTables(); 
+    }
+    if(t === 'loc') { 
+      document.getElementById('mLoc').classList.remove('hidden'); 
+      document.getElementById('t2').classList.add('active'); 
+      updateMgmtTables(); 
+    }
+    if(t === 'log') { 
+      document.getElementById('mLog').classList.remove('hidden'); 
+      document.getElementById('t3').classList.add('active'); 
+      renderLogs(); 
+    }
+    if(t === 'user') { 
+      document.getElementById('mUser').classList.remove('hidden'); 
+      document.getElementById('t4').classList.add('active'); 
+      updateMgmtTables(); 
+    }
+  }
+  
+  function toggleLayout() { layout = document.getElementById('layoutToggle').checked ? "list" : "grid"; renderItems(currentLocName); }
+  function hideAll() { ['gridView','locationDetail','itemDetail','searchResults'].forEach(id => document.getElementById(id).classList.add('hidden')); }
+  function clearSearch() { document.getElementById('searchInput').value = ""; document.getElementById('searchResults').classList.add('hidden'); }
+  
+  function fillSelects() { 
+    const actLocEl = document.getElementById('actLoc');
+    const actToLocEl = document.getElementById('actToLoc');
+    
+    const currFrom = actLocEl.value;
+    const currTo = actToLocEl.value;
+
+    const sortedLocs = [...db.locations].filter(l => l.status === 'Active').sort((a, b) => a.locationName.localeCompare(b.locationName));
+    const h = sortedLocs.map(l => `<option value="${l.locationName}">${l.type} - ${l.locationName}</option>`).join(''); 
+    
+    actLocEl.innerHTML = h; 
+    actToLocEl.innerHTML = h; 
+    
+    if (currFrom && Array.from(actLocEl.options).some(o => o.value === currFrom)) actLocEl.value = currFrom;
+    if (currTo && Array.from(actToLocEl.options).some(o => o.value === currTo)) actToLocEl.value = currTo;
+    
+    updateAvailableSpots('from');
+    updateAvailableSpots('to');
+  }
+  
+  function saveOrUpdateItem(mode) {
+    const btn = document.getElementById('btnSaveItem');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "Processing Data...";
+
+    const fileInput = document.getElementById('mImgFile');
+    const file = fileInput.files[0];
+    
+    let cleanPrice = document.getElementById('mPrice').value.replace(/[^0-9.-]+/g,"");
+
+    let payload = {
+      barcode: document.getElementById('mBc').value,
+      make: document.getElementById('mMake').value,
+      model: document.getElementById('mModel').value,
+      category: document.getElementById('mCat').value,
+      description: document.getElementById('mDesc').value,
+      price: cleanPrice,
+      minStock: document.getElementById('mMin').value,
+      specs: document.getElementById('mSpecs').value,
+      img: document.getElementById('mImg').value,
+      notes: document.getElementById('mNotes').value,
+      serialized: document.getElementById('mSerialized').value
+    };
+
+    if (file) {
+      btn.innerText = "Uploading Image...";
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        payload.imgBase64 = e.target.result.split(',')[1];
+        payload.imgName = file.name;
+        payload.imgMime = file.type;
+        executeSaveBackend(payload, mode, btn, originalText);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      executeSaveBackend(payload, mode, btn, originalText);
+    }
+  }
+
+  function executeSaveBackend(payload, mode, btn, originalText) {
+    if (mode === 'edit') {
+      google.script.run.withSuccessHandler(() => {
+        fetchData();
+        cancelEditItem();
+        btn.disabled = false;
+        btn.innerText = originalText;
+      }).updateExistingItem(payload);
+    } else {
+      google.script.run.withSuccessHandler(() => {
+        fetchData();
+        cancelEditItem();
+        btn.disabled = false;
+        btn.innerText = originalText;
+      }).addNewItem(payload);
+    }
+  }
+
+  function saveOrUpdateLoc(mode) {
+    const btn = document.getElementById('btnSaveLoc');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "Processing Data...";
+
+    const fileInput = document.getElementById('mLImgFile');
+    const file = fileInput.files[0];
+
+    let payload = {
+      name: document.getElementById('mLname').value,
+      type: document.getElementById('mLtype').value,
+      deployType: document.getElementById('mDeployType').value,
+      deployLoc: document.getElementById('mDeployLoc').value,
+      description: document.getElementById('mLDesc').value,
+      img: document.getElementById('mLImg').value,
+      notes: document.getElementById('mLNotes').value
+    };
+
+    if (file) {
+      btn.innerText = "Uploading Image...";
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        payload.imgBase64 = e.target.result.split(',')[1];
+        payload.imgName = file.name;
+        payload.imgMime = file.type;
+        executeLocBackend(payload, mode, btn, originalText);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      executeLocBackend(payload, mode, btn, originalText);
+    }
+  }
+
+  function executeLocBackend(payload, mode, btn, originalText) {
+    if (mode === 'edit') {
+      google.script.run.withSuccessHandler(() => {
+        fetchData();
+        cancelEditLoc();
+        btn.disabled = false;
+        btn.innerText = originalText;
+      }).updateExistingLocation(payload);
+    } else {
+      google.script.run.withSuccessHandler(() => {
+        fetchData();
+        cancelEditLoc();
+        btn.disabled = false;
+        btn.innerText = originalText;
+      }).addNewLocation(payload);
+    }
+  }
+  
+  function saveOrUpdateUser(mode) {
+    const btn = document.getElementById('btnSaveUser');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "Processing Data...";
+
+    let payload = {
+      name: document.getElementById('uName').value,
+      email: document.getElementById('uEmail').value,
+      role: document.getElementById('uRole').value
+    };
+    
+    if (!payload.email || !payload.role) {
+       alert("Please provide both an email and a role.");
+       btn.disabled = false; btn.innerText = originalText;
+       return;
+    }
+
+    google.script.run.withSuccessHandler(() => {
+      fetchData();
+      cancelEditUser();
+      btn.disabled = false;
+      btn.innerText = originalText;
+    }).withFailureHandler((err) => {
+      alert("Error: " + err.message);
+      btn.disabled = false;
+      btn.innerText = originalText;
+    }).saveOrUpdateUserBackend(payload, mode);
+  }
+
+</script>
 </body>
 </html>
