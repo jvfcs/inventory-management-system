@@ -27,13 +27,21 @@
 
   <style>
     /* NEW: Custom Brand Color Variables */
-    :root { --brand-color: #0d6efd; }
+    :root { 
+      --brand-color: #0d6efd; 
+      --light-bg: #f4f7f6;
+      --light-card: #ffffff;
+      --light-text: #212529;
+      --dark-bg: #121212;
+      --dark-card: #1e1e1e;
+      --dark-text: #e0e0e0;
+    }
     .text-primary { color: var(--brand-color) !important; }
     .bg-primary, .btn-primary { background-color: var(--brand-color) !important; border-color: var(--brand-color) !important; }
     .btn-outline-primary { color: var(--brand-color) !important; border-color: var(--brand-color) !important; }
     .btn-outline-primary:hover { background-color: var(--brand-color) !important; color: #fff !important; }
 
-    body { background: #f4f7f6; padding-bottom: 50px; font-family: sans-serif; transition: background-color 0.3s ease; -webkit-touch-callout: none; }
+    body { background: var(--light-bg); color: var(--light-text); padding-bottom: 50px; font-family: sans-serif; transition: background-color 0.3s ease; color 0.3s ease; -webkit-touch-callout: none; }
     /* iOS Safe Area (Notch / Dynamic Island) Adjustments */
     #appContainer {
       padding-top: calc(env(safe-area-inset-top) + 15px) !important;
@@ -50,7 +58,7 @@
     @media (min-width: 768px) { .dynamic-grid { grid-template-columns: repeat(4, 1fr); } }
     @media (min-width: 1200px) { .dynamic-grid { grid-template-columns: repeat(6, 1fr); } }
     
-    .loc-card, .item-card { background: white; padding: 15px; border-radius: 12px; border: 1px solid #eee; cursor: pointer; transition: 0.2s; }
+    .loc-card, .item-card { background: var(--light-card); padding: 15px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; }
     .loc-card:hover, .item-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
     .loc-card h6 { margin: 0; font-weight: 700; color: #2c3e50; font-size: 0.95rem; }
     .meta-text { font-size: 0.7rem; color: #7f8c8d; margin-top: 5px; line-height: 1.3; }
@@ -97,8 +105,8 @@
     #actSerialsIn, #saScanInput { text-transform: uppercase; }
 
     /* Dark Mode Custom Overrides */
-    [data-bs-theme="dark"] body { background-color: #121212; color: #e0e0e0; }
-    [data-bs-theme="dark"] .card, [data-bs-theme="dark"] .loc-card, [data-bs-theme="dark"] .item-card, [data-bs-theme="dark"] .item-row { background-color: #1e1e1e; border-color: #333; }
+    [data-bs-theme="dark"] body { background-color: var(--dark-bg); color: var(--dark-text); }
+    [data-bs-theme="dark"] .card, [data-bs-theme="dark"] .loc-card, [data-bs-theme="dark"] .item-card, [data-bs-theme="dark"] .item-row { background-color: var(--dark-card); border-color: rgba(255,255,255,0.05); }
     [data-bs-theme="dark"] .loc-card h6, [data-bs-theme="dark"] #detName, [data-bs-theme="dark"] .text-primary { color: #58a6ff !important; }
     [data-bs-theme="dark"] .meta-text, [data-bs-theme="dark"] .text-muted { color: #adb5bd !important; }
     [data-bs-theme="dark"] .cat-badge { background-color: #333; color: #e0e0e0; }
@@ -151,7 +159,7 @@
 </div>
 <div id="loginOverlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 10000; display: flex; align-items: center; justify-content: center;">
   <div class="card p-4 shadow-sm text-center" style="max-width: 400px; width: 90%;">
-    <img id="loginLogo" src="https://dummyimage.com/180x180/2c3e50/ffffff.png&text=Logo" alt="Logo" style="width:300px; height:300px; object-fit:contain; margin: 0 auto;" class="mb-3">
+    <img id="loginLogo" src="" alt="" style="width:300px; height:300px; object-fit:contain; margin: 0 auto; opacity: 0; transition: opacity 0.5s;" class="mb-3">
     <h3 id="loginTitle" class="fw-bold text-primary mb-3">Login</h3>
     
     <div id="g_id_onload"
@@ -166,7 +174,7 @@
   </div>
 </div>
 <div id="loadingOverlay">
-  <img id="loadLogo" src="https://dummyimage.com/180x180/2c3e50/ffffff.png&text=Logo" alt="Logo" style="width:300px; height:300px; object-fit:contain;" class="mb-3 text-primary">
+  <img id="loadLogo" src="" alt="" style="width:300px; height:300px; object-fit:contain; opacity: 0; transition: opacity 0.5s;" class="mb-3 text-primary">
   <h5 class="fw-bold text-secondary">Loading Database...</h5><br>
   <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
 </div>
@@ -192,7 +200,7 @@
 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex align-items-center" style="cursor: pointer;" onclick="showView('inventory')" title="Go to Home">
-      <img id="appLogo" src="https://dummyimage.com/180x180/2c3e50/ffffff.png&text=Logo" alt="Logo" style="width:30px; height:30px; object-fit:contain;" class="me-2 text-primary">
+      <img id="appLogo" src="" alt="" style="width:30px; height:30px; object-fit:contain; opacity: 0; transition: opacity 0.5s;" class="me-2 text-primary">
       <div>
         <h5 id="appTitleText" class="fw-bold m-0 mt-1 text-primary d-none d-sm-block">Inventory Management System</h5>
         <h5 id="appShortTitleText" class="fw-bold m-0 mt-1 text-primary d-block d-sm-none">IMS</h5>
@@ -860,15 +868,24 @@
       document.getElementById('loginTitle').innerText = loginStr + " Login";
 
       if (t.logoUrl) {
-          document.getElementById('loginLogo').src = t.logoUrl;
-          document.getElementById('loadLogo').src = t.logoUrl;
-          document.getElementById('appLogo').src = t.logoUrl;
+          ['loginLogo', 'loadLogo', 'appLogo'].forEach(id => {
+              const el = document.getElementById(id);
+              el.src = t.logoUrl;
+              el.onload = () => el.style.opacity = '1'; // Fades in smoothly once loaded!
+          });
       }
       if (t.themeColor) {
-          // NEW: Changes both mobile browser bar AND internal UI elements
           document.querySelector('meta[name="theme-color"]').setAttribute("content", t.themeColor);
           document.documentElement.style.setProperty('--brand-color', t.themeColor); 
       }
+      
+      // NEW: Apply Custom Color Palettes
+      if (t.lightBg) document.documentElement.style.setProperty('--light-bg', t.lightBg);
+      if (t.lightCard) document.documentElement.style.setProperty('--light-card', t.lightCard);
+      if (t.lightText) document.documentElement.style.setProperty('--light-text', t.lightText);
+      if (t.darkBg) document.documentElement.style.setProperty('--dark-bg', t.darkBg);
+      if (t.darkCard) document.documentElement.style.setProperty('--dark-card', t.darkCard);
+      if (t.darkText) document.documentElement.style.setProperty('--dark-text', t.darkText);
       if (t.footerText) {
           // NEW: Injects custom footer text
           document.getElementById('appFooterText').innerHTML = t.footerText;
