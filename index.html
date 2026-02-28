@@ -2523,7 +2523,9 @@ async function fetchData(callback) {
     
     // Let the master permission function handle the Management button visibility!
     applyRolePermissions();
-    
+
+    clearSearch(); // NEW: Wipes the search bar when swapping main tabs    
+
     if(v === 'inventory') {
       showGrid(); 
     } else {
@@ -2563,7 +2565,10 @@ async function fetchData(callback) {
   }
   
   function toggleLayout() { layout = document.getElementById('layoutToggle').checked ? "list" : "grid"; renderItems(currentLocName); }
-  function hideAll() { ['gridView','locationDetail','itemDetail','searchResults'].forEach(id => document.getElementById(id).classList.add('hidden')); }
+  function hideAll() { 
+	 ['gridView','locationDetail','itemDetail','searchResults'].forEach(id => document.getElementById(id).classList.add('hidden')); 
+	document.getElementById('searchInput').value = ""; // NEW: Clears text on internal navigation
+  }
   function clearSearch() { document.getElementById('searchInput').value = ""; document.getElementById('searchResults').classList.add('hidden'); }
   
   function fillSelects() { 
