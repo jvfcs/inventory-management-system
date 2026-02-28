@@ -209,7 +209,7 @@
 <div id="accessDenied" class="container py-5 text-center hidden">
   <div class="card p-5 shadow-sm mx-auto mt-5" style="max-width: 500px;">
     <h2 class="text-danger fw-bold mb-3">Access Denied</h2>
-    <p class="text-muted">You do not have permission to view the IMS. Please contact an administrator to request access.</p>
+    <p class="text-muted" id="accessDeniedMsg">You do not have permission to view the IMS. Please contact an administrator to request access.</p>
     <p id="deniedEmail" class="fw-bold mt-3 text-secondary"></p>
   </div>
 </div>
@@ -769,7 +769,14 @@
   let currentUserRole = "Viewer"; 
   let isSyncing = false;
 
+  // NEW: Template Variables
+  let appCurrency = "$";
+  let appDefaultImg = "";
+  let syncTimer = null;
+  let syncIntervalMs = 15000;
+
   function getPlaceholder() {
+    if (appDefaultImg) return appDefaultImg;
     const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
     return isDark 
       ? 'https://dummyimage.com/400x400/1e1e1e/adb5bd.png&text=No+Image' 
@@ -823,7 +830,7 @@
   function formatCurrencyInput(input) {
     let val = input.value.replace(/[^0-9.-]+/g,"");
     if(val) {
-      input.value = "$" + parseFloat(val).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      input.value = appCurrency + parseFloat(val).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     } else {
       input.value = "";
     }
@@ -917,6 +924,12 @@
       if (t.darkBg) document.documentElement.style.setProperty('--dark-bg', t.darkBg);
       if (t.darkCard) document.documentElement.style.setProperty('--dark-card', t.darkCard);
       if (t.darkText) document.documentElement.style.setProperty('--dark-text', t.darkText);
+      
+      // NEW: Apply the 4 new configuration templates
+      if (t.currencySymbol) appCurrency = t.currencySymbol;
+      if (t.defaultImgUrl) appDefaultImg = t.defaultImgUrl;
+      if (t.adminContact) document.getElementById('accessDeniedMsg').innerText = `You do not have permission to view the IMS. Please contact ${t.adminContact} to request access.`;
+      if (t.syncInterval) syncIntervalMs = parseInt(t.syncInterval) * 1000; // Converts seconds to milliseconds
       if (t.footerText) {
           // NEW: Injects custom footer text
           document.getElementById('appFooterText').innerHTML = t.footerText;
@@ -1113,7 +1126,10 @@ async function fetchData(callback) {
       if (callback) callback(); 
       
       history.replaceState({ view: 'grid' }, ""); 
-      setInterval(silentSync, 15000); 
+      
+      // NEW: Clears old timer before starting a new one, using the template interval
+      if (syncTimer) clearInterval(syncTimer);
+      syncTimer = setInterval(silentSync, syncIntervalMs); 
     } catch (err) {
       document.getElementById('loadingOverlay').classList.add('hidden');
       document.getElementById('accessDenied').classList.remove('hidden');
@@ -1237,10 +1253,10 @@ async function fetchData(callback) {
 
     document.getElementById('statUnique').innerText = activeItems.length;
     document.getElementById('statTotalUnits').innerText = globalUnits.toLocaleString('en-US');
-    document.getElementById('statTotalValue').innerText = "$" + globalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('statTotalValue').innerText = appCurrency + globalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     
-    document.getElementById('statPhysValue').innerText = "$" + physValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('statDepValue').innerText = "$" + depValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('statPhysValue').innerText = appCurrency + physValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('statDepValue').innerText = appCurrency + depValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
     const globalAlertBanner = document.getElementById('globalStockAlert');
     const alertArea = document.getElementById('dashAlertsArea');
@@ -1273,7 +1289,7 @@ async function fetchData(callback) {
             </div>
             <div class="text-end">
               <small class="text-muted d-block">Value</small>
-              <span class="fw-bold fs-5 text-success">$${stat.value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+              <span class="fw-bold fs-5 text-success">${appCurrency}${stat.value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
             </div>
           </div>
         </div>
@@ -1735,7 +1751,7 @@ async function fetchData(callback) {
     document.getElementById('mSerialized').value = itm.serialized || "No";
     document.getElementById('mDesc').value = itm.description;
     
-    document.getElementById('mPrice').value = itm.price ? "$" + parseFloat(itm.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : "";
+    document.getElementById('mPrice').value = itm.price ? appCurrency + parseFloat(itm.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : "";
     
     document.getElementById('mMin').value = itm.minStock;
     document.getElementById('mSpecs').value = itm.specs;
@@ -2447,8 +2463,8 @@ async function fetchData(callback) {
     document.getElementById('detDesc').innerText = itm.description || "No description provided.";
     
     let priceText = "";
-    if (unitPrice > 0) priceText += `Unit Price: $${unitPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-    if (totalValue > 0) priceText += (priceText ? ` | ` : ``) + `Total Stock Value: $${totalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    if (unitPrice > 0) priceText += `Unit Price: ${appCurrency}${unitPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    if (totalValue > 0) priceText += (priceText ? ` | ` : ``) + `Total Stock Value: ${appCurrency}${totalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     document.getElementById('detPrice').innerText = priceText;
     
     const notesEl = document.getElementById('detNotes');
