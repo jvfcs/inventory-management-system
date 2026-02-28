@@ -144,11 +144,10 @@
 </div>
 <div id="loginOverlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 10000; display: flex; align-items: center; justify-content: center;">
   <div class="card p-4 shadow-sm text-center" style="max-width: 400px; width: 90%;">
-    <img src="https://lh3.googleusercontent.com/d/1xgvAKlvNOYd02pJ24G7Uxv2KS3McRcvk" alt="Logo" style="width:300px; height:300px; object-fit:contain; margin: 0 auto;" class="mb-3">
-    <h3 class="fw-bold text-primary mb-3">IMS Login</h3>
+    <img id="loginLogo" src="https://dummyimage.com/180x180/2c3e50/ffffff.png&text=Logo" alt="Logo" style="width:300px; height:300px; object-fit:contain; margin: 0 auto;" class="mb-3">
+    <h3 id="loginTitle" class="fw-bold text-primary mb-3">Login</h3>
     
     <div id="g_id_onload"
-         data-client_id="950754972661-o30t3svi49fjpj9f4rg64dctcm3m8jb8.apps.googleusercontent.com"
          data-context="signin"
          data-ux_mode="popup"
          data-callback="handleCredentialResponse"
@@ -160,7 +159,7 @@
   </div>
 </div>
 <div id="loadingOverlay">
-  <img src="https://lh3.googleusercontent.com/d/1xgvAKlvNOYd02pJ24G7Uxv2KS3McRcvk" alt="Logo" style="width:300px; height:300px; object-fit:contain;" class="mb-3 text-primary">
+  <img id="loadLogo" src="https://dummyimage.com/180x180/2c3e50/ffffff.png&text=Logo" alt="Logo" style="width:300px; height:300px; object-fit:contain;" class="mb-3 text-primary">
   <h5 class="fw-bold text-secondary">Loading Database...</h5><br>
   <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
 </div>
@@ -186,10 +185,10 @@
 
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex align-items-center" style="cursor: pointer;" onclick="showView('inventory')" title="Go to Home">
-      <img src="https://lh3.googleusercontent.com/d/1xgvAKlvNOYd02pJ24G7Uxv2KS3McRcvk" alt="Logo" style="width:30px; height:30px; object-fit:contain;" class="me-2 text-primary">
+      <img id="appLogo" src="https://dummyimage.com/180x180/2c3e50/ffffff.png&text=Logo" alt="Logo" style="width:30px; height:30px; object-fit:contain;" class="me-2 text-primary">
       <div>
-        <h5 class="fw-bold m-0 mt-1 text-primary d-none d-sm-block">Inventory Management System</h5>
-        <h5 class="fw-bold m-0 mt-1 text-primary d-block d-sm-none">IMS</h5>
+        <h5 id="appTitleText" class="fw-bold m-0 mt-1 text-primary d-none d-sm-block">Inventory Management System</h5>
+        <h5 id="appShortTitleText" class="fw-bold m-0 mt-1 text-primary d-block d-sm-none">IMS</h5>
       </div>
     </div>
     <div class="text-end">
@@ -989,13 +988,48 @@ async function fetchData(callback) {
       const data = await apiCall('getInitialData');
       
       db = data; 
-      // Set the user context from the backend userAuth check
       const currentUser = data.users.find(u => u.email.toLowerCase() === localStorage.getItem('ims_user_email').toLowerCase());
       if (currentUser) {
         currentUserEmail = currentUser.email;
         currentUserRole = currentUser.role;
       } else {
-        currentUserRole = 'Admin'; // Fallback if it's the very first user created by the script
+        currentUserRole = 'Admin'; 
+      }
+
+      // NEW: Apply Template Values
+      if (db.template) {
+          const t = db.template;
+          if (t.appTitle) {
+              document.title = t.appTitle;
+              document.getElementById('loginTitle').innerText = t.appTitle + " Login";
+              document.getElementById('appTitleText').innerText = t.appTitle;
+          }
+          if (t.appShortName) {
+              document.getElementById('appShortTitleText').innerText = t.appShortName;
+          }
+          if (t.logoUrl) {
+              document.getElementById('loginLogo').src = t.logoUrl;
+              document.getElementById('loadLogo').src = t.logoUrl;
+              document.getElementById('appLogo').src = t.logoUrl;
+          }
+          if (t.themeColor) {
+              document.querySelector('meta[name="theme-color"]').setAttribute("content", t.themeColor);
+          }
+          if (t.googleClientId) {
+              // We must manually re-render the Google button because we dynamically inserted the Client ID
+              const googleDiv = document.getElementById('g_id_onload');
+              googleDiv.setAttribute('data-client_id', t.googleClientId);
+              if (window.google && window.google.accounts) {
+                  window.google.accounts.id.initialize({
+                      client_id: t.googleClientId,
+                      callback: handleCredentialResponse
+                  });
+                  window.google.accounts.id.renderButton(
+                      document.querySelector('.g_id_signin'),
+                      { theme: "outline", size: "large", type: "standard", shape: "rectangular", logo_alignment: "left" }
+                  );
+              }
+          }
       }
 
       document.getElementById('appContainer').classList.remove('hidden');
@@ -1011,8 +1045,8 @@ async function fetchData(callback) {
       setTimeout(() => document.getElementById('loadingOverlay').classList.add('hidden'), 300);
       if (callback) callback(); 
       
-      history.replaceState({ view: 'grid' }, ""); // NEW: Sets the starting history state
-      setInterval(silentSync, 15000); // Start silent sync loop
+      history.replaceState({ view: 'grid' }, ""); 
+      setInterval(silentSync, 15000); 
     } catch (err) {
       document.getElementById('loadingOverlay').classList.add('hidden');
       document.getElementById('accessDenied').classList.remove('hidden');
