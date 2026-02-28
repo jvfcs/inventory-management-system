@@ -28,13 +28,19 @@
   <style>
     /* NEW: Custom Brand Color Variables */
     :root { 
-      --brand-color: #0d6efd; 
+      --light-theme: #0d6efd;
+      --dark-theme: #58a6ff;
+      --brand-color: var(--light-theme); /* Defaults to light mode */
       --light-bg: #f4f7f6;
       --light-card: #ffffff;
       --light-text: #212529;
       --dark-bg: #121212;
       --dark-card: #1e1e1e;
       --dark-text: #e0e0e0;
+    }
+    
+    [data-bs-theme="dark"] {
+      --brand-color: var(--dark-theme); /* Automatically swaps ALL brand elements to the dark theme! */
     }
     
     /* 1. Global Light Text & Background Setup */
@@ -895,10 +901,14 @@
               el.onload = () => el.style.opacity = '1'; // Fades in smoothly once loaded!
           });
       }
-      if (t.themeColor) {
-          document.querySelector('meta[name="theme-color"]').setAttribute("content", t.themeColor);
-          document.documentElement.style.setProperty('--brand-color', t.themeColor); 
-      }
+      // NEW: Apply Dual Themes
+      if (t.lightTheme) document.documentElement.style.setProperty('--light-theme', t.lightTheme);
+      if (t.darkTheme) document.documentElement.style.setProperty('--dark-theme', t.darkTheme);
+      
+      // Set mobile browser bar to current active mode's color on initial load
+      const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+      const activeColor = currentTheme === 'dark' ? (t.darkTheme || '#58a6ff') : (t.lightTheme || '#0d6efd');
+      document.querySelector('meta[name="theme-color"]').setAttribute("content", activeColor);
       
       // NEW: Apply Custom Color Palettes
       if (t.lightBg) document.documentElement.style.setProperty('--light-bg', t.lightBg);
@@ -1055,6 +1065,10 @@
     root.setAttribute('data-bs-theme', newTheme);
     localStorage.setItem('theme', newTheme);
     document.getElementById('themeToggleBtn').innerText = newTheme === 'dark' ? '☀️' : '🌙';
+    
+    // NEW: Swap the mobile browser bar color when toggling
+    const brandColor = getComputedStyle(root).getPropertyValue(newTheme === 'dark' ? '--dark-theme' : '--light-theme').trim();
+    if (brandColor) document.querySelector('meta[name="theme-color"]').setAttribute("content", brandColor);
     
     const lightImg = 'https://dummyimage.com/400x400/f8f9fa/adb5bd.png&text=No+Image';
     const darkImg = 'https://dummyimage.com/400x400/1e1e1e/adb5bd.png&text=No+Image';
