@@ -186,7 +186,7 @@
   </div>
 
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center" style="cursor: pointer;" onclick="showView('inventory')" title="Go to Home">
       <img src="https://lh3.googleusercontent.com/d/1xgvAKlvNOYd02pJ24G7Uxv2KS3McRcvk" alt="Logo" style="width:30px; height:30px; object-fit:contain;" class="me-2 text-primary">
       <div>
         <h5 class="fw-bold m-0 mt-1 text-primary d-none d-sm-block">Inventory Management System</h5>
@@ -196,9 +196,8 @@
     <div class="text-end">
       <div class="d-flex gap-2 justify-content-end">
          <button id="themeToggleBtn" class="btn btn-sm btn-outline-secondary rounded-circle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">☀️</button> 
-         <button id="btnNavInventory" class="btn btn-sm btn-outline-dark d-none" onclick="showView('inventory')">Home</button>
-         <button id="btnNavManagement" class="btn btn-sm btn-outline-primary d-none" onclick="showView('management')">Admin</button>
-	 <button class="btn btn-sm btn-outline-danger fw-bold" onclick="signOut()">Sign Out</button>        
+         <button id="btnNavManagement" class="btn btn-sm btn-outline-primary d-none" onclick="showView('management')">Management</button>
+         <button class="btn btn-sm btn-outline-danger fw-bold" onclick="signOut()">Sign Out</button>        
       </div>
     </div>
   </div>
@@ -892,21 +891,21 @@
   }
 
   function applyRolePermissions() {
-      // Check if the user is currently looking at the Management view
       const isMgmtActive = !document.getElementById('viewManagement').classList.contains('hidden');
       
       if (currentUserRole === 'Admin' || currentUserRole === 'Manager') {
-          // Hide Mgmt button if they are ALREADY on the Mgmt page
           document.getElementById('btnNavManagement').classList.toggle('d-none', isMgmtActive);
           
           document.getElementById('btnEditLocInner').classList.remove('hidden');
           document.getElementById('btnEditItemInner').classList.remove('hidden');
           document.getElementById('btnAuditLocInner').classList.remove('hidden');
+          document.getElementById('btnCsvLoc').classList.remove('hidden'); // NEW: Show CSV
       } else {
           document.getElementById('btnNavManagement').classList.add('d-none');
           document.getElementById('btnEditLocInner').classList.add('hidden');
           document.getElementById('btnEditItemInner').classList.add('hidden');
           document.getElementById('btnAuditLocInner').classList.add('hidden');
+          document.getElementById('btnCsvLoc').classList.add('hidden'); // NEW: Hide CSV
       }
 
       if (currentUserRole === 'Admin') {
@@ -2526,7 +2525,6 @@ async function fetchData(callback) {
   function showView(v) { 
     document.getElementById('viewInventory').classList.toggle('hidden', v !== 'inventory'); 
     document.getElementById('viewManagement').classList.toggle('hidden', v !== 'management'); 
-    document.getElementById('btnNavInventory').classList.toggle('d-none', v === 'inventory');
     
     applyRolePermissions();
     clearSearch(); 
@@ -2922,27 +2920,22 @@ async function fetchData(callback) {
       if (e.state) {
           const state = e.state;
           
-          // 1. Route the main app containers
           if (state.view === 'mgmt') {
               document.getElementById('viewInventory').classList.add('hidden');
               document.getElementById('viewManagement').classList.remove('hidden');
-              document.getElementById('btnNavInventory').classList.remove('d-none');
           } else {
               document.getElementById('viewInventory').classList.remove('hidden');
               document.getElementById('viewManagement').classList.add('hidden');
-              document.getElementById('btnNavInventory').classList.add('d-none');
           }
           applyRolePermissions();
           clearSearch();
 
-          // 2. Route the specific view (passing 'true' so we don't duplicate history)
           if (state.view === 'grid') showGrid(true);
           else if (state.view === 'loc') viewLoc(state.name, state.type, true);
           else if (state.view === 'item') viewItem(state.bc, true);
           else if (state.view === 'mgmt') switchMgmt(state.tab, true);
           
       } else {
-          // Absolute fallback if history breaks
           showGrid(true);
       }
   });
