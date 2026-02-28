@@ -97,7 +97,7 @@
     .scroll-area { overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
     th.sortable { cursor: pointer; color: #0d6efd; text-decoration: underline; }
     .centered-col { text-align: center; vertical-align: middle; }
-    .stock-critical { background-color: #f8d7da !important; }
+    .stock-critical > td { background-color: #f8d7da !important; }
     
     .switch-container { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; font-weight: bold; color: #666; }
     .toggle-switch { position: relative; display: inline-block; width: 50px; height: 24px; }
@@ -129,7 +129,8 @@
     /* Text overrides for dark mode */
     [data-bs-theme="dark"] .text-muted, [data-bs-theme="dark"] .meta-text { color: var(--dark-text) !important; opacity: 0.7; }
     [data-bs-theme="dark"] .table { color: var(--dark-text) !important; --bs-table-color: var(--dark-text); --bs-table-bg: transparent; }
-    [data-bs-theme="dark"] input, [data-bs-theme="dark"] select, [data-bs-theme="dark"] textarea { background-color: rgba(0,0,0,0.2) !important; color: var(--dark-text) !important; border-color: rgba(255,255,255,0.1) !important; }
+    [data-bs-theme="dark"] input, [data-bs-theme="dark"] select, [data-bs-theme="dark"] textarea { background-color: var(--dark-bg) !important; color: var(--dark-text) !important; border-color: rgba(255,255,255,0.1) !important; }
+    [data-bs-theme="dark"] option { background-color: var(--dark-card); color: var(--dark-text); }
     
     /* Card & Container overrides for dark mode */
     [data-bs-theme="dark"] .card, [data-bs-theme="dark"] .loc-card, [data-bs-theme="dark"] .item-card, [data-bs-theme="dark"] .item-row { background-color: var(--dark-card) !important; border-color: rgba(255,255,255,0.05); }
@@ -139,7 +140,7 @@
     /* Table row overrides */
     [data-bs-theme="dark"] .table-light { background-color: rgba(255,255,255,0.05); color: var(--dark-text); border-bottom: 1px solid rgba(255,255,255,0.1); }
     [data-bs-theme="dark"] .table-secondary { background-color: rgba(0,0,0,0.5) !important; color: rgba(255,255,255,0.5); }
-    [data-bs-theme="dark"] .stock-critical { background-color: #4a191e !important; color: #fff; }
+    [data-bs-theme="dark"] .stock-critical > td { background-color: #4a191e !important; color: #fff !important; }
     [data-bs-theme="dark"] .border, [data-bs-theme="dark"] .border-top, [data-bs-theme="dark"] .border-bottom { border-color: rgba(255,255,255,0.1) !important; }
     
     /* UI Element Overrides */
