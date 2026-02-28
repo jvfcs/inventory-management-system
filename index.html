@@ -837,26 +837,51 @@
     });
   };
 
-// 2. Check Login on Load (Instantly, instead of waiting for images)
-  document.addEventListener("DOMContentLoaded", function() {
+// HELPER: Applies template variables to UI
+  function applyTemplateVars(t) {
+      if (t.appTitle) {
+          document.title = t.appTitle;
+          document.getElementById('loginTitle').innerText = t.appTitle + " Login";
+          document.getElementById('appTitleText').innerText = t.appTitle;
+      }
+      if (t.appShortName) document.getElementById('appShortTitleText').innerText = t.appShortName;
+      if (t.logoUrl) {
+          document.getElementById('loginLogo').src = t.logoUrl;
+          document.getElementById('loadLogo').src = t.logoUrl;
+          document.getElementById('appLogo').src = t.logoUrl;
+      }
+      if (t.themeColor) document.querySelector('meta[name="theme-color"]').setAttribute("content", t.themeColor);
+      if (t.googleClientId) {
+          const googleDiv = document.getElementById('g_id_onload');
+          googleDiv.setAttribute('data-client_id', t.googleClientId);
+          if (window.google && window.google.accounts) {
+              window.google.accounts.id.initialize({ client_id: t.googleClientId, callback: handleCredentialResponse });
+              window.google.accounts.id.renderButton(document.querySelector('.g_id_signin'), { theme: "outline", size: "large", type: "standard", shape: "rectangular", logo_alignment: "left" });
+          }
+      }
+  }
+
+// 2. Check Login on Load
+  document.addEventListener("DOMContentLoaded", async function() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-bs-theme', savedTheme);
     document.getElementById('themeToggleBtn').innerText = savedTheme === 'dark' ? '☀️' : '🌙';
 
-    // Safely attach scanners if the elements exist
     if(document.getElementById('actSerialsIn')) attachScannerLogic('actSerialsIn');
     if(document.getElementById('saScanInput')) attachScannerLogic('saScanInput');
-
-    // NEW: Restore the Search Listener!
     const searchInput = document.getElementById('searchInput');
     if(searchInput) searchInput.addEventListener('input', runSearch);
 
+    // Fetch template data BEFORE showing screens
+    try {
+        const tConfig = await apiCall('getTemplateConfig');
+        applyTemplateVars(tConfig);
+    } catch(e) { console.warn("Failed to load pre-boot template."); }
+
     const savedEmail = localStorage.getItem('ims_user_email');
     if (savedEmail) {
-      // User is remembered! Boot straight into the app.
       bootApp(savedEmail);
     } else {
-      // No memory of user. Hide the loading spinner and reveal the login screen.
       document.getElementById('loadingOverlay').classList.add('hidden');
       document.getElementById('loginOverlay').classList.remove('hidden');
     }
@@ -872,7 +897,9 @@
   // 3. Universal API Caller
   async function apiCall(actionName, payloadData = {}) {
     const email = localStorage.getItem('ims_user_email');
-    if (!email) {
+    
+    // Allow 'getTemplateConfig' to run without an email
+    if (!email && actionName !== 'getTemplateConfig') {
       document.getElementById('loginOverlay').classList.remove('hidden');
       throw new Error("Session expired. Please log in.");
     }
@@ -880,7 +907,7 @@
     const response = await fetch(GAS_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: actionName, userEmail: email, ...payloadData })
+      body: JSON.stringify({ action: actionName, userEmail: email || 'public', ...payloadData })
     });
 
     const result = await response.json();
@@ -996,41 +1023,7 @@ async function fetchData(callback) {
         currentUserRole = 'Admin'; 
       }
 
-      // NEW: Apply Template Values
-      if (db.template) {
-          const t = db.template;
-          if (t.appTitle) {
-              document.title = t.appTitle;
-              document.getElementById('loginTitle').innerText = t.appTitle + " Login";
-              document.getElementById('appTitleText').innerText = t.appTitle;
-          }
-          if (t.appShortName) {
-              document.getElementById('appShortTitleText').innerText = t.appShortName;
-          }
-          if (t.logoUrl) {
-              document.getElementById('loginLogo').src = t.logoUrl;
-              document.getElementById('loadLogo').src = t.logoUrl;
-              document.getElementById('appLogo').src = t.logoUrl;
-          }
-          if (t.themeColor) {
-              document.querySelector('meta[name="theme-color"]').setAttribute("content", t.themeColor);
-          }
-          if (t.googleClientId) {
-              // We must manually re-render the Google button because we dynamically inserted the Client ID
-              const googleDiv = document.getElementById('g_id_onload');
-              googleDiv.setAttribute('data-client_id', t.googleClientId);
-              if (window.google && window.google.accounts) {
-                  window.google.accounts.id.initialize({
-                      client_id: t.googleClientId,
-                      callback: handleCredentialResponse
-                  });
-                  window.google.accounts.id.renderButton(
-                      document.querySelector('.g_id_signin'),
-                      { theme: "outline", size: "large", type: "standard", shape: "rectangular", logo_alignment: "left" }
-                  );
-              }
-          }
-      }
+      if (db.template) applyTemplateVars(db.template);
 
       document.getElementById('appContainer').classList.remove('hidden');
       applyRolePermissions();
