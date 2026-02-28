@@ -2790,6 +2790,21 @@ async function fetchData(callback) {
       }
   }
 
+// --- IMAGE LIGHTBOX LOGIC ---
+  function openLightbox(imageSrc) {
+      // Prevent zooming in on the generic "No Image" placeholder
+      if (imageSrc.includes('dummyimage.com')) return; 
+      
+      document.getElementById('lightboxImg').src = imageSrc;
+      document.getElementById('imageLightbox').classList.remove('hidden');
+  }
+
+  function closeLightbox() {
+      document.getElementById('imageLightbox').classList.add('hidden');
+      // Clear the image source after it hides so the old image doesn't flash next time it opens
+      setTimeout(() => { document.getElementById('lightboxImg').src = ""; }, 200);
+  }
+
 // --- HTML5-QRCODE LIVE CAMERA LOGIC ---
   
   let html5QrCode;
