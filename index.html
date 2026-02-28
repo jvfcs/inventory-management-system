@@ -246,7 +246,7 @@
       <div id="locationDetail" class="hidden">
         <div class="mb-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold text-uppercase" onclick="showGrid()">← Back</button>
+            <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold text-uppercase" onclick="history.back()">← Back</button>
             <div class="d-flex gap-2">
               <button class="btn btn-sm btn-warning hidden fw-bold" id="btnAuditLocInner" onclick="startAudit(currentLocName)">Audit</button>
               <button class="btn btn-sm btn-success" id="btnCsvLoc" onclick="exportCsv()">Download CSV</button>
@@ -298,7 +298,7 @@
 
       <div id="itemDetail" class="card p-4 hidden">
         <div class="mb-3">
-          <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold text-uppercase" onclick="showGrid()">← Back</button>
+          <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold text-uppercase" onclick="history.back()">← Back</button>
         </div>
         
         <div class="d-flex flex-column flex-md-row gap-4">
@@ -1009,6 +1009,7 @@ async function fetchData(callback) {
       setTimeout(() => document.getElementById('loadingOverlay').classList.add('hidden'), 300);
       if (callback) callback(); 
       
+      history.replaceState({ view: 'grid' }, ""); // NEW: Sets the starting history state
       setInterval(silentSync, 15000); // Start silent sync loop
     } catch (err) {
       document.getElementById('loadingOverlay').classList.add('hidden');
@@ -1959,7 +1960,8 @@ async function fetchData(callback) {
     }
   }
 
-  function viewLoc(n, t) { 
+  function viewLoc(n, t, isBack = false) { 
+    if (!isBack) history.pushState({ view: 'loc', name: n, type: t }, "");
     hideAll(); 
     document.getElementById('locationDetail').classList.remove('hidden'); 
     
@@ -2282,7 +2284,8 @@ async function fetchData(callback) {
     }
   }
 
-  function viewItem(bc) {
+  function viewItem(bc, isBack = false) { 
+    if (!isBack) history.pushState({ view: 'item', bc: bc }, "");
     hideAll(); 
     activeBc = bc;
     const itm = db.items.find(i => i.barcode === bc);
@@ -2509,7 +2512,8 @@ async function fetchData(callback) {
     setTimeout(() => succ.classList.add('hidden'), 5000); 
   }
 
-  function showGrid() { 
+  function showGrid(isBack = false) { 
+    if (!isBack) history.pushState({ view: 'grid' }, "");
     hideAll(); 
     renderGrid(); 
     document.getElementById('gridView').classList.remove('hidden'); 
@@ -2518,22 +2522,22 @@ async function fetchData(callback) {
   function showView(v) { 
     document.getElementById('viewInventory').classList.toggle('hidden', v !== 'inventory'); 
     document.getElementById('viewManagement').classList.toggle('hidden', v !== 'management'); 
-    
     document.getElementById('btnNavInventory').classList.toggle('d-none', v === 'inventory');
     
-    // Let the master permission function handle the Management button visibility!
     applyRolePermissions();
-
-    clearSearch(); // NEW: Wipes the search bar when swapping main tabs    
-
+    clearSearch(); 
+    
     if(v === 'inventory') {
-      showGrid(); 
+      history.pushState({ view: 'grid' }, "");
+      showGrid(true); 
     } else {
-      switchMgmt('dash');
+      history.pushState({ view: 'mgmt', tab: 'dash' }, "");
+      switchMgmt('dash', true);
     }
   }
   
-  function switchMgmt(t) { 
+  function switchMgmt(t, isBack = false) { 
+    if (!isBack) history.pushState({ view: 'mgmt', tab: t }, "");
     ['mDash','mItem','mLoc','mLog', 'mUser'].forEach(id => document.getElementById(id).classList.add('hidden'));
     ['t0','t1','t2','t3', 't4'].forEach(id => document.getElementById(id).classList.remove('active'));
     
@@ -2908,6 +2912,36 @@ async function fetchData(callback) {
   function onScanFailure(error) {
       // Ignored to prevent console spam
   }
+
+// --- BROWSER HISTORY ENGINE ---
+  window.addEventListener('popstate', (e) => {
+      if (e.state) {
+          const state = e.state;
+          
+          // 1. Route the main app containers
+          if (state.view === 'mgmt') {
+              document.getElementById('viewInventory').classList.add('hidden');
+              document.getElementById('viewManagement').classList.remove('hidden');
+              document.getElementById('btnNavInventory').classList.remove('d-none');
+          } else {
+              document.getElementById('viewInventory').classList.remove('hidden');
+              document.getElementById('viewManagement').classList.add('hidden');
+              document.getElementById('btnNavInventory').classList.add('d-none');
+          }
+          applyRolePermissions();
+          clearSearch();
+
+          // 2. Route the specific view (passing 'true' so we don't duplicate history)
+          if (state.view === 'grid') showGrid(true);
+          else if (state.view === 'loc') viewLoc(state.name, state.type, true);
+          else if (state.view === 'item') viewItem(state.bc, true);
+          else if (state.view === 'mgmt') switchMgmt(state.tab, true);
+          
+      } else {
+          // Absolute fallback if history breaks
+          showGrid(true);
+      }
+  });
 
 </script>
 </body>
