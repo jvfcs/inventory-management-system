@@ -430,12 +430,13 @@
         <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold text-uppercase" onclick="history.back()">← Back</button>
       </div>
       
-      <ul class="nav nav-tabs mb-4">
+      <ul class="nav nav-tabs mb-4 flex-nowrap overflow-x-auto" style="white-space: nowrap;">
         <li class="nav-item"><a class="nav-link active" id="t0" onclick="switchMgmt('dash')">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" id="t1" onclick="switchMgmt('item')">Item Master</a></li>
-        <li class="nav-item"><a class="nav-link" id="t2" onclick="switchMgmt('loc')">Location Master</a></li>
-        <li class="nav-item"><a class="nav-link" id="t3" onclick="switchMgmt('log')">Transaction Log</a></li>
-        <li class="nav-item d-none" id="tabUserAccess"><a class="nav-link" id="t4" onclick="switchMgmt('user')">User Access</a></li>
+        <li class="nav-item"><a class="nav-link" id="t1" onclick="switchMgmt('item')">Items</a></li>
+        <li class="nav-item"><a class="nav-link" id="t2" onclick="switchMgmt('loc')">Locations</a></li>
+        <li class="nav-item"><a class="nav-link" id="t3" onclick="switchMgmt('log')">Logs</a></li>
+        <li class="nav-item d-none" id="tabUserAccess"><a class="nav-link" id="t4" onclick="switchMgmt('user')">Users</a></li>
+        <li class="nav-item d-none" id="tabTheme"><a class="nav-link text-warning" id="t5" onclick="switchMgmt('theme')">Theme</a></li>
       </ul>
       
       <div id="mDash">
@@ -719,8 +720,105 @@
           </div>
         </div>
       </div>
-      
-    </div>
+
+      <div id="mTheme" class="hidden">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h6 class="fw-bold m-0">Theme & White-Label Settings</h6>
+            <small class="text-muted">Customize the platform's appearance and system variables.</small>
+          </div>
+          <button class="btn btn-warning fw-bold px-4 shadow-sm" id="btnSaveTheme" onclick="saveThemeSettings()">Save & Apply Changes</button>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="card p-3 bg-light shadow-sm mb-4">
+              <h6 class="fw-bold mb-3 border-bottom pb-2">General App Settings</h6>
+              <label class="fw-bold small">App Title (appTitle)</label>
+              <input type="text" id="cfg_appTitle" class="form-control form-control-sm mb-1">
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">The full name of your platform (e.g., Inventory Management System). Used in the browser tab and loading screen.</small>
+
+              <label class="fw-bold small">Short Name (appShortName)</label>
+              <input type="text" id="cfg_appShortName" class="form-control form-control-sm mb-1">
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Abbreviated name for mobile layouts (e.g., IMS).</small>
+
+              <label class="fw-bold small">Use Short Name on Login? (loginUseShortName)</label>
+              <select id="cfg_loginUseShortName" class="form-select form-select-sm mb-1"><option value="Yes">Yes</option><option value="No">No</option></select>
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Select 'Yes' to display the Short Name on the login screen instead of the Full Title.</small>
+
+              <label class="fw-bold small">Currency Symbol (currencySymbol)</label>
+              <input type="text" id="cfg_currencySymbol" class="form-control form-control-sm mb-1">
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Symbol used for total valuations (e.g., $, €, £).</small>
+
+              <label class="fw-bold small">Footer Text (footerText)</label>
+              <input type="text" id="cfg_footerText" class="form-control form-control-sm mb-1">
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Text displayed at the very bottom of the app (e.g., Developed by Your Company).</small>
+
+              <label class="fw-bold small">Admin Contact Email (adminContact)</label>
+              <input type="text" id="cfg_adminContact" class="form-control form-control-sm mb-1">
+              <small class="text-muted d-block mb-2" style="font-size:0.7rem;">Displayed to users who hit the Access Denied screen.</small>
+            </div>
+
+            <div class="card p-3 bg-light shadow-sm">
+              <h6 class="fw-bold mb-3 border-bottom pb-2">Assets & Integrations</h6>
+              <label class="fw-bold small">Logo Image URL (logoUrl)</label>
+              <input type="text" id="cfg_logoUrl" class="form-control form-control-sm mb-1">
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Direct link to your company logo (PNG/JPG).</small>
+
+              <label class="fw-bold small">Default 'No Image' Graphic (defaultImgUrl)</label>
+              <input type="text" id="cfg_defaultImgUrl" class="form-control form-control-sm mb-1">
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Optional: Custom placeholder for items without photos.</small>
+
+              <label class="fw-bold small text-danger">Google Client ID (googleClientId)</label>
+              <input type="text" id="cfg_googleClientId" class="form-control form-control-sm border-danger mb-1">
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">OAuth 2.0 Client ID for Google Login. Do not change unless migrating servers.</small>
+
+              <label class="fw-bold small text-danger">Drive Folder ID (driveFolderId)</label>
+              <input type="text" id="cfg_driveFolderId" class="form-control form-control-sm border-danger mb-1">
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Google Drive folder ID where uploaded item/location images are saved.</small>
+
+              <label class="fw-bold small">Sync Interval (syncInterval)</label>
+              <input type="number" id="cfg_syncInterval" class="form-control form-control-sm mb-1">
+              <small class="text-muted d-block mb-2" style="font-size:0.7rem;">How often the app checks for background updates (in seconds). Default: 15.</small>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="card p-3 bg-light shadow-sm mb-4">
+              <h6 class="fw-bold mb-3 border-bottom pb-2">☀️ Light Mode Palette</h6>
+              <label class="fw-bold small text-primary">Primary Brand Color (lightTheme)</label>
+              <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_lightTheme_color" class="form-control form-control-color p-1" oninput="document.getElementById('cfg_lightTheme').value = this.value"><input type="text" id="cfg_lightTheme" class="form-control form-control-sm" oninput="document.getElementById('cfg_lightTheme_color').value = this.value"></div>
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Used for main titles, active tabs, buttons, and badges.</small>
+
+              <label class="fw-bold small">Background Color (lightBg)</label>
+              <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_lightBg_color" class="form-control form-control-color p-1" oninput="document.getElementById('cfg_lightBg').value = this.value"><input type="text" id="cfg_lightBg" class="form-control form-control-sm" oninput="document.getElementById('cfg_lightBg_color').value = this.value"></div>
+              
+              <label class="fw-bold small mt-2">Card/Panel Color (lightCard)</label>
+              <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_lightCard_color" class="form-control form-control-color p-1" oninput="document.getElementById('cfg_lightCard').value = this.value"><input type="text" id="cfg_lightCard" class="form-control form-control-sm" oninput="document.getElementById('cfg_lightCard_color').value = this.value"></div>
+
+              <label class="fw-bold small mt-2">Main Text Color (lightText)</label>
+              <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_lightText_color" class="form-control form-control-color p-1" oninput="document.getElementById('cfg_lightText').value = this.value"><input type="text" id="cfg_lightText" class="form-control form-control-sm" oninput="document.getElementById('cfg_lightText_color').value = this.value"></div>
+            </div>
+
+            <div class="card p-3 bg-dark text-white shadow-sm border-secondary">
+              <h6 class="fw-bold mb-3 border-bottom border-secondary pb-2">🌙 Dark Mode Palette</h6>
+              <label class="fw-bold small text-info">Primary Brand Color (darkTheme)</label>
+              <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_darkTheme_color" class="form-control form-control-color p-1 bg-dark border-secondary" oninput="document.getElementById('cfg_darkTheme').value = this.value"><input type="text" id="cfg_darkTheme" class="form-control form-control-sm bg-dark text-white border-secondary" oninput="document.getElementById('cfg_darkTheme_color').value = this.value"></div>
+              <small class="text-white-50 d-block mb-3" style="font-size:0.7rem;">Often a lighter/brighter variation of your Brand Color so it pops on dark screens.</small>
+
+              <label class="fw-bold small">Background Color (darkBg)</label>
+              <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_darkBg_color" class="form-control form-control-color p-1 bg-dark border-secondary" oninput="document.getElementById('cfg_darkBg').value = this.value"><input type="text" id="cfg_darkBg" class="form-control form-control-sm bg-dark text-white border-secondary" oninput="document.getElementById('cfg_darkBg_color').value = this.value"></div>
+              
+              <label class="fw-bold small mt-2">Card/Panel Color (darkCard)</label>
+              <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_darkCard_color" class="form-control form-control-color p-1 bg-dark border-secondary" oninput="document.getElementById('cfg_darkCard').value = this.value"><input type="text" id="cfg_darkCard" class="form-control form-control-sm bg-dark text-white border-secondary" oninput="document.getElementById('cfg_darkCard_color').value = this.value"></div>
+
+              <label class="fw-bold small mt-2">Main Text Color (darkText)</label>
+              <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_darkText_color" class="form-control form-control-color p-1 bg-dark border-secondary" oninput="document.getElementById('cfg_darkText').value = this.value"><input type="text" id="cfg_darkText" class="form-control form-control-sm bg-dark text-white border-secondary" oninput="document.getElementById('cfg_darkText_color').value = this.value"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
   </div>
 
   <div class="mt-5 pt-4 border-top text-center text-muted" style="font-size: 0.75rem; line-height: 1.5;">
@@ -1019,8 +1117,10 @@
 
       if (currentUserRole === 'Admin') {
           document.getElementById('tabUserAccess').classList.remove('d-none');
+          document.getElementById('tabTheme').classList.remove('d-none');
       } else {
           document.getElementById('tabUserAccess').classList.add('d-none');
+          document.getElementById('tabTheme').classList.add('d-none');
       }
       
       if (currentUserRole === 'Viewer') {
@@ -2659,8 +2759,8 @@ async function fetchData(callback) {
   
   function switchMgmt(t, isBack = false) { 
     if (!isBack) history.pushState({ view: 'mgmt', tab: t }, "");
-    ['mDash','mItem','mLoc','mLog', 'mUser'].forEach(id => document.getElementById(id).classList.add('hidden'));
-    ['t0','t1','t2','t3', 't4'].forEach(id => document.getElementById(id).classList.remove('active'));
+    ['mDash','mItem','mLoc','mLog', 'mUser', 'mTheme'].forEach(id => document.getElementById(id).classList.add('hidden'));
+    ['t0','t1','t2','t3', 't4', 't5'].forEach(id => document.getElementById(id).classList.remove('active'));
     
     if(t === 'dash') { 
       document.getElementById('mDash').classList.remove('hidden'); 
@@ -2686,6 +2786,12 @@ async function fetchData(callback) {
       document.getElementById('mUser').classList.remove('hidden'); 
       document.getElementById('t4').classList.add('active'); 
       updateMgmtTables(); 
+    }
+    // NEW: Open the Theme tab and populate fields
+    if(t === 'theme') {
+      document.getElementById('mTheme').classList.remove('hidden'); 
+      document.getElementById('t5').classList.add('active');
+      populateThemeForm();
     }
   }
   
@@ -3032,6 +3138,47 @@ async function fetchData(callback) {
 
   function onScanFailure(error) {
       // Ignored to prevent console spam
+  }
+
+// --- THEME / TEMPLATE MANAGER LOGIC ---
+  function populateThemeForm() {
+      if (!db.template) return;
+      const t = db.template;
+      const keys = ['appTitle','appShortName','loginUseShortName','footerText','adminContact','currencySymbol','logoUrl','defaultImgUrl','googleClientId','driveFolderId','syncInterval','lightTheme','darkTheme','lightBg','lightCard','lightText','darkBg','darkCard','darkText'];
+      
+      keys.forEach(k => {
+          const el = document.getElementById('cfg_' + k);
+          if (el && t[k]) {
+              el.value = t[k];
+              // Update the color picker box visually if it's a color field
+              const colorEl = document.getElementById('cfg_' + k + '_color');
+              if (colorEl) colorEl.value = t[k];
+          }
+      });
+  }
+
+  async function saveThemeSettings() {
+      const btn = document.getElementById('btnSaveTheme');
+      btn.innerText = "Saving & Applying...";
+      btn.disabled = true;
+
+      const keys = ['appTitle','appShortName','loginUseShortName','footerText','adminContact','currencySymbol','logoUrl','defaultImgUrl','googleClientId','driveFolderId','syncInterval','lightTheme','darkTheme','lightBg','lightCard','lightText','darkBg','darkCard','darkText'];
+      const payload = {};
+      
+      keys.forEach(k => {
+          const el = document.getElementById('cfg_' + k);
+          if (el) payload[k] = el.value.trim();
+      });
+
+      try {
+          await apiCall('saveTemplateSettings', { data: payload });
+          // Force a hard reload so new CSS variables, logos, and Google Client ID re-initialize cleanly
+          window.location.reload(); 
+      } catch (err) {
+          alert("Error saving theme: " + err.message);
+          btn.innerText = "Save & Apply Changes";
+          btn.disabled = false;
+      }
   }
 
 // --- BROWSER HISTORY ENGINE ---
