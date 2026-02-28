@@ -1025,8 +1025,10 @@ async function fetchData(callback) {
     if (currentSort.item.col !== -1) {
       const key = ["barcode", "make", "model", "category", "minStock", "specs", "img", "status"][currentSort.item.col];
       db.items.sort((a,b) => {
-        let valA = String(a[key] || "").toLowerCase();
-        let valB = String(b[key] || "").toLowerCase();
+        // NEW: If sorting by 'make' (the Item column), combine Make + Model for an accurate alphabetical sort
+        let valA = key === 'make' ? String(a.make + " " + a.model).toLowerCase() : String(a[key] || "").toLowerCase();
+        let valB = key === 'make' ? String(b.make + " " + b.model).toLowerCase() : String(b[key] || "").toLowerCase();
+        
         if(!isNaN(valA) && !isNaN(valB) && valA !== "" && valB !== "") {
            return currentSort.item.asc ? Number(valA) - Number(valB) : Number(valB) - Number(valA);
         }
