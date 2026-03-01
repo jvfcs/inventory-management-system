@@ -213,7 +213,6 @@
       flex: 1;
       margin-left: 280px;
       padding: 3rem 4rem;
-      max-width: 1000px;
     }
 
     /* Search Modal Overlay */
@@ -419,10 +418,56 @@
       border-radius: 4px;
       font-size: 0.9em;
       color: var(--accent);
+      word-break: break-word; /* Prevents long URLs from breaking mobile width */
+    }
+    pre {
+      white-space: pre-wrap; /* Forces long formulas to wrap to the next line */
+      word-wrap: break-word;
+      overflow-x: auto;
     }
     [data-theme="dark"] code {
       background: rgba(255,255,255,0.1);
     }
+
+    /* Scrollable Tabs UI */
+    .tabs-scroll-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    .hide-scroll {
+      overflow-x: auto;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+      scroll-behavior: smooth;
+    }
+    .hide-scroll::-webkit-scrollbar {
+      display: none; /* Chrome/Safari */
+    }
+    .tab-scroll-btn {
+      position: absolute;
+      top: 0;
+      bottom: 1px; /* Align perfectly with bottom border of tabs */
+      width: 32px;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-bottom: none;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, background-color 0.2s;
+    }
+    .tab-scroll-btn.visible {
+      opacity: 0.95;
+      pointer-events: auto;
+    }
+    .tab-scroll-btn:hover { background: var(--hover-bg); }
+    .tab-scroll-btn.left-arrow { left: 0; border-radius: 6px 0 0 0; box-shadow: 3px 0 8px rgba(0,0,0,0.1); }
+    .tab-scroll-btn.right-arrow { right: 0; border-radius: 0 6px 0 0; box-shadow: -3px 0 8px rgba(0,0,0,0.1); }
 
     /* Responsive Mobile CSS */
     @media (max-width: 768px) {
@@ -866,11 +911,15 @@
           Replace the web address inside the quotes with the <strong>Web App URL</strong> you copied in Step 4. Save the file. Your UI is now officially connected to your database!
         </div>
 
-        <ul class="nav nav-tabs" id="deployTabs" role="tablist">
-          <li class="nav-item" role="presentation"><button class="nav-link active fw-bold" data-bs-toggle="tab" data-bs-target="#gh-web" type="button" role="tab">GitHub (Web UI)</button></li>
-          <li class="nav-item" role="presentation"><button class="nav-link fw-bold" data-bs-toggle="tab" data-bs-target="#gh-cli" type="button" role="tab">GitHub (Git CLI)</button></li>
-          <li class="nav-item" role="presentation"><button class="nav-link fw-bold" data-bs-toggle="tab" data-bs-target="#hosting" type="button" role="tab">Standard Hosting (GoDaddy, etc.)</button></li>
-        </ul>
+        <div class="position-relative tabs-scroll-wrapper">
+          <button class="tab-scroll-btn left-arrow" id="scrollLeftBtn" onclick="scrollTabs(-150)">&#9664;</button>
+          <ul class="nav nav-tabs flex-nowrap hide-scroll" id="deployTabs" role="tablist">
+            <li class="nav-item" role="presentation"><button class="nav-link active fw-bold text-nowrap" data-bs-toggle="tab" data-bs-target="#gh-web" type="button" role="tab">GitHub (Web UI)</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link fw-bold text-nowrap" data-bs-toggle="tab" data-bs-target="#gh-cli" type="button" role="tab">GitHub (Git CLI)</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link fw-bold text-nowrap" data-bs-toggle="tab" data-bs-target="#hosting" type="button" role="tab">Standard Hosting (GoDaddy, etc.)</button></li>
+          </ul>
+          <button class="tab-scroll-btn right-arrow" id="scrollRightBtn" onclick="scrollTabs(150)">&#9654;</button>
+        </div>
         
         <div class="tab-content border border-top-0 p-4 bg-white" style="background: var(--sidebar-bg) !important;" id="deployTabsContent">
           <div class="tab-pane fade show active" id="gh-web" role="tabpanel">
@@ -1150,6 +1199,42 @@ git push -u origin main</code></pre>
       resContainer.innerHTML = html;
     }
   }
+
+  // --- SCROLLABLE TABS ENGINE ---
+  function updateTabArrows() {
+    const tabs = document.getElementById('deployTabs');
+    const leftBtn = document.getElementById('scrollLeftBtn');
+    const rightBtn = document.getElementById('scrollRightBtn');
+    if (!tabs || !leftBtn || !rightBtn) return;
+    
+    // Check if the tabs actually exceed the width of their container
+    const isScrollable = tabs.scrollWidth > tabs.clientWidth;
+    
+    if (isScrollable) {
+      // Only show Left arrow if we aren't scrolled all the way to the left
+      leftBtn.classList.toggle('visible', tabs.scrollLeft > 5);
+      // Only show Right arrow if we aren't scrolled all the way to the right
+      rightBtn.classList.toggle('visible', Math.ceil(tabs.scrollLeft + tabs.clientWidth) < tabs.scrollWidth - 5);
+    } else {
+      leftBtn.classList.remove('visible');
+      rightBtn.classList.remove('visible');
+    }
+  }
+
+  function scrollTabs(offset) {
+    const tabs = document.getElementById('deployTabs');
+    if (tabs) tabs.scrollLeft += offset;
+  }
+
+  // Hook tab logic into page load, scroll, and resize events
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.getElementById('deployTabs');
+    if (tabs) {
+      tabs.addEventListener('scroll', updateTabArrows);
+      window.addEventListener('resize', updateTabArrows);
+      setTimeout(updateTabArrows, 100); // Small delay to allow CSS rendering to finish
+    }
+  });
 
   // --- SCROLLSPY LOGIC ---
   const sections = document.querySelectorAll('.doc-section');
