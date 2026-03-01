@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IMS Documentation</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <style>
     /* CSS Variables for Theming */
     :root {
       --bg-color: #f9fafb;
       --sidebar-bg: #ffffff;
       --text-main: #111827;
-      --text-muted: #6b7280;
+      --text-muted: #4b5563;
       --accent: #4f46e5;
       --border-color: #e5e7eb;
       --input-bg: #f3f4f6;
@@ -40,6 +41,7 @@
       color: var(--text-main);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       transition: background-color 0.3s, color 0.3s;
+      margin: 0;
     }
     
     /* Layout */
@@ -47,21 +49,45 @@
       display: flex;
       min-height: 100vh;
     }
+
+    /* Mobile Header */
+    .mobile-header {
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background: var(--sidebar-bg);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 45;
+      backdrop-filter: blur(2px);
+    }
     
-    /* Sidebar */
+    /* Sidebar Structure */
     .sidebar {
       width: 280px;
       background: var(--sidebar-bg);
       border-right: 1px solid var(--border-color);
       position: fixed;
-      top: 0;
-      bottom: 0;
-      overflow-y: auto;
-      padding: 2rem 1.5rem;
+      top: 0; bottom: 0; left: 0;
       z-index: 50;
       display: flex;
       flex-direction: column;
-      transition: background-color 0.3s, border-color 0.3s;
+      transition: transform 0.3s ease, background-color 0.3s, border-color 0.3s;
+    }
+    
+    /* Sticky Sidebar Components */
+    .sidebar-header {
+      padding: 2rem 1.5rem 1rem 1.5rem;
+      flex-shrink: 0;
     }
     .sidebar-logo {
       font-size: 1.5rem;
@@ -72,8 +98,6 @@
       align-items: center;
       gap: 10px;
     }
-
-    /* Sidebar Search Trigger */
     .sidebar-search-trigger {
       background: var(--input-bg);
       border: 1px solid var(--border-color);
@@ -85,7 +109,6 @@
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-      margin-bottom: 1.5rem;
       transition: border-color 0.2s;
     }
     .sidebar-search-trigger:hover {
@@ -99,9 +122,19 @@
       font-weight: bold;
     }
 
-    .sidebar-nav {
+    /* Scrolling Navigation Menu */
+    .sidebar-nav-wrapper {
       flex-grow: 1;
+      overflow-y: auto;
+      padding: 0 1.5rem;
+      /* Hide Scrollbar */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE */
     }
+    .sidebar-nav-wrapper::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Edge */
+    }
+    
     .sidebar-nav a {
       display: block;
       color: var(--text-muted);
@@ -132,11 +165,11 @@
 
     /* Theme Slider Toggle */
     .theme-switch-wrapper {
+      padding: 1.5rem;
+      flex-shrink: 0;
       display: flex;
-      align-items: center;
       justify-content: center;
-      margin-top: auto;
-      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
     }
     .theme-switch {
       position: relative;
@@ -144,18 +177,11 @@
       width: 64px;
       height: 34px;
     }
-    .theme-switch input { 
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+    .theme-switch input { opacity: 0; width: 0; height: 0; }
     .slider {
       position: absolute;
       cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background-color: #d1d5db;
       transition: .4s;
       border-radius: 34px;
@@ -175,9 +201,7 @@
       transition: .4s;
       border-radius: 50%;
     }
-    [data-theme="dark"] .slider {
-      background-color: var(--accent);
-    }
+    [data-theme="dark"] .slider { background-color: var(--accent); }
     [data-theme="dark"] .slider:before {
       transform: translateX(30px);
       content: "🌙";
@@ -194,7 +218,7 @@
 
     /* Search Modal Overlay */
     .search-overlay {
-      display: none; /* Hidden by default */
+      display: none; 
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.5);
@@ -266,6 +290,63 @@
       color: var(--text-muted);
       text-align: right;
     }
+    
+    .search-highlight {
+      background-color: rgba(99, 102, 241, 0.3);
+      color: var(--text-main);
+      padding: 0 2px;
+      border-radius: 3px;
+      font-weight: 800;
+    }
+    [data-theme="dark"] .search-highlight {
+      background-color: rgba(99, 102, 241, 0.5);
+      color: #ffffff;
+    }
+
+    /* In-Document Global Highlighter */
+    .doc-highlight {
+      background-color: rgba(255, 193, 7, 0.5);
+      color: inherit;
+      padding: 0 2px;
+      border-radius: 3px;
+      box-shadow: 0 0 0 1px rgba(255, 193, 7, 0.8);
+    }
+    [data-theme="dark"] .doc-highlight {
+      background-color: rgba(255, 193, 7, 0.3);
+      color: #fff;
+    }
+    
+    /* Sidebar Section Highlighter */
+    .sidebar-nav a.sidebar-highlight {
+      background-color: rgba(255, 193, 7, 0.15) !important;
+      color: var(--text-main);
+      border-left: 4px solid rgba(255, 193, 7, 0.8);
+      border-radius: 0 6px 6px 0;
+    }
+
+    #clearHighlightsBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--accent);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      transform: translateY(20px);
+    }
+    #clearHighlightsBtn.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    #clearHighlightsBtn:hover { background: #3730a3; }
 
     /* Content Typography */
     .doc-section {
@@ -285,15 +366,33 @@
       font-size: 1.3rem;
       margin-top: 2rem;
       margin-bottom: 1rem;
+      color: var(--text-main);
     }
     .doc-section p, .doc-section li {
       font-size: 1rem;
       line-height: 1.7;
-      color: var(--text-muted);
+      color: var(--text-main); 
+      opacity: 0.9;
     }
     .doc-section strong {
       color: var(--text-main);
+      font-weight: 800;
     }
+
+    /* Bootstrap Overrides for Dark Mode Compatibility */
+    [data-theme="dark"] .text-muted { color: var(--text-muted) !important; }
+    [data-theme="dark"] .text-dark { color: var(--text-main) !important; }
+    [data-theme="dark"] .bg-white, [data-theme="dark"] .bg-light { background-color: var(--sidebar-bg) !important; }
+    [data-theme="dark"] .border, [data-theme="dark"] .border-top-0 { border-color: var(--border-color) !important; }
+    [data-theme="dark"] .nav-tabs { border-bottom-color: var(--border-color); }
+    [data-theme="dark"] .nav-tabs .nav-link { color: var(--text-muted); border-color: transparent; }
+    [data-theme="dark"] .nav-tabs .nav-link:hover { border-color: transparent transparent var(--border-color); color: var(--text-main); }
+    [data-theme="dark"] .nav-tabs .nav-link.active { 
+      background-color: var(--sidebar-bg) !important; 
+      color: var(--accent) !important; 
+      border-color: var(--border-color) var(--border-color) var(--sidebar-bg) !important; 
+    }
+    
     .list-group-item {
       background-color: var(--list-bg);
       border-color: var(--border-color);
@@ -325,13 +424,31 @@
       background: rgba(255,255,255,0.1);
     }
 
+    /* Responsive Mobile CSS */
     @media (max-width: 768px) {
-      .sidebar { display: none; }
-      .main-content { margin-left: 0; padding: 2rem; }
+      .mobile-header { display: flex; }
+      .sidebar { 
+        transform: translateX(-100%); 
+        box-shadow: 4px 0 15px rgba(0,0,0,0.2); 
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .main-content { margin-left: 0; padding: 2rem 1.5rem; }
     }
   </style>
 </head>
 <body>
+
+<div class="mobile-header">
+  <div class="fw-bold" style="color: var(--text-main); font-size: 1.2rem;">📦 IMS Docs</div>
+  <button onclick="toggleMobileMenu()" class="btn btn-sm btn-outline-secondary fw-bold" style="border-color: var(--border-color); color: var(--text-main);">☰ Menu</button>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
+
+<div id="clearHighlightsBtn" onclick="clearDocHighlights()">
+  ✕ Clear Search Highlights
+</div>
 
 <div class="search-overlay" id="searchOverlay" onclick="closeSearchModal(event)">
   <div class="search-modal" onclick="event.stopPropagation()">
@@ -350,35 +467,53 @@
 
 <div class="docs-layout">
   
-  <aside class="sidebar">
-    <div class="sidebar-logo">📦 IMS Docs</div>
-    
-    <div class="sidebar-search-trigger" onclick="openSearchModal()">
-      <span>🔍 Search...</span>
-      <span class="shortcut-key">⌘K</span>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">📦 IMS Docs</div>
+      
+      <div class="sidebar-search-trigger" onclick="openSearchModal()">
+        <span>🔍 Search...</span>
+        <span class="shortcut-key">⌘K</span>
+      </div>
     </div>
 
-    <nav class="sidebar-nav" id="toc">
-      <div class="sidebar-heading">Getting Started</div>
-      <a href="#intro" class="nav-link active">Introduction</a>
-      <a href="#roles" class="nav-link">Roles & Permissions</a>
-      <a href="#lbac" class="nav-link">Location-Based Access (LBAC)</a>
-      
-      <div class="sidebar-heading">Daily Operations</div>
-      <a href="#dashboard" class="nav-link">Dashboard & Analytics</a>
-      <a href="#transactions" class="nav-link">Check In, Out & Move</a>
-      <a href="#audits" class="nav-link">Performing Audits</a>
-      
-      <div class="sidebar-heading">Management</div>
-      <a href="#manage-items" class="nav-link">Managing Items</a>
-      <a href="#manage-locations" class="nav-link">Managing Locations</a>
-      
-      <div class="sidebar-heading">Administration</div>
-      <a href="#deploy-backend" class="nav-link">1. Deploy Backend</a>
-      <a href="#deploy-oauth" class="nav-link">2. Setup Google OAuth</a>
-      <a href="#deploy-frontend" class="nav-link">3. Deploy Frontend</a>
-      <a href="#theming" class="nav-link">Theme & Branding</a>
-    </nav>
+    <div class="sidebar-nav-wrapper">
+      <nav class="sidebar-nav" id="toc">
+        <div class="sidebar-heading">Getting Started</div>
+        <a href="#intro" class="nav-link active">Introduction</a>
+        <a href="#ui-nav" class="nav-link">UI & Navigation Features</a>
+        <a href="#mobile-pwa" class="nav-link">Mobile App (PWA) Setup</a>
+        <a href="#roles" class="nav-link">Roles & Permissions</a>
+        <a href="#lbac" class="nav-link">Location Access (LBAC)</a>
+        
+        <div class="sidebar-heading">Daily Operations</div>
+        <a href="#dashboard" class="nav-link">Dashboard & Alerts</a>
+        <a href="#finding-data" class="nav-link">Finding & Viewing Items</a>
+        <a href="#transactions" class="nav-link">Check In, Out & Move</a>
+        <a href="#audits" class="nav-link">Performing Audits</a>
+        <a href="#exporting" class="nav-link">Exporting Data (CSV)</a>
+        
+        <div class="sidebar-heading">Management (Admins)</div>
+        <a href="#manage-items" class="nav-link">Managing Items</a>
+        <a href="#manage-locations" class="nav-link">Managing Locations</a>
+        <a href="#manage-logs" class="nav-link">Transaction Logs</a>
+        <a href="#manage-users" class="nav-link">Managing Users</a>
+        
+        <div class="sidebar-heading">System Engine</div>
+        <a href="#sync-engine" class="nav-link">Background Sync Engine</a>
+        <a href="#theming" class="nav-link">Theme & Branding</a>
+        
+        <div class="sidebar-heading">Deployment Setup</div>
+        <a href="#deploy-drive" class="nav-link">1. Drive Setup</a>
+        <a href="#deploy-oauth" class="nav-link">2. Google Login Setup</a>
+        <a href="#deploy-sheet" class="nav-link">3. Database Setup</a>
+        <a href="#deploy-script" class="nav-link">4. API Setup</a>
+        <a href="#deploy-frontend" class="nav-link">5. UI Hosting</a>
+        
+        <div class="sidebar-heading">Help</div>
+        <a href="#faq" class="nav-link text-danger">Troubleshooting & FAQ</a>
+      </nav>
+    </div>
     
     <div class="theme-switch-wrapper">
       <label class="theme-switch" title="Toggle Dark/Light Mode">
@@ -395,7 +530,29 @@
       <section id="intro" class="doc-section">
         <h2>Introduction</h2>
         <p>Welcome to the Inventory Management System (IMS). This platform is a modern, Single-Page Application (SPA) designed to track hardware, deployable assets, and physical spaces.</p>
-        <p>The system is completely white-labeled and powered entirely by Google Workspace (Google Sheets for the database, Apps Script for the API, and Google Drive for image storage). It requires zero traditional server hosting costs.</p>
+        <p>While the backend database, automation, and API are powered entirely by Google Workspace (Google Sheets, Apps Script, and Google Drive), the beautiful frontend user interface is designed to be hosted externally on a free service like GitHub Pages or standard domain hosting. This architecture gives you an enterprise-grade web app with zero traditional server hosting costs.</p>
+      </section>
+
+      <section id="ui-nav" class="doc-section">
+        <h2>UI & Navigation Features</h2>
+        <p>The IMS is built as a Single Page Application, meaning it operates more like a native app on your phone than a traditional website. It is packed with quality-of-life features:</p>
+        <ul>
+          <li><strong>Loading Screen:</strong> When you boot the app, a loading screen appears. During this brief window, the app is downloading your custom Theme, pulling your permissions, and fetching the entire inventory database to your device for lightning-fast usage.</li>
+          <li><strong>The "Home" Button:</strong> Clicking the App Logo or App Title in the top left corner will immediately clear your current view and return you to the main Locations Grid.</li>
+          <li><strong>Sign Out:</strong> Click the red Sign Out button in the top right to instantly erase your session credentials and return to the Google Login screen.</li>
+          <li><strong>Dark / Light Mode Toggle:</strong> Next to the Management button is a ☀️/🌙 toggle switch. Clicking this instantly repaints the entire app into a beautiful dark mode to reduce eye strain in dark environments. The app remembers your preference.</li>
+          <li><strong>Natural Back Buttons:</strong> Even though it's a single page, the app hooks into your browser's History Engine. You can use your browser's standard Back/Forward arrows, or swipe back on your mobile device, and the app will navigate perfectly.</li>
+          <li><strong>Collapsible Sections:</strong> Throughout the app (Dashboards, Location Grids), you will see headers with a ▼ icon. Clicking these headers will collapse or expand that section to keep your screen uncluttered.</li>
+        </ul>
+      </section>
+
+      <section id="mobile-pwa" class="doc-section">
+        <h2>Mobile App (PWA) Setup</h2>
+        <p>The IMS is built as a Progressive Web App (PWA). This means you do not download it from the Apple App Store or Google Play Store. Instead, you "install" it directly from your web browser to your phone's home screen for a true native experience (full screen, no URL bars, optimized for notches/safe areas).</p>
+        <ul>
+          <li><strong>iPhone (iOS):</strong> Open your live hosted URL in Safari. Tap the Share icon (the square with an up arrow) at the bottom of the screen. Scroll down the menu and tap <strong>Add to Home Screen</strong>.</li>
+          <li><strong>Android:</strong> Open your live hosted URL in Chrome. Tap the 3-dot menu in the top right corner. Tap <strong>Add to Home screen</strong>.</li>
+        </ul>
       </section>
 
       <section id="roles" class="doc-section">
@@ -404,48 +561,79 @@
         <ul class="list-group list-group-flush mb-3">
           <li class="list-group-item"><strong>Admin:</strong> Full system access. Can edit users, change system themes, view all logs, and manage all inventory.</li>
           <li class="list-group-item"><strong>Sub-Admin:</strong> Global access to manage all inventory, locations, and view logs, but cannot edit Users or System Themes.</li>
-          <li class="list-group-item"><strong>Manager:</strong> <span class="badge-role">Restricted</span> Can manage inventory and perform audits, but <strong>only</strong> for their assigned locations.</li>
+          <li class="list-group-item"><strong>Manager:</strong> <span class="badge-role">Restricted</span> Can manage inventory and perform audits, but <strong>only</strong> for their assigned locations. Cannot view the Management tab.</li>
           <li class="list-group-item"><strong>Operator:</strong> <span class="badge-role">Restricted</span> Can check-in, check-out, and move items, and perform audits. Cannot access the Management dashboard. Restricted to assigned locations.</li>
-          <li class="list-group-item"><strong>Viewer:</strong> <span class="badge-role">Restricted</span> Read-only access to view stock levels for their assigned locations.</li>
+          <li class="list-group-item"><strong>Viewer:</strong> <span class="badge-role">Restricted</span> Read-only access to view stock levels for their assigned locations. Cannot perform any transactions.</li>
         </ul>
       </section>
 
       <section id="lbac" class="doc-section">
         <h2>Location-Based Access Control (LBAC)</h2>
-        <p>If a user is a Manager, Operator, or Viewer, they are subjected to LBAC filters. If an Admin does not explicitly assign them to a Location, that location does not exist to them.</p>
+        <p>If a user is a Manager, Operator, or Viewer, they are subjected to LBAC filters. If an Admin does not explicitly assign them to a Location, that location literally does not exist to them in the app. It will not appear on their dashboard, in their grid, or in their transaction dropdowns.</p>
         <h3>Access Groups</h3>
         <p>To make assigning locations easier, Admins can create "Access Groups" (e.g., <i>West Coast</i>, <i>Arizona</i>). When editing a location, you can tag it with a group. When assigning a user, you can assign them the entire group with one click, instantly granting them access to all locations bearing that tag.</p>
       </section>
 
       <section id="dashboard" class="doc-section">
-        <h2>Dashboard & Analytics</h2>
-        <p>The Dashboard provides a real-time financial and operational snapshot of the inventory.</p>
+        <h2>Dashboard & Alerts</h2>
+        <p>The Dashboard (found in the Management tab) provides a real-time financial and operational snapshot of the inventory.</p>
         <ul>
           <li><strong>Global Snapshot:</strong> Visible to Admins and Sub-Admins. Shows total unit counts and financial valuations across the entire company.</li>
           <li><strong>Location Groups Snapshot:</strong> Allows you to select an Access Group from a dropdown (e.g., "Arizona") and instantly recalculate the financial valuation and unit count strictly for assets within that region.</li>
-          <li><strong>Low Stock Alerts:</strong> Automatically surfaces items that have fallen below their defined "Min Stock" threshold.</li>
         </ul>
+        
+        <h3>Low Stock Alerts</h3>
+        <p>If an item dips below its designated "Min Stock" threshold, two things happen:</p>
+        <ol>
+          <li>A global <strong>red warning banner</strong> appears at the very top of the app, visible from anywhere.</li>
+          <li>Clicking that banner transports you to the Dashboard, where a red "Low Stock Warning" table details exactly which items are low and what their thresholds are.</li>
+        </ol>
+      </section>
+
+      <section id="finding-data" class="doc-section">
+        <h2>Finding & Viewing Items</h2>
+        <p>The main screen of the application is the <strong>Location Grid</strong>. Clicking a location card opens it to reveal all the items currently stored inside it.</p>
+        
+        <ul>
+          <li><strong>Global "Everywhere" Location:</strong> At the end of the Physical Spaces grid is a special blue 🌎 card called "Everywhere". This is a system-generated master view. Clicking it will show you every single item across your entire company in one massive list.</li>
+          <li><strong>Sorting:</strong> When viewing a location, use the dropdown in the top right to sort items alphabetically (A-Z, Z-A) or by Quantity (High-Low).</li>
+          <li><strong>Grid vs. List View:</strong> Next to the sort dropdown is a physical toggle switch. Click it to swap between a visual "Grid" layout (large images, square cards) and a condensed "List" layout (small thumbnails, compact rows).</li>
+          <li><strong>Image Zoom (Lightbox):</strong> If you click on an item's main image on its Detail Page, it will pop out into a high-resolution Lightbox overlay. Click the background to close it.</li>
+          <li><strong>Quick Edit Shortcut:</strong> If you are an Admin/Manager looking at an Item or Location detail page, you will see a small "✎ Edit" button under the image. Clicking this instantly teleports you directly to the Management form for that specific entity, saving you time!</li>
+        </ul>
+
+        <h3>Global Search Engine</h3>
+        <p>The Search Bar at the top of the app is incredibly powerful. As you type, the app searches through Barcodes, Make, Model, Descriptions, Notes, and Serial Numbers. Matches are highlighted in yellow. Click any result to jump directly to that item.</p>
+        
+        <div class="callout py-2 my-3 border-warning">
+          <strong>Wait, where did my item go? (Zero-Stock Visibility)</strong><br>
+          <span class="text-muted small">The main inventory grids strictly show items that <strong>currently reside</strong> in that specific location. If an item drops to <strong>0 stock</strong>, it will completely disappear from that location's visual grid to keep things uncluttered. To find it and add new stock, simply use the <strong>Global Search Bar</strong> at the top of the screen!</span>
+        </div>
+
+        <h3>Interactive Stock Badges (Teleporting)</h3>
+        <p>When you view an Item's Detail page, you will see a cluster of badges showing exactly where this item is currently located across your company (e.g., <code>Warehouse A: 50</code>). <strong>These badges are clickable!</strong> If you click one, the app will instantly teleport you to that specific location's inventory grid.</p>
+        <p><i>Note on LBAC:</i> You will only see stock badges for locations you have permission to view. If the item exists in California, but you only have Arizona permissions, the California badges are completely hidden from you.</p>
       </section>
 
       <section id="transactions" class="doc-section">
         <h2>Transactions (Check In, Out & Move)</h2>
-        <p>To execute a transaction, click on an item in the inventory grid to open its Details page. At the bottom, you will find the Action Form.</p>
+        <p>To execute a transaction, go to the Item Detail page. At the bottom, you will find the Action Form.</p>
         
         <h3>Bulk vs. Serialized Actions</h3>
         <div class="row mt-2">
           <div class="col-md-6">
             <strong>Bulk Items (e.g., Cables, Screws)</strong>
-            <p class="small mt-1">Simply type in the quantity you wish to move and select the destination. The system will math out the balances.</p>
+            <p class="small mt-1">Simply type in the quantity you wish to move, select the From/To locations, and click ADD, REMOVE, or MOVE. The system will math out the balances.</p>
           </div>
           <div class="col-md-6">
             <strong>Serialized Items (e.g., Cameras, Laptops)</strong>
-            <p class="small mt-1">The quantity field is hidden. You must either click the checkboxes of the specific serials you are moving, or use the camera/barcode scanner to rapidly scan serial numbers into the text box.</p>
+            <p class="small mt-1">The quantity field is hidden. You must either click the checkboxes of the specific serials you are moving, or use the camera scanner to scan serial numbers into the text box.</p>
           </div>
         </div>
 
-        <div class="callout">
-          <strong>Pro-Tip: Using the Camera Scanner</strong><br>
-          Click the 📷 icon next to the Serial Input box. The system supports rapid continuous scanning. Point your phone at a barcode, wait for the beep, and move to the next. It will automatically list them on new lines.
+        <div class="callout border-primary">
+          <strong>Hardware Scanner Support!</strong><br>
+          If you have a physical USB or Bluetooth barcode scanner gun, it works natively with this app! Just click inside the Search Bar or Serial Input box and pull the trigger. The app's rapid-stroke engine will automatically capture the scan and drop to a new line without requiring you to hit 'Enter'.
         </div>
       </section>
 
@@ -461,79 +649,221 @@
         </ol>
       </section>
 
-      <section id="manage-items" class="doc-section">
-        <h2>Managing Items (Catalog)</h2>
-        <p>The Item Master is where you define the catalog of equipment your company owns.</p>
+      <section id="exporting" class="doc-section">
+        <h2>Exporting Data (CSV)</h2>
+        <p>The system allows you to easily extract data for external reporting or spreadsheets.</p>
         <ul>
-          <li><strong>Barcode:</strong> Must be unique. This is the primary identifier.</li>
-          <li><strong>Tracking Type:</strong> Choose between "Bulk Quantity" (just count numbers) or "Individual Serials" (track exact units). <i>Note: Once items are logged, changing this can skew historical data.</i></li>
-          <li><strong>Image Uploads:</strong> You can paste an image URL from the web, or upload a file directly. Uploaded files are automatically saved to your configured Google Drive folder and securely linked.</li>
+          <li><strong>Location Inventory CSV:</strong> <i>(Access: Admin, Sub-Admin, Manager, Operator)</i>. Navigate to any Location (or the Global "Everywhere" view) and click the green <strong>Download CSV</strong> button in the top right. This generates a clean spreadsheet of every item, its category, exact spot/bin, quantity, and unit price for that specific location.</li>
+          <li><strong>Transaction Logs CSV:</strong> <i>(Access: Admin, Sub-Admin, Manager)</i>. Go to Management > Logs. In the top right, there is a small input box and a green Download button. Enter the exact number of rows you want to export (e.g., 500, or 5000) and click Download. This exports the raw, chronological history of every movement in the system.</li>
         </ul>
+      </section>
+
+      <section id="manage-items" class="doc-section">
+        <h2>Management: Items (Catalog)</h2>
+        <p><i>Access: Admin, Sub-Admin, Manager</i></p>
+        <p>The Items tab is where you define the catalog of equipment your company owns. In the data tables, <strong>click the column headers (blue underlined text)</strong> to instantly sort the database.</p>
+        <ul>
+          <li><strong>Barcode (Required):</strong> The most important field. Must be completely unique (e.g., a UPC code or internal SKU).</li>
+          <li><strong>Make & Model:</strong> The manufacturer (e.g., Sony) and the product name (e.g., FX6 Camera).</li>
+          <li><strong>Category:</strong> A high-level grouping used for filtering (e.g., CCTV, Cable, Accessories).</li>
+          <li><strong>Tracking Type:</strong> Choose between "Bulk Quantity" (just count numbers) or "Individual Serials" (track exact units). <i>Note: Do not change this after stock has been added, or your history will break!</i></li>
+          <li><strong>Description:</strong> A brief overview of what the item is. This is globally searchable!</li>
+          <li><strong>Unit Price:</strong> The financial cost of a single unit. The system uses this to calculate total inventory value on your dashboard.</li>
+          <li><strong>Min Stock:</strong> The threshold at which this item triggers a "Low Stock" warning on the Dashboard.</li>
+          <li><strong>Tech Specs URL:</strong> A link to a manual or website. A clickable link will appear on the Item Details page.</li>
+          <li><strong>Image URL / File Upload:</strong> You can paste an image link from the web, or upload a file directly from your computer. Uploaded files are automatically saved to your private Google Drive and securely linked. <i>Note: If you provide both an Image URL and a File Upload, the File Upload will override the URL.</i></li>
+          <li><strong>Notes:</strong> Any special handling instructions. This is also globally searchable!</li>
+        </ul>
+        
+        <h3>Enabling & Disabling Items</h3>
+        <p>In the Items table, you will see a toggle button in the Actions column. Disabling an item removes it from searches and dropdowns so it can no longer be interacted with. <strong>Safety Net:</strong> The system will block you from disabling an item if there is still active stock in the system. You must remove/audit the stock to zero before retiring the item.</p>
       </section>
 
       <section id="manage-locations" class="doc-section">
-        <h2>Managing Locations</h2>
-        <p>Locations are where items reside. They come in two types:</p>
+        <h2>Management: Locations</h2>
+        <p><i>Access: Admin, Sub-Admin, Manager</i></p>
+        <p>The Locations tab is where you create the places your items reside. Like the items table, column headers are clickable for rapid sorting.</p>
         <ul>
-          <li><strong>Physical Spaces:</strong> Standard rooms, offices, or buildings.</li>
-          <li><strong>Deployable Assets:</strong> Things like Trucks, Golf Carts, or Storage Cases that contain inventory but move around.</li>
+          <li><strong>Location Name:</strong> The name of the space (e.g., Warehouse A, Production Truck 1).</li>
+          <li><strong>Category:</strong> The general grouping (e.g., Office, Storage Room, Events).</li>
+          <li><strong>Type:</strong> Choose between <strong>Physical Space</strong> (a permanent building) or <strong>Deployable</strong> (an asset that moves, like a Truck or Storage Case).</li>
+          <li><strong>Deployment Location:</strong> If you select "Deployable" above, a new box appears asking *where* this truck/case is currently deployed to.</li>
+          <li><strong>Access Groups (LBAC):</strong> A checklist of groups (e.g., Arizona, West Coast). Check the boxes to assign this location to those groups. You can quickly create new groups by typing a tag and clicking "Add".</li>
+          <li><strong>Description & Notes:</strong> Add details about the location, access codes, or contact info.</li>
+          <li><strong>Image URL / File Upload:</strong> Give the location a photo! Just like items, File Uploads override Image URLs.</li>
         </ul>
+        
         <h3>Spots / Bins</h3>
-        <p>You do not need to pre-create Spots/Bins. When moving an item into a location, a user can simply type a new Spot name (e.g., "Shelf A3"), and the system will dynamically create it. To rename or delete an existing Spot, click the "Spots" button next to the location in the Location Master table.</p>
+        <p>You do not need to pre-create Spots/Bins. When a user is moving an item into a location on their device, they can simply type a new Spot name (e.g., "Shelf A3"), and the system will dynamically create it. To rename or delete an existing Spot, click the blue <strong>Spots</strong> button next to the location in the Location Management table.</p>
+
+        <h3>Enabling & Disabling Locations</h3>
+        <p>Like Items, Locations can be disabled. <strong>Safety Net:</strong> You cannot disable a location if it currently holds inventory.</p>
+
+        <h3>Access Group Summary Dashboard</h3>
+        <p>At the bottom of the Locations tab, you will see a visual dashboard. This automatically updates to show you every single Access Group in your system, and lists out exactly which locations belong to which groups, making it easy for Admins to verify their security architecture.</p>
       </section>
 
-      <section id="deploy-backend" class="doc-section">
-        <h2>1. Deploying the Backend (Google)</h2>
-        <p>The entire database runs on a single Google Sheet and Google Drive folder.</p>
+      <section id="manage-logs" class="doc-section">
+        <h2>Management: Transaction Logs</h2>
+        <p><i>Access: Admin, Sub-Admin, Manager</i></p>
+        <p>The Logs tab provides an immutable, chronological history of every action taken in the system. By default, it loads the 20 most recent transactions to ensure the app stays lightning-fast and responsive.</p>
+        <p>If you need to look further back in time, simply scroll to the bottom and click the blue <strong>Load More Activities</strong> button to pull the next 20 records into the view.</p>
+      </section>
+
+      <section id="manage-users" class="doc-section">
+        <h2>Management: Users</h2>
+        <p><i>Access: Admin Only</i></p>
+        <p>The Users tab controls who can log in. If an email is not in this list, they will hit an "Access Denied" screen.</p>
+        <ul>
+          <li><strong>Full Name (Optional):</strong> By default, the system tries to guess a user's display name from their email address (e.g., <code>john.doe@company.com</code> becomes "John Doe"). If their email is weird (e.g., <code>admin123@company.com</code>), you can type their actual name here to override the system guess!</li>
+          <li><strong>Email Address:</strong> Their exact Google login email.</li>
+          <li><strong>Role:</strong> See the "Roles & Permissions" section for details on access levels.</li>
+          <li><strong>Assign Locations (LBAC):</strong> If the user is a Restricted role, a checklist will appear. Check the Groups or specific Locations they are allowed to access.</li>
+        </ul>
+        <h3>Enabling & Disabling Users</h3>
+        <p>You can instantly revoke a user's access by clicking the Disable button in the table. <strong>Safety Net:</strong> The system will prevent you from accidentally disabling your own Admin account.</p>
+      </section>
+
+      <section id="sync-engine" class="doc-section">
+        <h2>Background Sync Engine</h2>
+        <p>To ensure all users across the company see accurate stock numbers without ever having to refresh their web browser, the app utilizes an intelligent, non-intrusive Background Sync Engine.</p>
+        <ul>
+          <li><strong>Auto-Soft Refresh:</strong> Every 15 seconds (configurable in the Theme tab), the app silently asks the Google database for changes. It injects new numbers, checks if an Admin revoked your permissions, and updates LBAC assignments automatically.</li>
+          <li><strong>Sync Indicator:</strong> When this happens, a tiny black badge containing a spinner and the text "Syncing..." will gently fade in at the bottom right corner of your screen, then fade away.</li>
+          <li><strong>Zero Interruption:</strong> This sync happens in the background. It will not interrupt you if you are typing in a form or scanning a barcode.</li>
+        </ul>
+      </section>
+
+      <section id="theming" class="doc-section">
+        <h2>Administration: Theme & Branding</h2>
+        <p><i>Access: Admin Only</i></p>
+        <p>The Theme tab allows Admins to completely white-label the software without ever touching code. Here is a breakdown of every field:</p>
+        <ul>
+          <li><strong>Company Name:</strong> Legal entity name. This is automatically injected into the dynamically generated Legal/Privacy Modal in the footer.</li>
+          <li><strong>Developer Name:</strong> Name of the primary architect (injected into the Legal Modal).</li>
+          <li><strong>Title:</strong> The full name of your platform (e.g., "Inventory Management System"). Displays in the browser tab and on desktop web views.</li>
+          <li><strong>Short Title:</strong> An abbreviation (e.g., "IMS") used on small mobile phone screens where space is tight.</li>
+          <li><strong>Use Short Title on Login?:</strong> Toggle this to "Yes" if you want the big login screen to say "IMS Login" instead of "Inventory Management System Login".</li>
+          <li><strong>Currency Symbol:</strong> Set this to $, €, £, or any symbol. It automatically formats all financial math across the app.</li>
+          <li><strong>Footer Text:</strong> The small copyright text at the very bottom of the app.</li>
+          <li><strong>Admin Contact:</strong> The email address shown to users if they hit the "Access Denied" screen, telling them who to contact for access.</li>
+          <li><strong>Logo Image URL:</strong> A web link to your company logo. This displays on the login screen, loading screen, and top navigation bar.</li>
+          <li><strong>Default 'No Image' Graphic:</strong> If an item doesn't have a photo, the app generates a gray "No Image" box. You can replace that with a custom branded placeholder by pasting an image URL here.</li>
+          <li><strong>Google Client ID & Drive Folder ID:</strong> The critical connection strings required for Google Login and Image Uploads.</li>
+          <li><strong>Sync Interval:</strong> How often the Background Sync Engine silently pings the database (in seconds). Default is 15.</li>
+          <li><strong>Light Mode / Dark Mode Palettes:</strong> Define Primary Brand Colors, Background Colors, Card Colors, and Text Colors for both display modes. When a user toggles the sun/moon icon, the app repaints itself instantly using these rules.</li>
+        </ul>
+      </section>
+
+      <section id="deploy-drive" class="doc-section">
+        <h2>Deployment Step 1: Google Drive Setup</h2>
+        <p>The system needs a secure place to store the photos you upload of your items and locations.</p>
         <ol>
-          <li><strong>Create a Google Drive Folder:</strong> Create a new folder in Google Drive (e.g., "IMS Images"). 
-            <div class="callout py-2 my-2">
-              <strong>Security Note:</strong> Do <strong>not</strong> share this folder publicly. Keep it restricted to the Admin/Creator only. The backend script will securely upload images here and handle specific file-level sharing automatically.
-            </div>
+          <li>Open your Google Drive.</li>
+          <li>Create a new folder and name it something like <strong>"IMS Images"</strong>.</li>
+          <li>Double click the folder to open it.</li>
+          <li>Look at the web address (URL) at the top of your browser. It will look like this: <br><code>https://drive.google.com/drive/folders/1aBcD2eFgH3iJkL4mNoP5qRsTuV6wXyZ</code></li>
+          <li>Copy the long string of letters and numbers at the very end. That is your <strong>Drive Folder ID</strong>. Paste it somewhere safe (like a notepad).</li>
+        </ol>
+        <div class="callout py-2 my-2 border-primary">
+          <strong>Security Note:</strong> Do <strong>not</strong> share this folder publicly. Keep it restricted to yourself. The backend script runs under your credentials and will securely upload images here for you!
+        </div>
+      </section>
+
+      <section id="deploy-oauth" class="doc-section">
+        <h2>Deployment Step 2: Google Login Setup</h2>
+        <p>To allow users to log into your app securely using their Google accounts, we need to create a "Client ID" in the Google Developer Console.</p>
+        <ol>
+          <li>Go to the <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> and sign in.</li>
+          <li>Click the project dropdown in the top left and select <strong>New Project</strong>. Name it "IMS Login" and click Create.</li>
+          <li>In the left sidebar, navigate to <strong>APIs & Services > OAuth consent screen</strong>.</li>
+          <li>Select <strong>Internal</strong> (if you only want employees in your company's Google Workspace to use it) or <strong>External</strong> (if you want anyone with a Gmail account to be able to use it), and click Create.</li>
+          <li>Fill out the required App Information (App name, support email) and click <strong>Save and Continue</strong> through the remaining steps.</li>
+          <li>In the left sidebar, click <strong>Credentials</strong>.</li>
+          <li>Click <strong>+ CREATE CREDENTIALS</strong> at the top and select <strong>OAuth client ID</strong>.</li>
+          <li>Select Application type: <strong>Web application</strong>. Name it "IMS Web App".</li>
+          <li>Under <strong>Authorized JavaScript origins</strong>, click <strong>+ ADD URI</strong>. You must enter the exact web address where your user interface will eventually be hosted.<br>
+            <i>Example:</i> <code>https://yourusername.github.io</code><br>
+            <span class="text-danger small">Important: Do not include trailing slashes or file paths (NO <code>/index.html</code> at the end).</span>
           </li>
-          <li><strong>Copy the Folder ID:</strong> Look at the URL of the folder. Copy the string of letters/numbers after <code>/folders/</code>. You will need this later.</li>
-          <li><strong>Create a Google Sheet:</strong> Create a blank Google Sheet. This will act as your database.</li>
-          <li><strong>Add the Apps Script:</strong> In the Sheet, click <strong>Extensions > Apps Script</strong>. Delete the default code and paste the entirety of your <code>Code.gs</code> file. Save the project.</li>
-          <li><strong>Deploy the API:</strong> In Apps Script, click the blue <strong>Deploy</strong> button in the top right, then select <strong>New deployment</strong>.
+          <li>Click <strong>Create</strong>. A popup will appear with your <strong>Client ID</strong>. It will look something like this:<br><code>1234567890-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com</code></li>
+          <li>Copy this Client ID and save it to your notepad!</li>
+        </ol>
+      </section>
+
+      <section id="deploy-sheet" class="doc-section">
+        <h2>Deployment Step 3: Database Setup</h2>
+        <p>Now we will build the actual database using Google Sheets. <strong>Accuracy is critical here!</strong> Do not delete columns once established, as it can skew historical indexing.</p>
+        <ol>
+          <li>Create a brand new, blank Google Sheet. Name it "IMS Database".</li>
+          <li>At the bottom of the screen, you will see "Sheet1". Double click it to rename it. You need to create exactly <strong>seven</strong> tabs with specific names. Use the "+" button to add new tabs.</li>
+          <li>Create these 7 tabs and set up the exact Headers/Formulas required in Row 1:
+            <ul class="mt-2">
+              <li>Tab 1: <strong>Items</strong>
+                <br><span class="small text-muted">Type Headers (A1 to M1): Barcode, Make, Model, Category, Min, Spec, Image URL, Status, Description, Price, Image File, Notes, Track Serials</span>
+              </li>
+              <li>Tab 2: <strong>Locations</strong>
+                <br><span class="small text-muted">Type Headers (A1 to J1): Location Name, Type, Status, Description, Notes, Image URL, Image File, Space Type, Deployment Location, LBAC Groups</span>
+              </li>
+              <li>Tab 3: <strong>Log</strong>
+                <br><span class="small text-muted">Type Headers (A1 to I1): Date, Email, Barcode, From, To, Quantity, Action, Serial Number, Spot</span>
+              </li>
+              <li>Tab 4: <strong>Users</strong>
+                <br><span class="small text-muted">Type Headers (A1 to G1): Email, Last Login, Status, Role, Name, Theme, Locations</span>
+              </li>
+              <li>Tab 5: <strong>Template</strong>
+                <br><span class="small text-muted">Type Headers (A1 to B1): Key, Value</span>
+              </li>
+              <li>Tab 6: <strong>Dashboard</strong>
+                <br><span class="small text-muted">Paste this EXACT formula into cell <strong>A1</strong>:</span>
+                <pre class="bg-dark text-light p-2 rounded mt-1 mb-2" style="font-size: 0.75rem;"><code>=IFERROR(QUERY({ARRAYFORMULA(TO_TEXT(Log!C1:C)), ARRAYFORMULA(TO_TEXT(Log!E1:E)), Log!F1:G}, "SELECT Col1, Col2, SUM(Col3) WHERE Col1 <> '' GROUP BY Col1, Col2 PIVOT Col4 LABEL Col1 'Barcode'"), "No Transaction Data Found")</code></pre>
+              </li>
+              <li>Tab 7: <strong>Alerts</strong>
+                <br><span class="small text-muted">Paste this EXACT formula into cell <strong>A1</strong>:</span>
+                <pre class="bg-dark text-light p-2 rounded mt-1 mb-2" style="font-size: 0.75rem;"><code>=ARRAYFORMULA(QUERY({Items!A2:B, Items!E2:E, IFERROR(VLOOKUP(Items!A2:A, QUERY(Log!A:G, "SELECT C, SUM(F) GROUP BY C"), 2, FALSE), 0)}, "SELECT Col1, Col2, Col3, Col4 WHERE Col4 < Col3 AND Col1 IS NOT NULL LABEL Col1 'Barcode', Col2 'Item', Col3 'Min Threshold', Col4 'Total On Hand'"))</code></pre>
+              </li>
+            </ul>
+          </li>
+          <li><strong>The Most Important Step:</strong> Go to your newly created <code>Template</code> tab. 
+            <br>In cell <strong>A2</strong>, type EXACTLY: <code>googleClientId</code>
+            <br>In cell <strong>B2</strong>, paste the long Client ID you got in Step 2!
+            <br>In cell <strong>A3</strong>, type EXACTLY: <code>driveFolderId</code>
+            <br>In cell <strong>B3</strong>, paste the short Folder ID you got in Step 1!
+          </li>
+        </ol>
+      </section>
+
+      <section id="deploy-script" class="doc-section">
+        <h2>Deployment Step 4: API Setup</h2>
+        <p>Now we attach the brain to the database.</p>
+        <ol>
+          <li>While still looking at your Google Sheet, click <strong>Extensions > Apps Script</strong> at the top.</li>
+          <li>A new window will open. Erase all the default code in the editor.</li>
+          <li>Open the <code>Code.gs</code> file that was provided to you, copy all of the text inside it, and paste it into the editor.</li>
+          <li>Click the 💾 <strong>Save</strong> icon (disk icon).</li>
+          <li>In the top right corner, click the blue <strong>Deploy</strong> button, then select <strong>New deployment</strong>.</li>
+          <li>Click the gear icon next to "Select type" and choose <strong>Web App</strong>.</li>
+          <li>Fill out the form:
             <ul>
-              <li><strong>Select type:</strong> Web App</li>
               <li><strong>Description:</strong> IMS v1</li>
               <li><strong>Execute as:</strong> Me (Your Email)</li>
               <li><strong>Who has access:</strong> Anyone</li>
             </ul>
           </li>
-          <li>Click <strong>Deploy</strong>. Copy the generated <strong>Web App URL</strong>. You will need to paste this into your <code>index.html</code> file on line 542 where it says <code>const GAS_URL = "...";</code></li>
-        </ol>
-      </section>
-
-      <section id="deploy-oauth" class="doc-section">
-        <h2>2. Setting up Google OAuth</h2>
-        <p>To allow users to log in securely with their Google accounts, you must create an OAuth Client ID via Google Cloud.</p>
-        <ol>
-          <li>Go to the <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> and sign in with your Admin account.</li>
-          <li>Click the project dropdown in the top left and select <strong>New Project</strong>. Name it "IMS Login" and click Create.</li>
-          <li>In the left sidebar, navigate to <strong>APIs & Services > OAuth consent screen</strong>.</li>
-          <li>Select <strong>Internal</strong> (if restricting to your specific company Google Workspace) or <strong>External</strong> (if allowing any Google account), and click Create.</li>
-          <li>Fill out the required App Information (App name, support email) and click Save and Continue through the remaining steps.</li>
-          <li>In the left sidebar, click <strong>Credentials</strong>.</li>
-          <li>Click <strong>+ CREATE CREDENTIALS</strong> at the top and select <strong>OAuth client ID</strong>.</li>
-          <li>Select Application type: <strong>Web application</strong>. Name it "IMS Web App".</li>
-          <li>Under <strong>Authorized JavaScript origins</strong>, click <strong>+ ADD URI</strong>. You must enter the exact URL where your UI will be hosted. 
-            <ul>
-              <li><i>Example for GitHub Pages:</i> <code>https://yourusername.github.io</code></li>
-              <li><i>Example for Custom Domain:</i> <code>https://ims.yourcompany.com</code></li>
-              <li><i>Note:</i> Do not include trailing slashes or file paths (no <code>/index.html</code>).</li>
-            </ul>
+          <li>Click <strong>Deploy</strong>. You will be asked to Authorize Access. Click "Review Permissions", select your Google account, click "Advanced" at the bottom, and click "Go to project (unsafe)". Allow the permissions.</li>
+          <li>Once finished, it will give you a <strong>Web App URL</strong> (it starts with <code>https://script.google.com/macros/s/...</code>).<br>
+            <span class="text-danger fw-bold">CRITICAL:</span> Ensure the URL you copy ends in <code>/exec</code> and NOT <code>/dev</code>. Copy this <code>/exec</code> URL to your notepad!
           </li>
-          <li>Click <strong>Create</strong>. A modal will appear with your <strong>Client ID</strong> (a long string ending in <code>.apps.googleusercontent.com</code>). Copy this ID!</li>
         </ol>
       </section>
 
       <section id="deploy-frontend" class="doc-section">
-        <h2>3. Deploying the Frontend (UI)</h2>
-        <p>The frontend is a single <code>index.html</code> file. Because there is no server-side logic required, it can be hosted literally anywhere for free.</p>
-        <div class="callout mb-4">
-          <strong>Important pre-requisite:</strong> Before uploading, open your <code>index.html</code> file in a text editor and ensure the <code>GAS_URL</code> variable is set to the Web App URL you generated in Step 1.
+        <h2>Deployment Step 5: UI Hosting</h2>
+        <p>The user interface is a single file called <code>index.html</code>. Because the database and API are fully hosted by Google, this HTML file can be hosted anywhere on the internet for free.</p>
+        
+        <div class="callout mb-4 border-primary">
+          <strong>Crucial Final Link:</strong> Before hosting the file, open your <code>index.html</code> file in a text editor (like Notepad on Windows or TextEdit on Mac). Use your computer's Find tool (Ctrl+F or Cmd+F) to search for the text: <code>const GAS_URL =</code>.<br><br>
+          Replace the web address inside the quotes with the <strong>Web App URL</strong> you copied in Step 4. Save the file. Your UI is now officially connected to your database!
         </div>
 
         <ul class="nav nav-tabs" id="deployTabs" role="tablist">
@@ -546,14 +876,16 @@
           <div class="tab-pane fade show active" id="gh-web" role="tabpanel">
             <h4>Deploying via GitHub Website (Easiest)</h4>
             <ol>
-              <li>Go to GitHub.com and create a new public repository (e.g., <code>ims-app</code>).</li>
+              <li>Go to GitHub.com and create a new public repository (e.g., name it <code>ims-app</code>).</li>
               <li>In the repository, click <strong>Add file > Upload files</strong>.</li>
-              <li>Drag and drop your <code>index.html</code> file into the browser and click <strong>Commit changes</strong>.</li>
+              <li>Drag and drop your updated <code>index.html</code> file into the browser and click <strong>Commit changes</strong>.</li>
               <li>Click the <strong>Settings</strong> tab at the top of the repository.</li>
               <li>On the left sidebar, click <strong>Pages</strong>.</li>
               <li>Under "Build and deployment", set the Source to <strong>Deploy from a branch</strong>.</li>
               <li>Under "Branch", select <code>main</code> and click <strong>Save</strong>.</li>
-              <li>Wait 1-2 minutes. Refresh the page, and GitHub will provide you with a live URL where your app is now hosted!</li>
+              <li>Wait 1-2 minutes. Refresh the page, and GitHub will provide you with a live URL where your app is now hosted! 
+                <br><span class="text-muted small">Example: <code>https://yourusername.github.io/ims-app/</code></span>
+              </li>
             </ol>
           </div>
 
@@ -586,14 +918,34 @@ git push -u origin main</code></pre>
         </div>
         
         <h3 class="mt-5">Finalizing the Setup</h3>
-        <p>The very first time you visit your deployed URL, the system will prompt you to log in via Google. <strong>The very first user to log into a completely blank database is automatically granted the Admin role.</strong></p>
-        <p>Once logged in, go to Management > Theme, and input the <strong>Google Client ID</strong> and <strong>Drive Folder ID</strong> you gathered in Steps 1 and 2, then click Save.</p>
+        <p>Go to the URL where your app is hosted. Because you already placed your Google Client ID into your Database Template tab in Step 3, the Google Login button will appear immediately!</p>
+        <p><strong>The very first user to log into a completely blank database is automatically granted the Admin role.</strong> Once you are logged in, click the Management button in the top right to start exploring your new system!</p>
       </section>
 
-      <section id="theming" class="doc-section">
-        <h2>Theme & Branding</h2>
-        <p>Admins can access the <strong>Theme</strong> tab in the Management dashboard to completely white-label the software.</p>
-        <p>You can define separate color palettes for Light Mode and Dark Mode. When a user clicks the ☀️/🌙 toggle, the app instantly repaints all buttons, headers, notification badges, and background panels to match your corporate branding. You can also configure the Legal Text and Support Emails here.</p>
+      <section id="faq" class="doc-section">
+        <h2 class="text-danger">Troubleshooting & FAQ</h2>
+        
+        <h3 class="text-danger mt-4">Help! The app is stuck on "Loading Database..."</h3>
+        <p>This almost always means the <code>GAS_URL</code> inside your <code>index.html</code> file is incorrect, or you failed to deploy the Google Sheet correctly.</p>
+        <ul>
+          <li>Did you deploy the Apps Script as a "Web App"?</li>
+          <li>Is the access level set to "Anyone"?</li>
+          <li>Does the URL you pasted into <code>index.html</code> end in <code>/exec</code>? (If it ends in <code>/dev</code>, it will fail for everyone except you).</li>
+        </ul>
+
+        <h3 class="text-danger mt-4">My camera scanner isn't turning on</h3>
+        <p>Modern browsers strictly block camera access on unsecured connections.</p>
+        <ul>
+          <li>Make sure the website you are hosting the app on uses <code>https://</code>, not <code>http://</code>. GitHub Pages handles this automatically.</li>
+          <li>Check your browser settings to ensure you haven't blocked camera access for this specific domain.</li>
+        </ul>
+
+        <h3 class="text-danger mt-4">I hit an "Access Denied" screen</h3>
+        <p>The email you used to log into Google is not listed in the <code>Users</code> tab of the database.</p>
+        <ul>
+          <li>If you are the Admin, open your Google Sheet and ensure your email is typed perfectly in the Users tab with the Status set to "Active".</li>
+          <li>If you are an employee, contact your system administrator to have your email added.</li>
+        </ul>
       </section>
 
     </div>
@@ -602,12 +954,10 @@ git push -u origin main</code></pre>
 
 <script>
   // --- THEME ENGINE ---
-  // Default to dark mode if no preference is saved
   const savedTheme = localStorage.getItem('ims_docs_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
   
   document.addEventListener('DOMContentLoaded', () => {
-    // Set the slider state based on the loaded theme
     const cb = document.getElementById('themeToggleCheckbox');
     if (savedTheme === 'dark') cb.checked = true;
   });
@@ -621,31 +971,132 @@ git push -u origin main</code></pre>
     localStorage.setItem('ims_docs_theme', newTheme);
   }
 
+  // --- MOBILE SIDEBAR ENGINE ---
+  function toggleMobileMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  // Close mobile menu when clicking a sidebar link
+  document.querySelectorAll('.sidebar-nav a.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+          document.getElementById('sidebar').classList.remove('open');
+          document.getElementById('sidebarOverlay').classList.remove('open');
+          clearDocHighlights(); // Clear highlights if they manually click a nav link
+      });
+  });
+
+  // --- ESCAPE REGEX HELPER ---
+  const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  // --- IN-DOCUMENT HIGHLIGHTER ENGINE ---
+  function highlightInDoc(keyword) {
+    clearDocHighlights();
+    if(!keyword) return;
+    
+    const regex = new RegExp(`(${escapeRegExp(keyword)})`, 'gi');
+    
+    // 1. Highlight specific text matches ONLY in the Main Content
+    const content = document.getElementById('docContent');
+    if (content) {
+        const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
+        const nodesToReplace = [];
+        let node;
+        while (node = walker.nextNode()) {
+            if (node.parentNode && !['SCRIPT', 'STYLE', 'MARK'].includes(node.parentNode.nodeName)) {
+                if (node.nodeValue.match(regex)) {
+                    nodesToReplace.push(node);
+                }
+            }
+        }
+        
+        nodesToReplace.forEach(node => {
+            const fragment = document.createDocumentFragment();
+            let lastIdx = 0;
+            node.nodeValue.replace(regex, (match, p1, offset) => {
+                fragment.appendChild(document.createTextNode(node.nodeValue.substring(lastIdx, offset)));
+                const mark = document.createElement('mark');
+                mark.className = 'doc-highlight';
+                mark.textContent = match; 
+                fragment.appendChild(mark);
+                lastIdx = offset + match.length;
+            });
+            fragment.appendChild(document.createTextNode(node.nodeValue.substring(lastIdx)));
+            node.parentNode.replaceChild(fragment, node);
+        });
+    }
+
+    // 2. Highlight the ENTIRE sidebar link for any section containing the match
+    const sections = document.querySelectorAll('.doc-section');
+    sections.forEach(sec => {
+        if (sec.innerText.toLowerCase().includes(keyword.toLowerCase())) {
+            const id = sec.getAttribute('id');
+            const navLink = document.querySelector(`.sidebar-nav a[href="#${id}"]`);
+            if (navLink) {
+                navLink.classList.add('sidebar-highlight');
+            }
+        }
+    });
+
+    // Show the floating clear button
+    document.getElementById('clearHighlightsBtn').classList.add('visible');
+  }
+
+  function clearDocHighlights() {
+    // Clear text highlights
+    const marks = document.querySelectorAll('mark.doc-highlight');
+    marks.forEach(mark => {
+        const parent = mark.parentNode;
+        if(parent) {
+            parent.replaceChild(document.createTextNode(mark.textContent), mark);
+            parent.normalize(); 
+        }
+    });
+    
+    // Clear sidebar highlights
+    const highlightedLinks = document.querySelectorAll('.sidebar-nav a.sidebar-highlight');
+    highlightedLinks.forEach(link => link.classList.remove('sidebar-highlight'));
+
+    document.getElementById('clearHighlightsBtn').classList.remove('visible');
+  }
+
   // --- SEARCH MODAL ENGINE ---
   const modal = document.getElementById('searchOverlay');
   const searchInput = document.getElementById('modalSearchInput');
 
   function openSearchModal() {
+    clearDocHighlights(); // Clear previous highlights when opening search
     modal.style.display = 'flex';
-    setTimeout(() => searchInput.focus(), 50); // Focus after rendering
+    setTimeout(() => searchInput.focus(), 50); 
   }
 
-  function closeSearchModal(e) {
-    // If an event is passed, check if the click was outside the modal box
-    if (e && e.target !== modal) return;
+  function closeSearchModal(e, keyword = null) {
+    if (e && e.target !== modal) return; // Prevent closing if clicking inside the box
     modal.style.display = 'none';
     searchInput.value = '';
-    executeSearch(); // clears results
+    executeSearch(); 
+    
+    if (keyword) {
+      setTimeout(() => highlightInDoc(keyword), 100); 
+      // Ensure mobile menu is closed so they can see the results
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('open');
+    }
   }
 
-  // Add keyboard shortcut (Ctrl+K or Cmd+K) to open search, and Esc to close
   window.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
       e.preventDefault();
       openSearchModal();
     }
-    if (e.key === 'Escape' && modal.style.display === 'flex') {
-      closeSearchModal();
+    if (e.key === 'Escape') {
+      if (modal.style.display === 'flex') {
+        closeSearchModal();
+      } else {
+        clearDocHighlights(); // Hitting ESC also clears highlights on the page!
+      }
     }
   });
 
@@ -670,18 +1121,24 @@ git push -u origin main</code></pre>
         const title = titleEl ? titleEl.innerText : 'Documentation Section';
         const id = sec.getAttribute('id');
         
-        // Find a relevant snippet near the matched word
         const rawText = sec.innerText.replace(/\n/g, ' ');
-        const matchIdx = text.indexOf(query);
+        const textLower = rawText.toLowerCase();
+        const matchIdx = textLower.indexOf(query);
         const startIdx = Math.max(0, matchIdx - 40);
         let snippet = rawText.substring(startIdx, matchIdx + query.length + 80);
         if (startIdx > 0) snippet = '...' + snippet;
         snippet += '...';
 
+        const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+        const highlightedSnippet = snippet.replace(regex, '<mark class="search-highlight">$1</mark>');
+        const highlightedTitle = title.replace(regex, '<mark class="search-highlight">$1</mark>');
+
+        // Pass the query to the close function so it can trigger the global highlighter!
+        const safeQuery = query.replace(/'/g, "\\'");
         html += `
-          <a href="#${id}" class="search-result-item" onclick="closeSearchModal(null)">
-            <div class="search-result-title">${title}</div>
-            <div class="search-result-snippet">${snippet}</div>
+          <a href="#${id}" class="search-result-item" onclick="closeSearchModal(null, '${safeQuery}')">
+            <div class="search-result-title">${highlightedTitle}</div>
+            <div class="search-result-snippet">${highlightedSnippet}</div>
           </a>
         `;
       }
