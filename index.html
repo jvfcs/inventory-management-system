@@ -123,6 +123,42 @@
 
     #actSerialsIn, #saScanInput { text-transform: uppercase; }
 
+    /* Scrollable Tabs UI */
+    .tabs-scroll-wrapper { position: relative; width: 100%; max-width: 100%; }
+    .hide-scroll {
+      display: flex; flex-wrap: nowrap; overflow-x: auto;
+      scrollbar-width: none; -ms-overflow-style: none;
+      scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+    }
+    .hide-scroll::-webkit-scrollbar { display: none; }
+    .tab-scroll-btn {
+      position: absolute; top: 0; bottom: 1px; width: 32px;
+      background: var(--light-bg); border: 1px solid rgba(0,0,0,0.1); border-bottom: none;
+      color: var(--light-text); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 10; opacity: 0; pointer-events: none;
+      transition: opacity 0.2s, background-color 0.2s;
+    }
+    [data-bs-theme="dark"] .tab-scroll-btn {
+      background: var(--dark-bg); color: var(--dark-text); border-color: rgba(255,255,255,0.1);
+    }
+    .tab-scroll-btn.visible { opacity: 0.95; pointer-events: auto; }
+    .tab-scroll-btn:hover { background: rgba(0,0,0,0.05); }
+    [data-bs-theme="dark"] .tab-scroll-btn:hover { background: rgba(255,255,255,0.1); }
+    .tab-scroll-btn.left-arrow { left: 0; border-radius: 6px 0 0 0; box-shadow: 3px 0 8px rgba(0,0,0,0.1); }
+    .tab-scroll-btn.right-arrow { right: 0; border-radius: 0 6px 0 0; box-shadow: -3px 0 8px rgba(0,0,0,0.1); }
+
+    /* Back To Top Button */
+    #backToTopBtn {
+      position: fixed; bottom: 30px; right: 30px; background: var(--brand-color);
+      color: white; width: 50px; height: 50px; border-radius: 50%; border: none;
+      cursor: pointer; font-size: 1.5rem; font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 10000; opacity: 0;
+      pointer-events: none; transition: all 0.3s ease; display: flex;
+      align-items: center; justify-content: center;
+    }
+    #backToTopBtn.visible { opacity: 1; pointer-events: auto; }
+    #backToTopBtn:hover { transform: translateY(-3px); filter: brightness(0.9); }
+
     /* Dark Mode Custom Overrides */
     [data-bs-theme="dark"] body { background-color: var(--dark-bg); color: var(--dark-text); }
     
@@ -430,14 +466,18 @@
         <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold text-uppercase" onclick="history.back()">← Back</button>
       </div>
       
-      <ul class="nav nav-tabs mb-4 flex-nowrap overflow-x-auto" style="white-space: nowrap;">
-        <li class="nav-item"><a class="nav-link active" id="t0" onclick="switchMgmt('dash')">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" id="t1" onclick="switchMgmt('item')">Items</a></li>
-        <li class="nav-item"><a class="nav-link" id="t2" onclick="switchMgmt('loc')">Locations</a></li>
-        <li class="nav-item"><a class="nav-link" id="t3" onclick="switchMgmt('log')">Logs</a></li>
-        <li class="nav-item d-none" id="tabUserAccess"><a class="nav-link" id="t4" onclick="switchMgmt('user')">Users</a></li>
-        <li class="nav-item d-none" id="tabTheme"><a class="nav-link" id="t5" onclick="switchMgmt('theme')">Theme</a></li>
-      </ul>
+      <div class="position-relative tabs-scroll-wrapper mb-4">
+        <button class="tab-scroll-btn left-arrow" id="scrollLeftBtn" onclick="scrollTabs(-150)">&#9664;</button>
+        <ul class="nav nav-tabs flex-nowrap hide-scroll" id="mgmtTabs" role="tablist">
+          <li class="nav-item"><a class="nav-link active text-nowrap" id="t0" onclick="switchMgmt('dash')">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link text-nowrap" id="t1" onclick="switchMgmt('item')">Items</a></li>
+          <li class="nav-item"><a class="nav-link text-nowrap" id="t2" onclick="switchMgmt('loc')">Locations</a></li>
+          <li class="nav-item"><a class="nav-link text-nowrap" id="t3" onclick="switchMgmt('log')">Logs</a></li>
+          <li class="nav-item d-none" id="tabUserAccess"><a class="nav-link text-nowrap" id="t4" onclick="switchMgmt('user')">Users</a></li>
+          <li class="nav-item d-none" id="tabTheme"><a class="nav-link text-nowrap" id="t5" onclick="switchMgmt('theme')">Theme</a></li>
+        </ul>
+        <button class="tab-scroll-btn right-arrow" id="scrollRightBtn" onclick="scrollTabs(150)">&#9654;</button>
+      </div>
       
       <div id="mDash">
         <div id="dashAlertsArea" class="hidden mb-4">
@@ -935,6 +975,8 @@
        </div>
    </div>
 </div>
+
+<button id="backToTopBtn" onclick="scrollToTop()" title="Go to top">↑</button>
 
 <div class="modal fade" id="legalModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
@@ -3131,8 +3173,56 @@ async function fetchData(callback) {
     } else {
       history.pushState({ view: 'mgmt', tab: 'dash' }, "");
       switchMgmt('dash', true);
+      setTimeout(updateTabArrows, 50); // Refresh arrow visibility when opening mgmt
     }
   }
+
+  // --- SCROLLABLE TABS ENGINE ---
+  function updateTabArrows() {
+    const tabs = document.getElementById('mgmtTabs');
+    const leftBtn = document.getElementById('scrollLeftBtn');
+    const rightBtn = document.getElementById('scrollRightBtn');
+    if (!tabs || !leftBtn || !rightBtn) return;
+    
+    const isScrollable = tabs.scrollWidth > tabs.clientWidth;
+    
+    if (isScrollable) {
+      leftBtn.classList.toggle('visible', tabs.scrollLeft > 5);
+      rightBtn.classList.toggle('visible', Math.ceil(tabs.scrollLeft + tabs.clientWidth) < tabs.scrollWidth - 5);
+    } else {
+      leftBtn.classList.remove('visible');
+      rightBtn.classList.remove('visible');
+    }
+  }
+
+  function scrollTabs(offset) {
+    const tabs = document.getElementById('mgmtTabs');
+    if (tabs) tabs.scrollLeft += offset;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.getElementById('mgmtTabs');
+    if (tabs) {
+      tabs.addEventListener('scroll', updateTabArrows);
+      window.addEventListener('resize', updateTabArrows);
+    }
+  });
+
+  // --- BACK TO TOP ENGINE ---
+  function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  window.addEventListener('scroll', () => {
+    const bttBtn = document.getElementById('backToTopBtn');
+    if (bttBtn) {
+        if (window.scrollY > 400) {
+            bttBtn.classList.add('visible');
+        } else {
+            bttBtn.classList.remove('visible');
+        }
+    }
+  });
   
   function switchMgmt(t, isBack = false) { 
     if (!isBack) history.pushState({ view: 'mgmt', tab: t }, "");
