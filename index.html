@@ -7,30 +7,24 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="IMS">
-  <meta name="theme-color" content="#2c3e50">
-  
+  <meta name="theme-color" content="#2c3e50">  
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="manifest" href="site.webmanifest">
-
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>  
   <script>
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-bs-theme', savedTheme);
   </script>
-
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-
   <style>
-    /* NEW: Custom Brand Color Variables */
     :root { 
       --light-theme: #0d6efd;
       --dark-theme: #58a6ff;
-      --brand-color: var(--light-theme); /* Defaults to light mode */
+      --brand-color: var(--light-theme);
       --light-bg: #f4f7f6;
       --light-card: #ffffff;
       --light-text: #212529;
@@ -38,55 +32,40 @@
       --dark-card: #1e1e1e;
       --dark-text: #e0e0e0;
     }
-    
-    [data-bs-theme="dark"] {
-      --brand-color: var(--dark-theme); /* Automatically swaps ALL brand elements to the dark theme! */
+        [data-bs-theme="dark"] {
+      --brand-color: var(--dark-theme);
     }
-    
-    /* 1. Global Light Text & Background Setup */
     body { background-color: var(--light-bg); color: var(--light-text); padding-bottom: 50px; font-family: sans-serif; transition: background-color 0.3s ease, color 0.3s ease; -webkit-touch-callout: none; }
     .text-muted, .meta-text { color: var(--light-text) !important; opacity: 0.7; }
     .table { color: var(--light-text); --bs-table-color: var(--light-text); }
-    
-    /* 2. Theme Color (Brand) Attachments */
     .text-primary { color: var(--brand-color) !important; }
     .bg-primary, .btn-primary { background-color: var(--brand-color) !important; border-color: var(--brand-color) !important; color: #fff !important; }
     .btn-outline-primary { color: var(--brand-color) !important; border-color: var(--brand-color) !important; }
     .btn-outline-primary:hover { background-color: var(--brand-color) !important; color: #fff !important; }
     .nav-tabs .nav-link.active { color: var(--brand-color) !important; font-weight: 900; border-bottom-color: var(--brand-color); }
-    
-    /* 3. Force Titles to match Theme Color in BOTH modes */
     .loc-card h6, #selectedLocTitle, #detName, #cameraModalTitle, #loginTitle, #appTitleText, #appShortTitleText, #catalogFormTitle, #locFormTitle, #userFormTitle { color: var(--brand-color) !important; }
-    
-    /* 4. Light Mode Card Backgrounds */
     .card, .loc-card, .item-card, .item-row { background-color: var(--light-card); border: 1px solid rgba(0,0,0,0.05); }
-    /* iOS Safe Area (Notch / Dynamic Island) Adjustments */
     #appContainer {
       padding-top: calc(env(safe-area-inset-top) + 15px) !important;
       padding-bottom: calc(env(safe-area-inset-bottom) + 15px) !important;
       padding-left: env(safe-area-inset-left) !important;
       padding-right: env(safe-area-inset-right) !important;
-    }
-    
+    }    
     #syncIndicator {
       bottom: calc(env(safe-area-inset-bottom) + 20px) !important;
     }
     .card { border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-radius: 12px; margin-bottom: 15px; }
     .dynamic-grid { display: grid; gap: 15px; grid-template-columns: repeat(2, 1fr); }
     @media (min-width: 768px) { .dynamic-grid { grid-template-columns: repeat(4, 1fr); } }
-    @media (min-width: 1200px) { .dynamic-grid { grid-template-columns: repeat(6, 1fr); } }
-    
+    @media (min-width: 1200px) { .dynamic-grid { grid-template-columns: repeat(6, 1fr); } }    
     .loc-card, .item-card { background: var(--light-card); padding: 15px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; }
     .loc-card:hover, .item-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
     .loc-card h6 { margin: 0; font-weight: 700; color: inherit; font-size: 0.95rem; }
-    .meta-text { font-size: 0.7rem; color: #7f8c8d; margin-top: 5px; line-height: 1.3; }
-    
+    .meta-text { font-size: 0.7rem; color: #7f8c8d; margin-top: 5px; line-height: 1.3; }    
     .cat-badge { font-size: 0.6rem; background: #eef2f3; color: #34495e; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; font-weight: 800; display: inline-block; }
-    .serial-badge { background: #d1e7dd; color: #0f5132; margin-left: 5px; }
-    
+    .serial-badge { background: #d1e7dd; color: #0f5132; margin-left: 5px; }    
     .loc-card img, .item-card img { width: 100%; height: 120px; object-fit: contain; border-radius: 8px; background: transparent; margin-bottom: 10px; padding: 5px; }
-    .search-thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
-    
+    .search-thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }    
     .item-row { display: flex; align-items: center; gap: 15px; background: white; padding: 12px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 8px; cursor: pointer; }
     .item-row img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
     .hidden { display: none !important; }
@@ -97,8 +76,7 @@
     .scroll-area { overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
     th.sortable { cursor: pointer; color: #0d6efd; text-decoration: underline; }
     .centered-col { text-align: center; vertical-align: middle; }
-    .stock-critical > td { background-color: #f8d7da !important; }
-    
+    .stock-critical > td { background-color: #f8d7da !important; }    
     .switch-container { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; font-weight: bold; color: #666; }
     .toggle-switch { position: relative; display: inline-block; width: 50px; height: 24px; }
     .toggle-switch input { opacity: 0; width: 0; height: 0; }
@@ -106,12 +84,9 @@
     .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
     input:checked + .slider { background-color: var(--brand-color); }
     input:checked + .slider:before { transform: translateX(26px); }
-
     .stock-badge { background: #eef2f3; color: inherit; border: 1px solid #dee2e6; cursor: pointer; transition: 0.2s; }
     .stock-badge:hover { background: #dfe6e9; transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-
     .notes-block { background-color: rgba(0,0,0,0.03); border-left: 3px solid var(--brand-color); color: inherit; }
-
     .stat-card { border-radius: 12px; padding: 20px; color: white; }
     .stat-card h3 { font-weight: 800; font-size: 2rem; margin: 0; }
     .stat-card p { margin: 0; font-weight: 600; opacity: 0.9; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
@@ -120,10 +95,7 @@
     .stat-bg-3 { background: linear-gradient(135deg, #6c757d, #5c636a); }
     .stat-bg-4 { background: linear-gradient(135deg, #0dcaf0, #0aa2c0); color: #000; } 
     .stat-bg-5 { background: linear-gradient(135deg, #fd7e14, #e35d00); } 
-
     #actSerialsIn, #saScanInput { text-transform: uppercase; }
-
-    /* Scrollable Tabs UI */
     .tabs-scroll-wrapper { position: relative; width: 100%; max-width: 100%; }
     .hide-scroll {
       display: flex; flex-wrap: nowrap; overflow-x: auto;
@@ -146,8 +118,6 @@
     [data-bs-theme="dark"] .tab-scroll-btn:hover { background: rgba(255,255,255,0.1); }
     .tab-scroll-btn.left-arrow { left: 0; border-radius: 6px 0 0 0; box-shadow: 3px 0 8px rgba(0,0,0,0.1); }
     .tab-scroll-btn.right-arrow { right: 0; border-radius: 0 6px 0 0; box-shadow: -3px 0 8px rgba(0,0,0,0.1); }
-
-    /* Back To Top Button */
     #backToTopBtn {
       position: fixed; bottom: 30px; right: 30px; background: var(--brand-color);
       color: white; width: 50px; height: 50px; border-radius: 50%; border: none;
@@ -158,8 +128,6 @@
     }
     #backToTopBtn.visible { opacity: 1; pointer-events: auto; }
     #backToTopBtn:hover { transform: translateY(-3px); filter: brightness(0.9); }
-
-    /* GDPR Consent Banner */
     #gdprBanner {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 10500;
       background: var(--light-bg); border-top: 1px solid rgba(0,0,0,0.1);
@@ -171,34 +139,22 @@
       box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
     }
     #gdprBanner.visible { transform: translateY(0); }
-
-    /* Dark Mode Custom Overrides */
-    
-    /* Fix LBAC Checklists and Modal Text Visibility */
     [data-bs-theme="dark"] .text-dark { color: var(--dark-text) !important; }
     [data-bs-theme="dark"] .text-muted { color: #adb5bd !important; }
     [data-bs-theme="dark"] .form-check-label { color: var(--dark-text) !important; }
     [data-bs-theme="dark"] .modal-body .fw-bold { color: var(--dark-text) !important; }
     [data-bs-theme="dark"] body { background-color: var(--dark-bg); color: var(--dark-text); }
-    
-    /* Text overrides for dark mode */
     [data-bs-theme="dark"] .text-muted, [data-bs-theme="dark"] .meta-text { color: var(--dark-text) !important; opacity: 0.7; }
     [data-bs-theme="dark"] .table { color: var(--dark-text) !important; --bs-table-color: var(--dark-text); --bs-table-bg: transparent; }
     [data-bs-theme="dark"] input, [data-bs-theme="dark"] select, [data-bs-theme="dark"] textarea { background-color: var(--dark-bg) !important; color: var(--dark-text) !important; border-color: rgba(255,255,255,0.1) !important; }
     [data-bs-theme="dark"] option { background-color: var(--dark-card); color: var(--dark-text); }
-    
-    /* Card & Container overrides for dark mode */
     [data-bs-theme="dark"] .card, [data-bs-theme="dark"] .loc-card, [data-bs-theme="dark"] .item-card, [data-bs-theme="dark"] .item-row { background-color: var(--dark-card) !important; border-color: rgba(255,255,255,0.05); }
     [data-bs-theme="dark"] .bg-white { background-color: var(--dark-card) !important; color: var(--dark-text) !important; }
     [data-bs-theme="dark"] .bg-light { background-color: rgba(255,255,255,0.05) !important; color: var(--dark-text) !important; }
-    
-    /* Table row overrides */
     [data-bs-theme="dark"] .table-light { background-color: rgba(255,255,255,0.05); color: var(--dark-text); border-bottom: 1px solid rgba(255,255,255,0.1); }
     [data-bs-theme="dark"] .table-secondary { background-color: rgba(0,0,0,0.5) !important; color: rgba(255,255,255,0.5); }
     [data-bs-theme="dark"] .stock-critical > td { background-color: #4a191e !important; color: #fff !important; }
     [data-bs-theme="dark"] .border, [data-bs-theme="dark"] .border-top, [data-bs-theme="dark"] .border-bottom { border-color: rgba(255,255,255,0.1) !important; }
-    
-    /* UI Element Overrides */
     [data-bs-theme="dark"] .cat-badge { background-color: rgba(255,255,255,0.1); color: var(--dark-text); }
     [data-bs-theme="dark"] .serial-badge { background-color: #0f5132; color: #d1e7dd; border: 1px solid #198754; }
     [data-bs-theme="dark"] .qty-bubble { background-color: var(--brand-color); color: #fff; } 
@@ -211,17 +167,12 @@
     [data-bs-theme="dark"] .stock-badge:hover { background-color: rgba(255,255,255,0.1); }
     [data-bs-theme="dark"] .notes-block { background-color: rgba(255,255,255,0.05); color: var(--dark-text); border-left: 3px solid var(--brand-color); }
     [data-bs-theme="dark"] #availableSerialsCheckboxes { background-color: var(--dark-card) !important; border-color: rgba(255,255,255,0.1) !important; }
-
-    #themeToggleBtn { font-size: 1.2rem; display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; padding: 0; line-height: 1; }
-    
+    #themeToggleBtn { font-size: 1.2rem; display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; padding: 0; line-height: 1; }    
     .collapse-toggle[aria-expanded="true"] .toggle-icon { transform: rotate(180deg); }
-    .toggle-icon { display: inline-block; transition: transform 0.2s ease; }
-    
+    .toggle-icon { display: inline-block; transition: transform 0.2s ease; }    
     #syncIndicator { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.75); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; z-index: 9999; opacity: 0; transition: opacity 0.5s; pointer-events: none; display: flex; align-items: center; gap: 8px; }
-    
     #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #f4f7f6; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.3s ease; }
-    [data-bs-theme="dark"] #loadingOverlay { background-color: #121212; }
-    
+    [data-bs-theme="dark"] #loadingOverlay { background-color: #121212; }    
     .table-warning { transition: background-color 0.3s ease; }
   </style>
 </head>
@@ -243,8 +194,7 @@
 <div id="loginOverlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 10000; display: flex; align-items: center; justify-content: center;">
   <div class="card p-4 shadow-sm text-center" style="max-width: 400px; width: 90%;">
     <img id="loginLogo" src="" alt="" style="width:300px; height:300px; object-fit:contain; margin: 0 auto; opacity: 0; transition: opacity 0.5s;" class="mb-3">
-    <h3 id="loginTitle" class="fw-bold text-primary mb-3">Login</h3>
-    
+    <h3 id="loginTitle" class="fw-bold text-primary mb-3">Login</h3>    
     <div id="g_id_onload"
          data-context="signin"
          data-ux_mode="popup"
@@ -261,7 +211,6 @@
   <h5 class="fw-bold text-secondary">Loading Database...</h5><br>
   <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
 </div>
-
 <div id="accessDenied" class="container py-5 text-center hidden">
   <div class="card p-5 shadow-sm mx-auto mt-5" style="max-width: 500px;">
     <h2 class="text-danger fw-bold mb-3">Access Denied</h2>
@@ -269,18 +218,14 @@
     <p id="deniedEmail" class="fw-bold mt-3 text-secondary"></p>
   </div>
 </div>
-
 <div id="appContainer" class="container py-3 hidden">
-
   <div id="syncIndicator">
     <div class="spinner-border text-light" role="status" style="width: 14px; height: 14px; border-width: 2px;"></div>
     <span>Syncing...</span>
   </div>
-
   <div id="globalStockAlert" class="alert alert-danger text-center fw-bold shadow-sm mb-3 hidden" style="cursor: pointer;" onclick="showView('management'); switchMgmt('dash');">
     ⚠️ Low Stock: Click here for details.
   </div>
-
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex align-items-center" style="cursor: pointer;" onclick="showView('inventory')" title="Go to Home">
       <img id="appLogo" src="" alt="" style="width:30px; height:30px; object-fit:contain; opacity: 0; transition: opacity 0.5s;" class="me-2 text-primary">
@@ -291,16 +236,13 @@
     </div>
     <div class="text-end">
           <div class="d-flex gap-2 justify-content-end">
-             <button id="themeToggleBtn" class="btn btn-sm btn-outline-secondary rounded-circle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">☀️</button> 
-             
+             <button id="themeToggleBtn" class="btn btn-sm btn-outline-secondary rounded-circle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">☀️</button>              
              <a href="docs.html" target="_blank" class="btn btn-sm btn-outline-secondary rounded-circle" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: bold; text-decoration: none;" title="Help & Documentation">?</a>
-             
              <button id="btnNavManagement" class="btn btn-sm btn-outline-primary d-none" onclick="showView('management')">Management</button>
              <button class="btn btn-sm btn-outline-danger fw-bold" onclick="signOut()">Sign Out</button>        
           </div>
         </div>
   </div>
-
   <div id="viewInventory">
     <div id="searchContainer" class="position-relative mb-4">
       <div class="input-group shadow-sm">
@@ -310,7 +252,6 @@
       </div>
       <div id="searchResults" class="list-group hidden"></div>
     </div>
-
     <div id="mainContent">
       <div id="gridView">
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -320,16 +261,14 @@
             <option value="qtyDesc">Qty High-Low</option>
             <option value="qtyAsc">Qty Low-High</option>
           </select>
-        </div>
-        
+        </div>        
         <div class="d-flex justify-content-between align-items-center mt-2 mb-3 border-bottom pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapsePhysical" aria-expanded="true">
             <h6 class="fw-bold text-secondary m-0">Physical Spaces & Global</h6>
             <span class="text-secondary fw-bold toggle-icon">▼</span>
         </div>
         <div id="collapsePhysical" class="collapse show">
             <div id="locationGridPhysical" class="dynamic-grid mb-4"></div>
-        </div>
-        
+        </div>        
         <div id="deployableSection" class="hidden">
           <div class="d-flex justify-content-between align-items-center mt-4 mb-3 border-bottom border-info pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDeployable" aria-expanded="true">
               <h6 class="fw-bold text-info m-0">Deployable Locations</h6>
@@ -340,7 +279,6 @@
           </div>
         </div>
       </div>
-
       <div id="locationDetail" class="hidden">
         <div class="mb-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
@@ -349,8 +287,7 @@
               <button class="btn btn-sm btn-warning hidden fw-bold" id="btnAuditLocInner" onclick="startAudit(currentLocName)">Audit</button>
               <button class="btn btn-sm btn-success" id="btnCsvLoc" onclick="exportCsv()">Download CSV</button>
             </div>
-          </div>
-          
+          </div>          
           <div id="locInfoHeader" class="d-flex flex-row gap-3 my-3 hidden border-bottom pb-3">
              <div class="d-flex flex-column gap-2" style="width: 100px; flex-shrink: 0;">
                  <img id="locDetImg" style="width:100%; height:100px; border-radius:10px; object-fit:cover; background:#eee;">
@@ -367,7 +304,6 @@
                 <p id="locDetNotes" class="small mb-0 text-muted fst-italic"></p>
               </div>
            </div>
-
            <div class="d-flex justify-content-between align-items-center mt-2 mb-4" id="locControlsContainer">
              <select id="itemSortSelect" class="form-select form-select-sm w-auto" onchange="renderItems(currentLocName)">
                <option value="cat_az">Category A-Z</option>
@@ -388,17 +324,14 @@
                <span>LIST</span>
              </div>
            </div>
-         </div>
-        
+         </div>        
         <div id="itemsContainer"></div>
         <div id="auditContainer" class="hidden mt-3"></div>
       </div>
-
       <div id="itemDetail" class="card p-4 hidden">
         <div class="mb-3">
           <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold text-uppercase" onclick="history.back()">← Back</button>
-        </div>
-        
+        </div>        
         <div class="d-flex flex-column flex-md-row gap-4">
           <div class="d-flex flex-column gap-2" style="max-width: 140px; flex-shrink: 0;">
               <img id="detImg" style="width:100%; height:140px; border-radius:15px; object-fit:contain; background:transparent; cursor:zoom-in;" onclick="openLightbox(this.src)" title="Tap to enlarge">
@@ -417,15 +350,12 @@
             <div id="detNotes" class="notes-block small p-2 rounded mb-2 hidden"></div>
             <div id="detUpdate" class="meta-text border-top pt-2 mt-2"></div>
           </div>
-        </div>
-        
+        </div>        
         <div id="detStock" class="mt-4 mb-2 d-flex flex-wrap gap-2"></div>
-        <div id="detSerialList" class="mb-4 hidden"></div>
-        
+        <div id="detSerialList" class="mb-4 hidden"></div>        
         <div id="inlineActionForm" class="mt-4 border-top pt-3 hidden">
           <div id="errorMsg" class="alert alert-danger py-2 px-3 small mb-3 hidden fw-bold"></div>
-          <div id="successMsg" class="alert alert-success py-2 px-3 small mb-3 hidden fw-bold"></div>
-          
+          <div id="successMsg" class="alert alert-success py-2 px-3 small mb-3 hidden fw-bold"></div>          
           <div class="row g-2 align-items-end mb-3">
             <div class="col-md-6">
               <label class="small fw-bold">Location</label>
@@ -438,7 +368,6 @@
             <div class="col-md-12 hidden" id="newSpotContainer">
               <input type="text" id="actNewSpot" class="form-control border-primary shadow-sm mt-1" placeholder="Type new Spot/Bin name (e.g., Shelf 30)">
             </div>
-
             <div class="col-md-6 hidden" id="toLocContainer">
               <label class="small fw-bold text-primary mt-2">Destination Location</label>
               <select id="actToLoc" class="form-select border-primary" onchange="updateAvailableSpots('to')"></select>
@@ -449,13 +378,11 @@
             </div>
             <div class="col-md-12 hidden" id="newToSpotContainer">
               <input type="text" id="actNewToSpot" class="form-control border-primary shadow-sm mt-1" placeholder="Type new Spot/Bin name (e.g., Storage Case 3)">
-            </div>
-            
+            </div>            
             <div class="col-md-12" id="qtyContainer">
               <label class="small fw-bold mt-2">Quantity</label>
               <input type="number" id="actQty" class="form-control form-control-lg" value="1" min="1">
             </div>
-
             <div class="col-md-12 hidden" id="serialContainer">
               <div class="card p-3 border shadow-sm mb-1 mt-3">
                 <div class="d-flex justify-content-between align-items-end mb-1">
@@ -463,14 +390,12 @@
   		<button class="btn btn-sm btn-outline-primary py-0 px-2 fw-bold" type="button" onclick="startCamera('actSerialsIn')">📷</button>
 		</div>
                 <textarea id="actSerialsIn" class="form-control mb-3" rows="2" placeholder="Scan or type serials here... (Comma or Newline separated)"></textarea>
-
                 <label class="small fw-bold text-secondary mb-1">Or Select Available Serials (For 'REMOVE' / 'MOVE')</label>
                 <div id="availableSerialsCheckboxes" class="border rounded p-2" style="max-height: 150px; overflow-y: auto; background: #fff;">
                 </div>
               </div>
             </div>
           </div>
-
           <div class="row g-2 mt-1">
             <div class="col-4"><button class="btn btn-success py-2 w-100 fw-bold" id="btnIn" onclick="submitInline('In')">ADD</button></div>
             <div class="col-4"><button class="btn btn-danger py-2 w-100 fw-bold" id="btnOut" onclick="submitInline('Out')">REMOVE</button></div>
@@ -478,16 +403,13 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
-
   <div id="viewManagement" class="hidden">
     <div class="card p-4">
       <div class="mb-3">
         <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold text-uppercase" onclick="history.back()">← Back</button>
-      </div>
-      
+      </div>      
       <div class="position-relative tabs-scroll-wrapper mb-4">
         <button class="tab-scroll-btn left-arrow" id="scrollLeftBtn" onclick="scrollTabs(-150)">&#9664;</button>
         <ul class="nav nav-tabs flex-nowrap hide-scroll" id="mgmtTabs" role="tablist">
@@ -499,8 +421,7 @@
           <li class="nav-item d-none" id="tabTheme"><a class="nav-link text-nowrap" id="t5" onclick="switchMgmt('theme')">Theme</a></li>
         </ul>
         <button class="tab-scroll-btn right-arrow" id="scrollRightBtn" onclick="scrollTabs(150)">&#9654;</button>
-      </div>
-      
+      </div>      
       <div id="mDash">
         <div id="dashAlertsArea" class="hidden mb-4">
           <div class="card border-danger shadow-sm">
@@ -517,7 +438,6 @@
             </div>
           </div>
         </div>
-
         <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashGlobal" aria-expanded="true">
             <h6 class="fw-bold text-uppercase letter-spacing-1 text-muted small m-0">Global Snapshot</h6>
             <span class="text-muted fw-bold toggle-icon">▼</span>
@@ -558,7 +478,6 @@
               </div>
             </div>
         </div>
-
         <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom border-primary pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashGroups" aria-expanded="true">
             <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0">Location Groups Snapshot</h6>
             <span class="text-primary fw-bold toggle-icon">▼</span>
@@ -566,8 +485,7 @@
         <div id="collapseDashGroups" class="collapse show mb-4 bg-light p-3 rounded border">
             <select id="dashGroupSelect" class="form-select border-primary mb-3 shadow-sm fw-bold text-primary" onchange="renderDashGroupCards()">
                 <option value="">Select an Access Group to view snapshot...</option>
-            </select>
-            
+            </select>            
             <div id="dashGroupStats" class="hidden">
               <div class="row g-3 mb-3">
                 <div class="col-md-4">
@@ -605,12 +523,10 @@
               </div>
               <h6 class="fw-bold mb-3 border-bottom border-secondary pb-2">Group Locations</h6>
             </div>
-
             <div class="row g-3" id="dashLocationCardsGroup">
                 <div class="col-12 text-muted small">Please select a group from the dropdown to view its snapshot.</div>
             </div>
         </div>
-
         <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashPhys" aria-expanded="true">
             <h6 class="fw-bold text-uppercase letter-spacing-1 text-muted small m-0">Physical Spaces</h6>
             <span class="text-muted fw-bold toggle-icon">▼</span>
@@ -618,7 +534,6 @@
         <div id="collapseDashPhys" class="collapse show">
             <div class="row g-3 mb-4" id="dashLocationCardsPhysical"></div>
         </div>
-
         <div id="dashDeployableSection" class="hidden">
           <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom border-info pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashDep" aria-expanded="true">
               <h6 class="fw-bold text-uppercase letter-spacing-1 text-info small m-0">Deployable Locations</h6>
@@ -629,7 +544,6 @@
           </div>
         </div>
       </div>
-
       <div id="mItem" class="hidden">
         <div class="row">
           <div class="col-lg-4 mb-4">
@@ -650,26 +564,21 @@
               <option value="Office Supplies">Office Supplies</option>
               <option value="Tools">Tools</option>
               <option value="Other">Other</option>
-            </select>
-            
+            </select>            
             <select id="mSerialized" class="form-select mb-2 text-primary fw-bold">
               <option value="No">Tracking: Bulk Quantity</option>
               <option value="Yes">Tracking: Individual Serials</option>
             </select>
-
             <textarea id="mDesc" class="form-control mb-2" placeholder="Description" rows="2"></textarea>
             <input type="text" id="mPrice" class="form-control mb-2" placeholder="Unit Price (e.g. $1,500.00)" onblur="formatCurrencyInput(this)">
             <input type="number" id="mMin" class="form-control mb-2" placeholder="Min Stock">
             <input type="text" id="mSpecs" class="form-control mb-2" placeholder="Tech Specs URL">
-            <input type="text" id="mImg" class="form-control mb-2" placeholder="Image URL (Optional)">
-            
+            <input type="text" id="mImg" class="form-control mb-2" placeholder="Image URL (Optional)">            
             <label class="small fw-bold mb-0">Image Upload (Overrides URL)</label>
             <small class="text-muted d-block mb-1" style="font-size: 0.7rem;">PNG, JPG, or JPEG only</small>
             <img id="mImgPreview" class="hidden mb-2 border rounded shadow-sm" style="max-width: 100px; max-height: 100px; object-fit: cover;">
-            <input type="file" id="mImgFile" class="form-control mb-2" accept=".png, .jpg, .jpeg">
-            
-            <textarea id="mNotes" class="form-control mb-3" placeholder="Notes" rows="2"></textarea>
-            
+            <input type="file" id="mImgFile" class="form-control mb-2" accept=".png, .jpg, .jpeg">            
+            <textarea id="mNotes" class="form-control mb-3" placeholder="Notes" rows="2"></textarea>            
             <button class="btn btn-primary w-100 mb-2" id="btnSaveItem" onclick="saveOrUpdateItem('add')">Save Item</button>
             <button class="btn btn-outline-secondary w-100 hidden" id="btnCancelEdit" onclick="cancelEditItem()">Cancel Edit</button>
           </div>
@@ -691,7 +600,6 @@
           </div>
         </div>
       </div>
-
       <div id="mLoc" class="hidden">
         <div class="row">
           <div class="col-lg-4 mb-4">
@@ -705,14 +613,12 @@
               <option value="Storage Case">Storage Case</option>
               <option value="Storage Room">Storage Room</option>
               <option value="Other">Other</option>
-            </select>
-            
+            </select>            
             <select id="mDeployType" class="form-select mb-2 text-primary fw-bold" onchange="toggleDeployLoc()">
               <option value="Physical Space">Type: Physical Space</option>
               <option value="Deployable">Type: Deployable</option>
             </select>
-            <input type="text" id="mDeployLoc" class="form-control mb-2 hidden" placeholder="Deployment Location (e.g. Site Name)">
-            
+            <input type="text" id="mDeployLoc" class="form-control mb-2 hidden" placeholder="Deployment Location (e.g. Site Name)">            
             <label class="fw-bold small mb-1 text-primary mt-1">Access Groups (LBAC)</label>
             <div id="locGroupChecklist" class="border border-primary rounded p-2 mb-2 bg-white shadow-sm" style="max-height: 120px; overflow-y: auto;">
                 </div>
@@ -720,19 +626,16 @@
                 <input type="text" id="newLocGroupIn" class="form-control border-primary" placeholder="Create new group tag...">
                 <button class="btn btn-primary fw-bold" type="button" onclick="addNewGroupTag()">Add</button>
             </div>
-
             <textarea id="mLDesc" class="form-control mb-2" placeholder="Description" rows="2"></textarea>
             <input type="text" id="mLImg" class="form-control mb-2" placeholder="Image URL (Optional)">
             <label class="small fw-bold mb-0">Image Upload (Overrides URL)</label>
             <small class="text-muted d-block mb-1" style="font-size: 0.7rem;">PNG, JPG, or JPEG only</small>
             <img id="mLImgPreview" class="hidden mb-2 border rounded shadow-sm" style="max-width: 100px; max-height: 100px; object-fit: cover;">
             <input type="file" id="mLImgFile" class="form-control mb-2" accept=".png, .jpg, .jpeg">
-            <textarea id="mLNotes" class="form-control mb-3" placeholder="Notes" rows="2"></textarea>
-            
+            <textarea id="mLNotes" class="form-control mb-3" placeholder="Notes" rows="2"></textarea>            
             <button class="btn btn-primary w-100 mb-2" id="btnSaveLoc" onclick="saveOrUpdateLoc('add')">Create Location</button>
             <button class="btn btn-outline-secondary w-100 hidden" id="btnCancelEditLoc" onclick="cancelEditLoc()">Cancel Edit</button>
-          </div>
-          
+          </div>          
           <div class="col-lg-8">
             <div id="locTableContainer">
                 <h6 class="fw-bold mb-3">Locations (Click Headers to Sort)</h6>
@@ -748,13 +651,11 @@
                      <tbody id="bodyLocs"></tbody>
                    </table>
                 </div>
-            </div>
-            
+            </div>            
             <div id="locGroupsSummaryContainer" class="mt-4 mb-4">
                 <h6 class="fw-bold mb-3 border-bottom pb-2">Access Group Summary</h6>
                 <div class="row g-2" id="locGroupsSummaryCards"></div>
             </div>
-
             <div id="spotManagerContainer" class="hidden">
               <div class="d-flex justify-content-between align-items-center mb-3">
                   <h6 class="fw-bold m-0" id="spotManagerTitle">Manage Spots</h6>
@@ -772,7 +673,6 @@
           </div>
         </div>
       </div>
-
       <div id="mLog" class="hidden">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h6 class="fw-bold m-0">Full Transaction History</h6>
@@ -781,7 +681,6 @@
             <input type="number" id="exportLogRows" class="form-control form-control-sm" placeholder="Rows to DL" value="100" style="width:100px;"> rows
           </div>
         </div>
-
         <div class="table-responsive bg-white p-2 border rounded">
            <table class="table table-sm table-hover m-0 text-nowrap" style="font-size:0.85rem">
              <thead class="table-light"><tr>
@@ -800,14 +699,12 @@
           <button id="btnLoadMore" class="btn btn-outline-primary btn-sm px-4" onclick="loadMoreLogs()">Load More Activities</button>
         </div>
       </div>
-
       <div id="mUser" class="hidden">
         <div class="row">
           <div class="col-lg-4 mb-4">
             <h6 class="fw-bold mb-3" id="userFormTitle">Add New User</h6>
             <input type="text" id="uName" class="form-control mb-2" placeholder="Full Name (Optional)">
-            <input type="email" id="uEmail" class="form-control mb-2" placeholder="User Email Address">
-            
+            <input type="email" id="uEmail" class="form-control mb-2" placeholder="User Email Address">            
             <select id="uRole" class="form-select mb-2" onchange="updateRoleDescription()">
               <option value="" disabled selected>Select Access Role</option>
               <option value="Admin">Admin</option>
@@ -815,18 +712,14 @@
               <option value="Manager">Manager (Restricted)</option>
               <option value="Operator">Operator (Restricted)</option>
               <option value="Viewer">Viewer (Restricted)</option>
-            </select>
-            
+            </select>            
             <div id="uLocationsContainer" class="hidden mb-3 border rounded p-2 bg-light">
                <label class="fw-bold small mb-1 text-primary">Assign Locations (LBAC)</label>
                <div id="uLocationsList" style="max-height: 150px; overflow-y: auto;"></div>
-            </div>
-            
-            <div id="roleDesc" class="small text-muted mb-3 p-2 bg-light rounded border border-light hidden"></div>
-            
+            </div>            
+            <div id="roleDesc" class="small text-muted mb-3 p-2 bg-light rounded border border-light hidden"></div>            
             <button class="btn btn-primary w-100 mb-2" id="btnSaveUser" onclick="saveOrUpdateUser('add')">Add User</button>
-            <button class="btn btn-outline-secondary w-100 hidden" id="btnCancelEditUser" onclick="cancelEditUser()">Cancel Edit</button>
-            
+            <button class="btn btn-outline-secondary w-100 hidden" id="btnCancelEditUser" onclick="cancelEditUser()">Cancel Edit</button>            
             <div class="mt-4 p-3 bg-light rounded border small text-muted">
               <h6 class="fw-bold mb-2">Role Permissions</h6>
               <strong>Admin:</strong> Full system access, including User Access and Theme management.<br>
@@ -854,7 +747,6 @@
           </div>
         </div>
       </div>
-
       <div id="mTheme" class="hidden">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <div>
@@ -863,7 +755,6 @@
           </div>
           <button class="btn btn-primary fw-bold px-4 shadow-sm" id="btnSaveTheme" onclick="saveThemeSettings()">Save & Apply Changes</button>
         </div>
-
         <div class="row g-4">
           <div class="col-lg-6">
             <div class="card p-3 bg-light shadow-sm mb-4">
@@ -871,94 +762,74 @@
 	      <label class="fw-bold small">Company Name</label>
               <input type="text" id="cfg_companyName" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Legal entity name used in Terms & Privacy generation.</small>
-
               <label class="fw-bold small">Developer Name</label>
               <input type="text" id="cfg_developerName" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Name of the primary architect/developer.</small>
-
               <label class="fw-bold small">Title</label>
               <input type="text" id="cfg_appTitle" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">The full name of your platform (e.g., Inventory Management System). Used in the browser tab and login screen.</small>
-
               <label class="fw-bold small">Short Title</label>
               <input type="text" id="cfg_appShortName" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Abbreviated title for mobile layouts (e.g., IMS).</small>
-
               <label class="fw-bold small">Use Short Title on Login?</label>
               <select id="cfg_loginUseShortName" class="form-select form-select-sm mb-1"><option value="Yes">Yes</option><option value="No">No</option></select>
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Select 'Yes' to display the Short Title on the login screen instead of the Full Title.</small>
-
               <label class="fw-bold small">Currency Symbol</label>
               <input type="text" id="cfg_currencySymbol" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Symbol used for total valuations (e.g., $, €, £).</small>
-
               <label class="fw-bold small">Footer Text</label>
               <input type="text" id="cfg_footerText" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Text displayed at the very bottom of the app (e.g., Your Company).</small>
-
               <label class="fw-bold small">Admin Contact</label>
               <input type="text" id="cfg_adminContact" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-2" style="font-size:0.7rem;">Displayed to users who hit the Access Denied screen (e.g., support@company.com; Please contact support@company.com to request access.).</small>
             </div>
-
             <div class="card p-3 bg-light shadow-sm">
               <h6 class="fw-bold mb-3 border-bottom pb-2">Assets & Integrations</h6>
               <label class="fw-bold small">Logo Image URL</label>
               <input type="text" id="cfg_logoUrl" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Direct link to your company logo (PNG/JPG).</small>
-
               <label class="fw-bold small">Default 'No Image' Graphic</label>
               <input type="text" id="cfg_defaultImgUrl" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Optional: Custom placeholder for items without photos.</small>
-
               <label class="fw-bold small text-danger">Google Client ID</label>
               <input type="text" id="cfg_googleClientId" class="form-control form-control-sm border-danger mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">OAuth 2.0 Client ID for Google Login. Do not change unless migrating servers.</small>
-
               <label class="fw-bold small text-danger">Google Drive Folder ID</label>
               <input type="text" id="cfg_driveFolderId" class="form-control form-control-sm border-danger mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Google Drive folder ID where uploaded item/location images are saved.</small>
-
               <label class="fw-bold small">Sync Interval</label>
               <input type="number" id="cfg_syncInterval" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-2" style="font-size:0.7rem;">How often the app checks for background updates (in seconds). Default: 15.</small>
             </div>
           </div>
-
           <div class="col-lg-6">
             <div class="card p-3 bg-light shadow-sm mb-4">
               <h6 class="fw-bold mb-3 border-bottom pb-2">☀️ Light Mode Palette</h6>
               <label class="fw-bold small text-primary">Primary Brand Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_lightTheme_color" class="form-control form-control-color p-1" oninput="document.getElementById('cfg_lightTheme').value = this.value"><input type="text" id="cfg_lightTheme" class="form-control form-control-sm" oninput="document.getElementById('cfg_lightTheme_color').value = this.value"></div>
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Used for main titles, active tabs, buttons, and badges. Default: #00008B</small>
-
               <label class="fw-bold small">Background Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_lightBg_color" class="form-control form-control-color p-1" oninput="document.getElementById('cfg_lightBg').value = this.value"><input type="text" id="cfg_lightBg" class="form-control form-control-sm" oninput="document.getElementById('cfg_lightBg_color').value = this.value"></div>
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Default: #F4F7F6</small>
-              
               <label class="fw-bold small mt-2">Card/Panel Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_lightCard_color" class="form-control form-control-color p-1" oninput="document.getElementById('cfg_lightCard').value = this.value"><input type="text" id="cfg_lightCard" class="form-control form-control-sm" oninput="document.getElementById('cfg_lightCard_color').value = this.value"></div>
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Default: #FFFFFF</small>
-
               <label class="fw-bold small mt-2">Main Text Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_lightText_color" class="form-control form-control-color p-1" oninput="document.getElementById('cfg_lightText').value = this.value"><input type="text" id="cfg_lightText" class="form-control form-control-sm" oninput="document.getElementById('cfg_lightText_color').value = this.value"></div>
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Default: #212529</small>
             </div>
-
             <div class="card p-3 bg-dark text-white shadow-sm border-secondary">
               <h6 class="fw-bold mb-3 border-bottom border-secondary pb-2">🌙 Dark Mode Palette</h6>
               <label class="fw-bold small text-info">Primary Brand Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_darkTheme_color" class="form-control form-control-color p-1 bg-dark border-secondary" oninput="document.getElementById('cfg_darkTheme').value = this.value"><input type="text" id="cfg_darkTheme" class="form-control form-control-sm bg-dark text-white border-secondary" oninput="document.getElementById('cfg_darkTheme_color').value = this.value"></div>
               <small class="text-white-50 d-block mb-3" style="font-size:0.7rem;">Often a lighter/brighter variation of your Brand Color so it pops on dark screens. Default: #1E90FF</small>
-
               <label class="fw-bold small">Background Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_darkBg_color" class="form-control form-control-color p-1 bg-dark border-secondary" oninput="document.getElementById('cfg_darkBg').value = this.value"><input type="text" id="cfg_darkBg" class="form-control form-control-sm bg-dark text-white border-secondary" oninput="document.getElementById('cfg_darkBg_color').value = this.value"></div>
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Default: #121212</small>
-              
               <label class="fw-bold small mt-2">Card/Panel Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_darkCard_color" class="form-control form-control-color p-1 bg-dark border-secondary" oninput="document.getElementById('cfg_darkCard').value = this.value"><input type="text" id="cfg_darkCard" class="form-control form-control-sm bg-dark text-white border-secondary" oninput="document.getElementById('cfg_darkCard_color').value = this.value"></div>
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Default: #1E1E1E</small>
-
               <label class="fw-bold small mt-2">Main Text Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_darkText_color" class="form-control form-control-color p-1 bg-dark border-secondary" oninput="document.getElementById('cfg_darkText').value = this.value"><input type="text" id="cfg_darkText" class="form-control form-control-sm bg-dark text-white border-secondary" oninput="document.getElementById('cfg_darkText_color').value = this.value"></div>
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Default: #E0E0E0</small>
@@ -968,36 +839,29 @@
       </div>
       </div>
   </div>
-
   <div class="mt-5 pt-4 border-top text-center text-muted" style="font-size: 0.75rem; line-height: 1.5;">
     <p class="mb-1" id="appFooterText">Developed by Jack Vu in 2026.</p>
     <p class="mb-0 mt-2"><a href="#" class="text-decoration-none fw-bold" onclick="showLegalModal(event)">Terms & Privacy Policy</a></p>
   </div>
-
 </div>
-
 <div id="serialAuditModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; display:flex; justify-content:center; align-items:center;">
    <div class="card p-4 shadow-lg" style="width:90%; max-width:500px; max-height:90vh; overflow-y:auto;">
        <h5 class="fw-bold mb-1" id="saTitle">Audit Serials</h5>
-       <p class="small text-muted mb-3">Scan physical serials below, then click Verify to compare against expected inventory.</p>
-       
+       <p class="small text-muted mb-3">Scan physical serials below, then click Verify to compare against expected inventory.</p>       
        <div class="d-flex justify-content-between align-items-end mb-1">
        <label class="small fw-bold text-primary mb-0">1. Scan All Serials Here</label>
        <button class="btn btn-sm btn-outline-primary py-0 px-2 fw-bold" type="button" onclick="startCamera('saScanInput')">📷</button>
        </div>
        <textarea id="saScanInput" class="form-control mb-2" rows="3" style="text-transform:uppercase;" placeholder="Scan or type serials here..."></textarea>
-       <button class="btn btn-sm btn-info w-100 fw-bold mb-3 text-dark" onclick="verifyScannedSerials()">↻ Verify Scans</button>
-       
+       <button class="btn btn-sm btn-info w-100 fw-bold mb-3 text-dark" onclick="verifyScannedSerials()">↻ Verify Scans</button>       
        <label class="small fw-bold text-secondary mb-1">2. Expected Inventory (Uncheck if missing)</label>
-       <div id="saExpectedList" class="mb-4 border rounded p-2 bg-light" style="max-height: 180px; overflow-y: auto;"></div>
-       
+       <div id="saExpectedList" class="mb-4 border rounded p-2 bg-light" style="max-height: 180px; overflow-y: auto;"></div>       
        <div class="d-flex justify-content-end gap-2 mt-2">
            <button class="btn btn-outline-secondary" onclick="closeSerialAudit()">Cancel</button>
            <button class="btn btn-warning fw-bold" onclick="saveSerialAudit()">Save Counts</button>
        </div>
    </div>
 </div>
-
 <div id="gdprBanner" class="p-3">
   <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
     <div style="font-size: 0.85rem; color: var(--light-text);" class="text-md-start text-center gdpr-text">
@@ -1008,9 +872,7 @@
   </div>
 </div>
 <style>[data-bs-theme="dark"] .gdpr-text { color: var(--dark-text) !important; }</style>
-
 <button id="backToTopBtn" onclick="scrollToTop()" title="Go to top">↑</button>
-
 <div class="modal fade" id="legalModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
     <div class="modal-content bg-white" style="border-radius: 12px;">
@@ -1026,33 +888,26 @@
     </div>
   </div>
 </div>
-
 <script>
   let db = { items: [], locations: [], logs: [], users: [] };
   let layout = "list";
   let activeBc = "";
   let currentLocName = "";
   let logLimit = 20;
-  
-  let currentSort = {
+    let currentSort = {
     item: { col: -1, asc: true },
     loc: { col: -1, asc: true },
     user: { col: -1, asc: true }
-  };
-  
-  let currentSerialSort = { col: 'serial', asc: true };
-  
+  };  
+  let currentSerialSort = { col: 'serial', asc: true };  
   let currentUserEmail = "You"; 
   let currentUserRole = "Viewer"; 
-  let currentUserLocations = []; // NEW: Stores user's allowed locations
+  let currentUserLocations = [];
   let isSyncing = false;
-
-  // NEW: Template Variables
   let appCurrency = "$";
   let appDefaultImg = "";
   let syncTimer = null;
   let syncIntervalMs = 15000;
-
   function getPlaceholder() {
     if (appDefaultImg) return appDefaultImg;
     const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
@@ -1060,7 +915,6 @@
       ? 'https://dummyimage.com/400x400/1e1e1e/adb5bd.png&text=No+Image' 
       : 'https://dummyimage.com/400x400/f8f9fa/adb5bd.png&text=No+Image';
   }
-
   const roleDescriptions = {
       'Admin': 'Full system access, including User Access and Theme management.',
       'Sub-Admin': 'Global access to manage all Items, Locations, and view Logs. Cannot manage Users or Theme.',
@@ -1068,44 +922,34 @@
       'Operator': 'Can Check-In, Check-Out, and Move inventory, but ONLY for their assigned locations.',
       'Viewer': 'Read-only access to view inventory levels ONLY for their assigned locations.'
   };
-
   function updateRoleDescription() {
       const val = document.getElementById('uRole').value;
       const descEl = document.getElementById('roleDesc');
-      const locCont = document.getElementById('uLocationsContainer'); // NEW
-      
+      const locCont = document.getElementById('uLocationsContainer');      
       if(val && roleDescriptions[val]) {
           descEl.innerText = roleDescriptions[val];
           descEl.classList.remove('hidden');
       } else {
           descEl.classList.add('hidden');
       }
-      
-     // NEW: Show location checklist only for Restricted Roles
       if (val === 'Manager' || val === 'Operator' || val === 'Viewer') {
           locCont.classList.remove('hidden');
       } else {
           locCont.classList.add('hidden');
       }
   }
-
-  // NEW: Renders the Location Checkboxes dynamically (Groups + Locations)
   function renderLocationChecklist(assignedStr = "") {
       const assigned = assignedStr.split(',').map(s => s.trim().toLowerCase()).filter(s => s);
       const listEl = document.getElementById('uLocationsList');
-
       if (!db.rawLocations || db.rawLocations.length === 0) {
           listEl.innerHTML = '<small class="text-muted">No locations exist yet.</small>';
           return;
       }
-
       let groups = new Set();
       db.rawLocations.forEach(l => {
           if (l.lbacGroups) l.lbacGroups.split(',').forEach(g => { if(g.trim()) groups.add(g.trim()); });
       });
-
       let html = '<div class="text-muted small mb-2" style="font-size:0.75rem;">Check groups or specific locations to grant access.</div>';
-
       if (groups.size > 0) {
           html += '<div class="fw-bold small text-dark mb-1 border-bottom border-secondary pb-1 mt-2">Location Groups</div>';
           Array.from(groups).sort().forEach(g => {
@@ -1118,7 +962,6 @@
                 </div>`;
           });
       }
-
       html += '<div class="fw-bold small text-dark mb-1 border-bottom border-secondary pb-1 mt-3">Individual Locations</div>';
       db.rawLocations.sort((a,b) => a.locationName.localeCompare(b.locationName)).forEach(l => {
           const isChecked = assigned.includes(l.locationName.toLowerCase()) ? 'checked' : '';
@@ -1129,37 +972,30 @@
               <input class="form-check-input u-loc-check" type="checkbox" value="${safeName}" id="uloc_l_${safeName}" ${isChecked}>
               <label class="form-check-label small fw-bold" for="uloc_l_${safeName}">${l.locationName} ${badge}</label>
             </div>`;
-      });
-      
+      });      
       listEl.innerHTML = html;
   }
-
   function fmtTime(ts) {
     if(!ts) return "N/A";
     const d = new Date(ts);
     return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
   }
-
   function getUserDisplayName(email) {
     if (!email) return "Unknown";
-    if (email === "You") return "You";
-    
+    if (email === "You") return "You";    
     if (db.users && db.users.length > 0) {
         const u = db.users.find(x => x.email.toLowerCase() === email.toLowerCase());
         if (u && u.name && u.name.trim() !== "") return u.name;
-    }
-    
+    }    
     let namePart = email.split('@')[0];
     return namePart.split('.').map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
   }
-
   function getLocLabel(locName) {
     if (!locName || locName === "External" || locName === "Deployed" || locName === "Transit") return locName;
     if (locName === "Everywhere") return "Global - Everywhere";
     const loc = db.locations.find(l => l.locationName === locName);
     return loc ? `${loc.type} - ${loc.locationName}` : locName;
-  }
-  
+  }  
   function formatCurrencyInput(input) {
     let val = input.value.replace(/[^0-9.-]+/g,"");
     if(val) {
@@ -1168,36 +1004,26 @@
       input.value = "";
     }
   }
-
   const GAS_URL = "https://script.google.com/macros/s/AKfycbxRM7pblum2TVubgCvVQBRWF6FWKkHhtT-2pJuA8kCueVGo8izlXv6BCbNOQPzOH9PqCA/exec";
-
-// 1. Google Auth Callback
   function handleCredentialResponse(response) {
     const jwt = response.credential;
     const payload = JSON.parse(atob(jwt.split('.')[1]));
     const userEmail = payload.email;
-
     localStorage.setItem('ims_user_email', userEmail);
-    localStorage.setItem('ims_google_token', jwt);
-    
+    localStorage.setItem('ims_google_token', jwt);    
     bootApp(userEmail);
   }
-
-  // NEW: Sign Out Function
   function signOut() {
     localStorage.removeItem('ims_user_email');
     localStorage.removeItem('ims_google_token');
     window.location.reload(); 
   }
-
-// NEW: Restored Scanner Logic Function
   const attachScannerLogic = (inputId) => {
     const serialInput = document.getElementById(inputId);
     if (!serialInput) return;
     let rapidStrokeCount = 0;
     let lastKeyTime = Date.now();
     let scanTimer;
-
     serialInput.addEventListener('keydown', function(e) {
       let currentTime = Date.now();
       if (e.key !== 'Enter') {
@@ -1206,7 +1032,6 @@
       }
       lastKeyTime = currentTime;
     });
-
     serialInput.addEventListener('keyup', function(e) {
       clearTimeout(scanTimer);
       scanTimer = setTimeout(() => {
@@ -1218,8 +1043,6 @@
       }, 150); 
     });
   };
-
-// HELPER: Applies template variables to UI
   function applyTemplateVars(t) {
       if (t.appTitle) {
           document.title = t.appTitle;
@@ -1228,8 +1051,6 @@
       if (t.appShortName) {
           document.getElementById('appShortTitleText').innerText = t.appShortName;
       }
-      
-      // NEW: Login Title Logic (Checks if user wants Short or Full name)
       const useShort = (t.loginUseShortName && t.loginUseShortName.toLowerCase() === 'yes');
       const loginStr = (useShort && t.appShortName) ? t.appShortName : (t.appTitle || "IMS");
       document.getElementById('loginTitle').innerText = loginStr + " Login";
@@ -1238,33 +1059,25 @@
           ['loginLogo', 'loadLogo', 'appLogo'].forEach(id => {
               const el = document.getElementById(id);
               el.src = t.logoUrl;
-              el.onload = () => el.style.opacity = '1'; // Fades in smoothly once loaded!
+              el.onload = () => el.style.opacity = '1';
           });
       }
-      // NEW: Apply Dual Themes
       if (t.lightTheme) document.documentElement.style.setProperty('--light-theme', t.lightTheme);
       if (t.darkTheme) document.documentElement.style.setProperty('--dark-theme', t.darkTheme);
-      
-      // Set mobile browser bar to current active mode's color on initial load
       const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
       const activeColor = currentTheme === 'dark' ? (t.darkTheme || '#58a6ff') : (t.lightTheme || '#0d6efd');
       document.querySelector('meta[name="theme-color"]').setAttribute("content", activeColor);
-      
-      // NEW: Apply Custom Color Palettes
       if (t.lightBg) document.documentElement.style.setProperty('--light-bg', t.lightBg);
       if (t.lightCard) document.documentElement.style.setProperty('--light-card', t.lightCard);
       if (t.lightText) document.documentElement.style.setProperty('--light-text', t.lightText);
       if (t.darkBg) document.documentElement.style.setProperty('--dark-bg', t.darkBg);
       if (t.darkCard) document.documentElement.style.setProperty('--dark-card', t.darkCard);
       if (t.darkText) document.documentElement.style.setProperty('--dark-text', t.darkText);
-      
-      // NEW: Apply the 4 new configuration templates
       if (t.currencySymbol) appCurrency = t.currencySymbol;
       if (t.defaultImgUrl) appDefaultImg = t.defaultImgUrl;
       if (t.adminContact) document.getElementById('accessDeniedMsg').innerText = `You do not have permission to view the IMS. Please contact ${t.adminContact} to request access.`;
-      if (t.syncInterval) syncIntervalMs = parseInt(t.syncInterval) * 1000; // Converts seconds to milliseconds
+      if (t.syncInterval) syncIntervalMs = parseInt(t.syncInterval) * 1000;
       if (t.footerText) {
-          // NEW: Injects custom footer text
           document.getElementById('appFooterText').innerHTML = t.footerText;
       }
       if (t.googleClientId) {
@@ -1276,24 +1089,18 @@
           }
       }
   }
-
-// 2. Check Login on Load
   document.addEventListener("DOMContentLoaded", async function() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-bs-theme', savedTheme);
     document.getElementById('themeToggleBtn').innerText = savedTheme === 'dark' ? '☀️' : '🌙';
-
     if(document.getElementById('actSerialsIn')) attachScannerLogic('actSerialsIn');
     if(document.getElementById('saScanInput')) attachScannerLogic('saScanInput');
     const searchInput = document.getElementById('searchInput');
     if(searchInput) searchInput.addEventListener('input', runSearch);
-
-    // Fetch template data BEFORE showing screens
     try {
         const tConfig = await apiCall('getTemplateConfig');
         applyTemplateVars(tConfig);
     } catch(e) { console.warn("Failed to load pre-boot template."); }
-
     const savedEmail = localStorage.getItem('ims_user_email');
     if (savedEmail) {
       bootApp(savedEmail);
@@ -1302,39 +1109,29 @@
       document.getElementById('loginOverlay').classList.remove('hidden');
     }
   });
-
   function bootApp(email) {
     document.getElementById('loginOverlay').classList.add('hidden');
     document.getElementById('loadingOverlay').classList.remove('hidden');
     document.getElementById('loadingOverlay').style.opacity = '1';
-    fetchData(); // Kick off the data load
+    fetchData();
   }
-
-  // 3. Universal API Caller
   async function apiCall(actionName, payloadData = {}) {
     const email = localStorage.getItem('ims_user_email');
-    
-    // Allow 'getTemplateConfig' to run without an email
     if (!email && actionName !== 'getTemplateConfig') {
       document.getElementById('loginOverlay').classList.remove('hidden');
       throw new Error("Session expired. Please log in.");
     }
-
     const response = await fetch(GAS_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ action: actionName, userEmail: email || 'public', ...payloadData })
     });
-
     const result = await response.json();
     if (result.error) throw new Error(result.error);
     return result.data;
   }
-
   function applyRolePermissions() {
       const isMgmtActive = !document.getElementById('viewManagement').classList.contains('hidden');
-      
-      // UPDATED: Management & Edit Permissions
       if (currentUserRole === 'Admin' || currentUserRole === 'Sub-Admin' || currentUserRole === 'Manager') {
           document.getElementById('btnNavManagement').classList.toggle('d-none', isMgmtActive);
           document.getElementById('btnEditLocInner').classList.remove('hidden');
@@ -1346,55 +1143,41 @@
           document.getElementById('btnEditItemInner').classList.add('hidden');
           document.getElementById('btnCsvLoc').classList.add('hidden'); 
       }
-
-      // NEW: Audit Permissions (Operators get access, Viewers do not)
       if (['Admin', 'Sub-Admin', 'Manager', 'Operator'].includes(currentUserRole)) {
           document.getElementById('btnAuditLocInner').classList.remove('hidden');
       } else {
           document.getElementById('btnAuditLocInner').classList.add('hidden');
       }
-
       if (currentUserRole === 'Admin') {
           document.getElementById('tabUserAccess').classList.remove('d-none');
           document.getElementById('tabTheme').classList.remove('d-none');
       } else {
           document.getElementById('tabUserAccess').classList.add('d-none');
           document.getElementById('tabTheme').classList.add('d-none');
-      }
-      
+      }      
       if (currentUserRole === 'Viewer') {
           document.getElementById('inlineActionForm').classList.add('hidden');
       } else {
           document.getElementById('inlineActionForm').classList.remove('hidden');
       }
   }
-
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") silentSync();
   });
-
   async function silentSync() {
     if (isSyncing) return;
-    isSyncing = true;
-    
+    isSyncing = true;    
     const ind = document.getElementById('syncIndicator');
     if (ind) ind.style.opacity = 1;
-
     try {
       const d = await apiCall('getInitialData');
-      
-      // RE-APPLY THE LBAC FILTER AND RAW LOCATIONS DURING SYNC
       db = d; 
       db.rawLocations = [...d.locations];
-
-      // Re-evaluate current user in case an Admin changed their permissions in the background!
       const currentUser = db.users.find(u => u.email.toLowerCase() === currentUserEmail.toLowerCase());
       if (currentUser) {
           currentUserRole = currentUser.role;
           currentUserLocations = (currentUser.locations || "").split(',').map(s => s.trim()).filter(s => s);
       }
-
-      // NEW: THE MAGIC LBAC FILTER (Now supports Groups!)
       if (!['Admin', 'Sub-Admin'].includes(currentUserRole)) {
           if (currentUserLocations.length > 0) {
               const assignedLower = currentUserLocations.map(s => s.toLowerCase());
@@ -1410,7 +1193,6 @@
               db.locations = []; 
           }
       }
-
       applySorts();
       softRefreshUI();
     } catch (e) {
@@ -1420,7 +1202,6 @@
       if (ind) ind.style.opacity = 0;
     }
   }
-
   function softRefreshUI() {
       if (!document.getElementById('viewInventory').classList.contains('hidden')) {
           if (!document.getElementById('gridView').classList.contains('hidden')) renderGrid();
@@ -1437,52 +1218,39 @@
           if (!document.getElementById('mLog').classList.contains('hidden')) renderLogs();
       }
   }
-
   async function toggleTheme() {
     const root = document.documentElement;
     const currentTheme = root.getAttribute('data-bs-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';    
     root.setAttribute('data-bs-theme', newTheme);
     localStorage.setItem('theme', newTheme);
     document.getElementById('themeToggleBtn').innerText = newTheme === 'dark' ? '☀️' : '🌙';
-    
-    // NEW: Swap the mobile browser bar color when toggling
     const brandColor = getComputedStyle(root).getPropertyValue(newTheme === 'dark' ? '--dark-theme' : '--light-theme').trim();
-    if (brandColor) document.querySelector('meta[name="theme-color"]').setAttribute("content", brandColor);
-    
+    if (brandColor) document.querySelector('meta[name="theme-color"]').setAttribute("content", brandColor);    
     const lightImg = 'https://dummyimage.com/400x400/f8f9fa/adb5bd.png&text=No+Image';
-    const darkImg = 'https://dummyimage.com/400x400/1e1e1e/adb5bd.png&text=No+Image';
-    
+    const darkImg = 'https://dummyimage.com/400x400/1e1e1e/adb5bd.png&text=No+Image';    
     document.querySelectorAll('img').forEach(img => {
       if (newTheme === 'dark' && img.src === lightImg) img.src = darkImg;
       if (newTheme === 'light' && img.src === darkImg) img.src = lightImg;
     });
-    
-    // NEW: API Call
     try {
       apiCall('saveUserTheme', { data: { theme: newTheme } });
     } catch(e) { console.error("Could not save theme to backend", e); }
   }
-
 async function fetchData(callback) {
     try {
-      const data = await apiCall('getInitialData');
-      
+      const data = await apiCall('getInitialData');      
       db = data; 
-      db.rawLocations = [...data.locations]; // NEW: Saves raw list for the Admin checklist UI
-
+      db.rawLocations = [...data.locations];
       const currentUser = data.users.find(u => u.email.toLowerCase() === localStorage.getItem('ims_user_email').toLowerCase());
       if (currentUser) {
         currentUserEmail = currentUser.email;
         currentUserRole = currentUser.role;
-        currentUserLocations = (currentUser.locations || "").split(',').map(s => s.trim()).filter(s => s); // NEW
+        currentUserLocations = (currentUser.locations || "").split(',').map(s => s.trim()).filter(s => s);
       } else {
         currentUserRole = 'Admin'; 
         currentUserLocations = []; 
       }
-
-      // NEW: THE MAGIC LBAC FILTER (Now supports Groups!)
       if (!['Admin', 'Sub-Admin'].includes(currentUserRole)) {
           if (currentUserLocations.length > 0) {
               const assignedLower = currentUserLocations.map(s => s.toLowerCase());
@@ -1498,9 +1266,7 @@ async function fetchData(callback) {
               db.locations = []; 
           }
       }
-
       if (db.template) applyTemplateVars(db.template);
-
       document.getElementById('appContainer').classList.remove('hidden');
       applyRolePermissions();
       applySorts();
@@ -1509,14 +1275,10 @@ async function fetchData(callback) {
       updateMgmtTables();
       renderLogs();
       renderDashboard(); 
-
       document.getElementById('loadingOverlay').style.opacity = '0';
       setTimeout(() => document.getElementById('loadingOverlay').classList.add('hidden'), 300);
-      if (callback) callback(); 
-      
+      if (callback) callback();       
       history.replaceState({ view: 'grid' }, ""); 
-      
-      // NEW: Clears old timer before starting a new one, using the template interval
       if (syncTimer) clearInterval(syncTimer);
       syncTimer = setInterval(silentSync, syncIntervalMs); 
     } catch (err) {
@@ -1524,16 +1286,13 @@ async function fetchData(callback) {
       document.getElementById('accessDenied').classList.remove('hidden');
       document.getElementById('deniedEmail').innerText = err.message;
     }
-  }
-  
+  }  
   function applySorts() {
     if (currentSort.item.col !== -1) {
       const key = ["barcode", "make", "model", "category", "minStock", "specs", "img", "status"][currentSort.item.col];
       db.items.sort((a,b) => {
-        // NEW: If sorting by 'make' (the Item column), combine Make + Model for an accurate alphabetical sort
         let valA = key === 'make' ? String(a.make + " " + a.model).toLowerCase() : String(a[key] || "").toLowerCase();
-        let valB = key === 'make' ? String(b.make + " " + b.model).toLowerCase() : String(b[key] || "").toLowerCase();
-        
+        let valB = key === 'make' ? String(b.make + " " + b.model).toLowerCase() : String(b[key] || "").toLowerCase();        
         if(!isNaN(valA) && !isNaN(valB) && valA !== "" && valB !== "") {
            return currentSort.item.asc ? Number(valA) - Number(valB) : Number(valB) - Number(valA);
         }
@@ -1547,7 +1306,6 @@ async function fetchData(callback) {
         return a.barcode.localeCompare(b.barcode);
       });
     }
-
     if (currentSort.loc.col !== -1) {
       const key = ["type", "locationName", "status"][currentSort.loc.col];
       db.locations.sort((a,b) => {
@@ -1561,7 +1319,6 @@ async function fetchData(callback) {
         return a.type.localeCompare(b.type);
       });
     }
-
     if (db.users) {
       if (currentSort.user.col !== -1) {
         const key = ["name", "role", "lastLogin", "status"][currentSort.user.col];
@@ -1576,7 +1333,6 @@ async function fetchData(callback) {
       }
     }
   }
-
   function getStockBalance(barcode, location = null, subLocation = null) {
     let balance = 0;
     db.logs.forEach(l => {
@@ -1591,7 +1347,6 @@ async function fetchData(callback) {
     });
     return balance;
   }
-
   function renderDashboard() {
     let globalUnits = 0;
     let globalValue = 0;
@@ -1599,25 +1354,20 @@ async function fetchData(callback) {
     let depValue = 0;
     const lowStockAlerts = [];
     const locationStats = {};
-
     db.locations.filter(l => l.status === 'Active').forEach(l => {
       locationStats[l.locationName] = { type: l.type, units: 0, value: 0, deployType: l.deployType || 'Physical Space', groups: l.lbacGroups || '' };
     });
-
-    const activeItems = db.items.filter(i => i.status === 'Active');
-    
+    const activeItems = db.items.filter(i => i.status === 'Active');    
     activeItems.forEach(itm => {
       const price = parseFloat(itm.price) || 0;
       let itemGlobalStock = 0;
-
       for (const locName in locationStats) {
         const stockAtLoc = getStockBalance(itm.barcode, locName); 
         if (stockAtLoc > 0) {
           locationStats[locName].units += stockAtLoc;
           let val = stockAtLoc * price;
           locationStats[locName].value += val;
-          itemGlobalStock += stockAtLoc;
-          
+          itemGlobalStock += stockAtLoc;          
           if (locationStats[locName].deployType === 'Deployable') {
               depValue += val;
           } else {
@@ -1625,10 +1375,8 @@ async function fetchData(callback) {
           }
         }
       }
-
       globalUnits += itemGlobalStock;
       globalValue += (itemGlobalStock * price);
-
       if (itemGlobalStock <= parseFloat(itm.minStock)) {
         lowStockAlerts.push({
           bc: itm.barcode,
@@ -1639,18 +1387,14 @@ async function fetchData(callback) {
         });
       }
     });
-
     document.getElementById('statUnique').innerText = activeItems.length;
     document.getElementById('statTotalUnits').innerText = globalUnits.toLocaleString('en-US');
-    document.getElementById('statTotalValue').innerText = appCurrency + globalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    
+    document.getElementById('statTotalValue').innerText = appCurrency + globalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});    
     document.getElementById('statPhysValue').innerText = appCurrency + physValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     document.getElementById('statDepValue').innerText = appCurrency + depValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-
     const globalAlertBanner = document.getElementById('globalStockAlert');
     const alertArea = document.getElementById('dashAlertsArea');
-    const alertBody = document.getElementById('dashAlertsBody');
-    
+    const alertBody = document.getElementById('dashAlertsBody');    
     if (lowStockAlerts.length > 0) {
       alertBody.innerHTML = lowStockAlerts.map(a => `
         <tr onclick="showView('inventory'); viewItem('${a.bc}')" style="cursor: pointer;" title="Click to view item details">
@@ -1666,7 +1410,6 @@ async function fetchData(callback) {
       alertArea.classList.add('hidden');
       globalAlertBanner.classList.add('hidden');
     }
-
     const buildDashCard = (locName, stat) => `
       <div class="col-md-6 col-lg-4">
         <div class="card p-3 border h-100 mb-0 shadow-sm" style="cursor:pointer;" onclick="showView('inventory'); viewLoc('${locName}', '${stat.type}')">
@@ -1684,12 +1427,9 @@ async function fetchData(callback) {
         </div>
       </div>
     `;
-
     const physKeys = Object.keys(locationStats).filter(k => locationStats[k].deployType !== 'Deployable').sort();
     const depKeys = Object.keys(locationStats).filter(k => locationStats[k].deployType === 'Deployable').sort();
-
-    document.getElementById('dashLocationCardsPhysical').innerHTML = physKeys.map(k => buildDashCard(k, locationStats[k])).join('');
-    
+    document.getElementById('dashLocationCardsPhysical').innerHTML = physKeys.map(k => buildDashCard(k, locationStats[k])).join('');    
     const depSec = document.getElementById('dashDeployableSection');
     if (depKeys.length > 0) {
       depSec.classList.remove('hidden');
@@ -1697,14 +1437,11 @@ async function fetchData(callback) {
     } else {
       depSec.classList.add('hidden');
     }
-
-    // NEW: Populate the Location Groups Dropdown
-    window.currentDashStats = locationStats; // Save for the dropdown to access
+    window.currentDashStats = locationStats;
     let dashGroups = new Set();
     Object.values(locationStats).forEach(stat => {
         if (stat.groups) stat.groups.split(',').forEach(g => { if (g.trim()) dashGroups.add(g.trim()); });
-    });
-    
+    });    
     const grpSelect = document.getElementById('dashGroupSelect');
     const currentGrp = grpSelect.value;
     if (dashGroups.size > 0) {
@@ -1713,26 +1450,20 @@ async function fetchData(callback) {
         if (dashGroups.has(currentGrp)) grpSelect.value = currentGrp;
     } else {
         grpSelect.innerHTML = '<option value="">No groups available</option>';
-    }
-    
+    }    
     renderDashGroupCards();
   }
-
-  // UPGRADED: Render group cards AND calculate the 5 Snapshot Metrics
   function renderDashGroupCards() {
       const grp = document.getElementById('dashGroupSelect').value;
       const container = document.getElementById('dashLocationCardsGroup');
-      const statsBlock = document.getElementById('dashGroupStats');
-      
+      const statsBlock = document.getElementById('dashGroupStats');      
       if (!grp || !window.currentDashStats) {
           statsBlock.classList.add('hidden');
           container.innerHTML = '<div class="col-12 text-muted small">Please select a group from the dropdown to view its snapshot.</div>';
           return;
-      }
-      
+      }      
       let grpLocs = [];
       let html = '';
-
       const buildCard = (locName, stat) => `
         <div class="col-md-6 col-lg-4">
           <div class="card p-3 border border-primary h-100 mb-0 shadow-sm bg-white" style="cursor:pointer;" onclick="showView('inventory'); viewLoc('${locName.replace(/'/g, "\\'")}', '${stat.type}')">
@@ -1750,8 +1481,6 @@ async function fetchData(callback) {
           </div>
         </div>
       `;
-
-      // 1. Identify which locations belong to this group & build their HTML cards
       for (const locName in window.currentDashStats) {
           const stat = window.currentDashStats[locName];
           if (stat.groups) {
@@ -1762,8 +1491,6 @@ async function fetchData(callback) {
               }
           }
       }
-
-      // 2. Perform math to calculate metrics strictly for this group's locations
       let grpUniqueItems = 0, grpTotalUnits = 0, grpTotalValue = 0, grpPhysValue = 0, grpDepValue = 0;
 
       db.items.filter(i => i.status === 'Active').forEach(itm => {
@@ -1780,8 +1507,6 @@ async function fetchData(callback) {
                   else itemPhysInGrp += stk;
               }
           });
-
-          // Unique item counter constraint: Must have > 0 stock in the group to count
           if (itemTotalInGrp > 0) {
               grpUniqueItems++;
               grpTotalUnits += itemTotalInGrp;
@@ -1790,42 +1515,32 @@ async function fetchData(callback) {
               grpDepValue += (itemDepInGrp * price);
           }
       });
-
-      // 3. Inject the math into the UI
       document.getElementById('grpStatUnique').innerText = grpUniqueItems.toLocaleString('en-US');
       document.getElementById('grpStatTotalUnits').innerText = grpTotalUnits.toLocaleString('en-US');
       document.getElementById('grpStatTotalValue').innerText = appCurrency + grpTotalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
       document.getElementById('grpStatPhysValue').innerText = appCurrency + grpPhysValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
       document.getElementById('grpStatDepValue').innerText = appCurrency + grpDepValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-
-      // 4. Reveal the UI
       statsBlock.classList.remove('hidden');
       container.innerHTML = html || '<div class="col-12 text-muted small">No locations found for this group.</div>';
   }
-
   function exportLogCsv() {
     const limit = parseInt(document.getElementById('exportLogRows').value) || 100;
     const sortedLogs = [...db.logs].reverse().slice(0, limit);
-    let csv = "Date,User,Barcode,Item,Serial,From,To,Quantity\n";
-    
+    let csv = "Date,User,Barcode,Item,Serial,From,To,Quantity\n";    
     sortedLogs.forEach(l => {
       const itm = db.items.find(i => i.barcode === l.barcode);
       const itemName = itm ? `${itm.make} ${itm.model}` : l.barcode;
       const fSpot = l.fromLoc && l.subLoc ? ` (${l.subLoc})` : "";
-      const tSpot = l.toLoc && l.subLoc ? ` (${l.subLoc})` : "";
-      
+      const tSpot = l.toLoc && l.subLoc ? ` (${l.subLoc})` : "";      
       const fromFull = `${getLocLabel(l.fromLoc)}${fSpot}`;
-      const toFull = `${getLocLabel(l.toLoc)}${tSpot}`;
-      
+      const toFull = `${getLocLabel(l.toLoc)}${tSpot}`;      
       const cleanUser = getUserDisplayName(l.userEmail).replace(/"/g, '""');
       const cleanItem = itemName.replace(/"/g, '""');
       const cleanFrom = fromFull.replace(/"/g, '""');
       const cleanTo = toFull.replace(/"/g, '""');
-      const cleanSerial = l.serial.replace(/"/g, '""');
-      
+      const cleanSerial = l.serial.replace(/"/g, '""');      
       csv += `"${fmtTime(l.timestamp)}","${cleanUser}","${l.barcode}","${cleanItem}","${cleanSerial}","${cleanFrom}","${cleanTo}",${Math.abs(l.quantity)}\n`;
-    });
-    
+    });    
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1833,23 +1548,18 @@ async function fetchData(callback) {
     a.download = `Transaction_Logs_${limit}_Rows.csv`;
     a.click();
   }
-
   function renderLogs() {
     const tbody = document.getElementById('bodyLogs');
     const sortedLogs = [...db.logs].reverse();
     const visible = sortedLogs.slice(0, logLimit);
-    // Added 'index' parameter to the map function to count rows
     tbody.innerHTML = visible.map((l, index) => {
       const itm = db.items.find(i => i.barcode === l.barcode);
       const itemName = itm ? `${itm.make} ${itm.model}` : l.barcode;
-      const serialLabel = l.serial ? ` <br><small class="text-primary">SN: ${l.serial}</small>` : "";
-      
+      const serialLabel = l.serial ? ` <br><small class="text-primary">SN: ${l.serial}</small>` : "";      
       const fSpot = l.fromLoc && l.subLoc ? ` (${l.subLoc})` : "";
-      const tSpot = l.toLoc && l.subLoc ? ` (${l.subLoc})` : "";
-      
+      const tSpot = l.toLoc && l.subLoc ? ` (${l.subLoc})` : "";      
       const fromFull = `${getLocLabel(l.fromLoc)}${fSpot}`;
-      const toFull = `${getLocLabel(l.toLoc)}${tSpot}`;
-      
+      const toFull = `${getLocLabel(l.toLoc)}${tSpot}`;      
       return `<tr>
           <td class="text-muted fw-bold"><small>${index + 1}</small></td>
           <td><small class="text-muted">${fmtTime(l.timestamp)}</small></td>
@@ -1862,9 +1572,7 @@ async function fetchData(callback) {
     }).join('');
     document.getElementById('btnLoadMore').classList.toggle('hidden', logLimit >= sortedLogs.length);
   }
-
   function loadMoreLogs() { logLimit += 20; renderLogs(); }
-
   function updateMgmtTables() {
     const spotCounts = {};
     db.logs.forEach(log => {
@@ -1879,7 +1587,6 @@ async function fetchData(callback) {
         }
       }
     });
-
     document.getElementById('bodyItems').innerHTML = db.items.map(i => {
       const total = getStockBalance(i.barcode);
       const criticalClass = (total <= Number(i.minStock) && i.status === 'Active') ? 'stock-critical' : '';
@@ -1895,12 +1602,10 @@ async function fetchData(callback) {
           </button>
         </td>
       </tr>`;
-    }).join('');
-    
+    }).join('');    
     document.getElementById('bodyLocs').innerHTML = db.locations.map(l => {
       const sCount = spotCounts[l.locationName] ? spotCounts[l.locationName].size : 0;
-      const spotBtnText = sCount > 0 ? `Spots (${sCount})` : `Spots (0)`;
-      
+      const spotBtnText = sCount > 0 ? `Spots (${sCount})` : `Spots (0)`;      
       return `
       <tr class="${l.status === 'Inactive' ? 'table-secondary text-muted' : ''}" onclick="editLoc('${l.locationName}')" style="cursor: pointer;">
         <td><span class="badge bg-secondary">${l.type}</span></td>
@@ -1913,8 +1618,6 @@ async function fetchData(callback) {
         </td>
       </tr>`;
     }).join('');
-
-    // NEW: Render the Access Groups Summary
     let groupMap = {};
     if (db.rawLocations) {
         db.rawLocations.forEach(l => {
@@ -1947,9 +1650,7 @@ async function fetchData(callback) {
             `).join('');
         }
     }
-    // Keeps the checklist fresh if you are currently on the New Location form
-    if (document.getElementById('locFormTitle').innerText === "Add New Location") renderLocGroupsUI("");
-      
+    if (document.getElementById('locFormTitle').innerText === "Add New Location") renderLocGroupsUI("");      
     if (db.users && db.users.length > 0) {
         document.getElementById('bodyUsers').innerHTML = db.users.map(u => `
           <tr class="${u.status === 'Inactive' ? 'table-secondary text-muted' : ''}" onclick="editUser('${u.email}')" style="cursor: pointer;">
@@ -1963,23 +1664,18 @@ async function fetchData(callback) {
             </td>
           </tr>`).join('');
     }
-  }
-  
+  }  
   function openSpotManager(locName) {
       const spots = new Set();
       db.logs.forEach(l => {
         if (l.toLoc === locName && l.subLoc) spots.add(l.subLoc);
         if (l.fromLoc === locName && l.subLoc) spots.add(l.subLoc);
       });
-
       const spotList = Array.from(spots).sort();
-
       document.getElementById('locTableContainer').classList.add('hidden');
       document.getElementById('spotManagerContainer').classList.remove('hidden');
-      document.getElementById('spotManagerTitle').innerText = `Manage Spots: ${locName}`;
-      
-      const tbody = document.getElementById('bodySpots');
-      
+      document.getElementById('spotManagerTitle').innerText = `Manage Spots: ${locName}`;      
+      const tbody = document.getElementById('bodySpots');      
       if (spotList.length === 0) {
          tbody.innerHTML = `<tr><td colspan="2" class="text-center text-muted">No custom spots found for this location.</td></tr>`;
       } else {
@@ -1994,37 +1690,29 @@ async function fetchData(callback) {
          }).join('');
       }
   }
-
   function closeSpotManager() {
       document.getElementById('spotManagerContainer').classList.add('hidden');
       document.getElementById('locTableContainer').classList.remove('hidden');
   }
-
   function startAudit(locName) {
-      if(locName === 'Everywhere') return alert('Cannot audit the Global view. Please select a specific physical location.');
-      
+      if(locName === 'Everywhere') return alert('Cannot audit the Global view. Please select a specific physical location.');      
       document.getElementById('itemsContainer').classList.add('hidden');
       document.getElementById('locControlsContainer').classList.add('hidden');
-      document.getElementById('auditContainer').classList.remove('hidden');
-      
-      let auditList = [];
-      
+      document.getElementById('auditContainer').classList.remove('hidden');      
+      let auditList = [];      
       db.items.filter(i => i.status === 'Active').forEach(itm => {
           const spots = new Set();
           db.logs.filter(l => l.barcode === itm.barcode).forEach(l => {
               if (l.toLoc === locName && l.subLoc) spots.add(l.subLoc);
               if (l.fromLoc === locName && l.subLoc) spots.add(l.subLoc);
-          });
-          
+          });          
           let defaultQ = getStockBalance(itm.barcode, locName, "");
-          if (defaultQ > 0) auditList.push({ item: itm, spot: "Default", expected: defaultQ, missingSerials: [], foundSerials: [] });
-          
+          if (defaultQ > 0) auditList.push({ item: itm, spot: "Default", expected: defaultQ, missingSerials: [], foundSerials: [] });          
           spots.forEach(s => {
               let q = getStockBalance(itm.barcode, locName, s);
               if (q > 0) auditList.push({ item: itm, spot: s, expected: q, missingSerials: [], foundSerials: [] });
           });
-      });
-      
+      });      
       let h = `
       <div class="alert alert-warning small border-warning">
           <strong>Audit Mode Active:</strong> Verify physical counts. If tracking serials, click 'Audit Serials'.
@@ -2040,15 +1728,13 @@ async function fetchData(callback) {
             </tr>
           </thead>
           <tbody>
-      `;
-      
+      `;      
       if (auditList.length === 0) {
           h += `<tr><td colspan="4" class="text-center text-muted py-4">No items currently recorded in this location.</td></tr>`;
       } else {
           auditList.forEach((row, idx) => {
               let spotLabel = row.spot === "Default" ? `<span class="text-muted fst-italic small">Default</span>` : `<span class="badge bg-secondary">${row.spot}</span>`;
-              let serialBadge = row.item.serialized === 'Yes' ? `<span class="badge bg-dark ms-1" style="font-size:0.5rem">SER</span>` : '';
-              
+              let serialBadge = row.item.serialized === 'Yes' ? `<span class="badge bg-dark ms-1" style="font-size:0.5rem">SER</span>` : '';              
               let actionHTML = '';
               if (row.item.serialized === 'Yes') {
                   let actVal = row.actual !== undefined ? row.actual : row.expected;
@@ -2057,7 +1743,6 @@ async function fetchData(callback) {
               } else {
                   actionHTML = `<input type="number" id="act_${idx}" class="form-control form-control-sm text-center fw-bold" value="${row.expected}" min="0" oninput="checkAuditDiff(${idx})">`;
               }
-
               h += `
               <tr id="auditRow_${idx}">
                   <td>
@@ -2070,28 +1755,22 @@ async function fetchData(callback) {
               </tr>
               `;
           });
-      }
-      
+      }      
       h += `</tbody></table></div>
       <div class="d-flex justify-content-between mb-4">
          <button class="btn btn-outline-secondary fw-bold" onclick="cancelAudit()">Cancel</button>
          <button class="btn btn-warning fw-bold px-4" onclick="submitAudit('${locName}')">Submit True-Up</button>
       </div>
-      `;
-      
+      `;      
       document.getElementById('auditContainer').innerHTML = h;
       window.currentAuditList = auditList;
   }
-
   let currentSerialAuditIdx = -1;
-
   function openSerialAudit(idx) {
       currentSerialAuditIdx = idx;
       const row = window.currentAuditList[idx];
-      document.getElementById('saTitle').innerText = `${row.item.make} ${row.item.model}`;
-      
-      const expectedSerials = getAvailableSerials(row.item.barcode, currentLocName, row.spot === "Default" ? "" : row.spot);
-      
+      document.getElementById('saTitle').innerText = `${row.item.make} ${row.item.model}`;      
+      const expectedSerials = getAvailableSerials(row.item.barcode, currentLocName, row.spot === "Default" ? "" : row.spot);      
       let html = '';
       if(expectedSerials.length === 0) {
          html += '<div class="small text-muted fst-italic py-2">No specific serials recorded here.</div>';
@@ -2106,25 +1785,18 @@ async function fetchData(callback) {
          });
       }
       document.getElementById('saExpectedList').innerHTML = html;
-      document.getElementById('saScanInput').value = row.foundSerials.join('\n');
-      
+      document.getElementById('saScanInput').value = row.foundSerials.join('\n');      
       document.getElementById('serialAuditModal').classList.remove('hidden');
   }
-
   function verifyScannedSerials() {
       const rawIn = document.getElementById('saScanInput').value;
-      if (!rawIn.trim()) return alert("No serials scanned to verify.");
-      
-      let scanned = rawIn.split(/[\n,]+/).map(s => s.trim().toUpperCase()).filter(s => s !== "");
-      
+      if (!rawIn.trim()) return alert("No serials scanned to verify.");      
+      let scanned = rawIn.split(/[\n,]+/).map(s => s.trim().toUpperCase()).filter(s => s !== "");      
       const checkboxes = document.querySelectorAll('.sa-check');
-      checkboxes.forEach(cb => cb.checked = false); 
-      
+      checkboxes.forEach(cb => cb.checked = false);      
       document.querySelectorAll('.sa-label').forEach(lbl => lbl.classList.remove('text-success'));
-
       let unmatched = [];
-      let matchedCount = 0;
-      
+      let matchedCount = 0;      
       scanned.forEach(s => {
           let cb = document.getElementById('sa_' + s);
           if (cb) {
@@ -2134,43 +1806,33 @@ async function fetchData(callback) {
           } else {
               unmatched.push(s);
           }
-      });
-      
-      document.getElementById('saScanInput').value = unmatched.join('\n');
-      
+      });      
+      document.getElementById('saScanInput').value = unmatched.join('\n');      
       let missingCount = checkboxes.length - matchedCount;
       alert(`Verification Complete:\n\n- ${matchedCount} matched expected inventory.\n- ${missingCount} expected serial(s) are missing (now unchecked).\n- ${unmatched.length} extra/unexpected serial(s) found in scanner text box.`);
   }
-
   function closeSerialAudit() {
       document.getElementById('serialAuditModal').classList.add('hidden');
   }
-
   function saveSerialAudit() {
       const row = window.currentAuditList[currentSerialAuditIdx];
-      const expectedSerials = getAvailableSerials(row.item.barcode, currentLocName, row.spot === "Default" ? "" : row.spot);
-      
+      const expectedSerials = getAvailableSerials(row.item.barcode, currentLocName, row.spot === "Default" ? "" : row.spot);      
       let missing = [];
       document.querySelectorAll('.sa-check').forEach(cb => {
           if(!cb.checked) missing.push(cb.value);
       });
-      row.missingSerials = missing;
-      
+      row.missingSerials = missing;      
       let rawFound = document.getElementById('saScanInput').value;
       let foundArr = rawFound.split(/[\n,]+/).map(s => s.trim().toUpperCase()).filter(s => s !== "");
-      row.foundSerials = [...new Set(foundArr)]; 
-      
+      row.foundSerials = [...new Set(foundArr)];      
       let newActual = expectedSerials.length - missing.length + row.foundSerials.length;
-      row.actual = newActual;
-      
+      row.actual = newActual;      
       document.getElementById(`actBtn_${currentSerialAuditIdx}`).innerText = `Audited (${newActual})`;
       document.getElementById(`actBtn_${currentSerialAuditIdx}`).classList.remove('btn-outline-primary');
-      document.getElementById(`actBtn_${currentSerialAuditIdx}`).classList.add('btn-primary'); 
-      
+      document.getElementById(`actBtn_${currentSerialAuditIdx}`).classList.add('btn-primary');      
       closeSerialAudit();
       checkAuditDiff(currentSerialAuditIdx);
   }
-
   function checkAuditDiff(idx) {
       const row = window.currentAuditList[idx];
       let act = 0;
@@ -2179,8 +1841,7 @@ async function fetchData(callback) {
       } else {
           act = parseInt(document.getElementById(`act_${idx}`).value) || 0;
           row.actual = act;
-      }
-      
+      }      
       const tr = document.getElementById(`auditRow_${idx}`);
       if (act !== row.expected) {
           tr.classList.add('table-warning');
@@ -2188,19 +1849,15 @@ async function fetchData(callback) {
           tr.classList.remove('table-warning');
       }
   }
-
   function cancelAudit() {
       document.getElementById('auditContainer').classList.add('hidden');
       document.getElementById('locControlsContainer').classList.remove('hidden');
       document.getElementById('itemsContainer').classList.remove('hidden');
   }
-
   function submitAudit(locName) {
-      let adjustments = [];
-      
+      let adjustments = [];      
       window.currentAuditList.forEach((row, idx) => {
-          let act = row.item.serialized === 'Yes' ? (row.actual !== undefined ? row.actual : row.expected) : (parseInt(document.getElementById(`act_${idx}`).value) || 0);
-          
+          let act = row.item.serialized === 'Yes' ? (row.actual !== undefined ? row.actual : row.expected) : (parseInt(document.getElementById(`act_${idx}`).value) || 0);          
           if (row.item.serialized === 'Yes') {
               if ((row.missingSerials && row.missingSerials.length > 0) || (row.foundSerials && row.foundSerials.length > 0)) {
                   adjustments.push({
@@ -2226,20 +1883,16 @@ async function fetchData(callback) {
                   });
               }
           }
-      });
-      
+      });      
       if (adjustments.length === 0) {
           alert("All counts match expected inventory. Audit complete!");
           cancelAudit();
           return;
-      }
-      
-      if (!confirm(`You have recorded ${adjustments.length} discrepancy(ies). Submitting this will automatically log Adjustment records to correct your inventory.\n\nProceed?`)) return;
-      
+      }      
+      if (!confirm(`You have recorded ${adjustments.length} discrepancy(ies). Submitting this will automatically log Adjustment records to correct your inventory.\n\nProceed?`)) return;      
       const timestamp = new Date().toISOString();
       adjustments.forEach(adj => {
-           const subL = adj.spot === "Default" ? "" : adj.spot;
-           
+           const subL = adj.spot === "Default" ? "" : adj.spot;           
            if (adj.serialized === 'Yes') {
                adj.missingSerials.forEach(s => {
                    db.logs.unshift({ timestamp: timestamp, userEmail: currentUserEmail, barcode: adj.barcode, fromLoc: adj.loc, toLoc: "Lost/Audit", quantity: 1, type: "Audit-Out", serial: s, subLoc: subL });
@@ -2254,23 +1907,19 @@ async function fetchData(callback) {
                const qty = Math.abs(adj.diff);
                db.logs.unshift({ timestamp: timestamp, userEmail: currentUserEmail, barcode: adj.barcode, fromLoc: fLoc, toLoc: tLoc, quantity: qty, type: logType, serial: "", subLoc: subL });
            }
-      });
-      
+      });      
       cancelAudit();
       renderItems(locName); 
-      showSuccess(`Audit submitted successfully. Adjustments logged.`);
-      
+      showSuccess(`Audit submitted successfully. Adjustments logged.`);      
       google.script.run.withSuccessHandler(() => {
           setTimeout(silentSync, 2000);
       }).withFailureHandler((err) => {
           showError("Audit sync failed. Please refresh page.");
       }).submitAuditBackend(adjustments);
   }
-
   function editItem(bc) {
     const itm = db.items.find(i => i.barcode === bc);
-    if(!itm) return;
-    
+    if(!itm) return;    
     document.getElementById('catalogFormTitle').innerText = "Edit Item: " + bc;
     document.getElementById('mBc').value = itm.barcode;
     document.getElementById('mBc').disabled = true; 
@@ -2278,33 +1927,27 @@ async function fetchData(callback) {
     document.getElementById('mModel').value = itm.model;
     document.getElementById('mCat').value = itm.category;
     document.getElementById('mSerialized').value = itm.serialized || "No";
-    document.getElementById('mDesc').value = itm.description;
-    
-    document.getElementById('mPrice').value = itm.price ? appCurrency + parseFloat(itm.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : "";
-    
+    document.getElementById('mDesc').value = itm.description;    
+    document.getElementById('mPrice').value = itm.price ? appCurrency + parseFloat(itm.price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : "";    
     document.getElementById('mMin').value = itm.minStock;
     document.getElementById('mSpecs').value = itm.specs;
     document.getElementById('mImg').value = itm.img;
-    document.getElementById('mNotes').value = itm.notes;
-    
+    document.getElementById('mNotes').value = itm.notes;    
     const preview = document.getElementById('mImgPreview');
     if (itm.imgFile || itm.img) {
       preview.src = itm.imgFile || itm.img;
       preview.classList.remove('hidden');
     } else {
       preview.classList.add('hidden');
-    }
-    
+    }    
     const saveBtn = document.getElementById('btnSaveItem');
     saveBtn.innerText = "Update Item";
     saveBtn.setAttribute('onclick', "saveOrUpdateItem('edit')");
-    document.getElementById('btnCancelEdit').classList.remove('hidden');
-    
+    document.getElementById('btnCancelEdit').classList.remove('hidden');    
     showView('management');
     switchMgmt('item');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-
   function cancelEditItem() {
     document.getElementById('catalogFormTitle').innerText = "Add to Catalog";
     document.getElementById('mBc').value = "";
@@ -2321,23 +1964,19 @@ async function fetchData(callback) {
     document.getElementById('mImgFile').value = "";
     document.getElementById('mNotes').value = "";
     document.getElementById('mImgPreview').classList.add('hidden');
-    document.getElementById('mImgPreview').src = "";
-    
+    document.getElementById('mImgPreview').src = "";    
     const saveBtn = document.getElementById('btnSaveItem');
     saveBtn.innerText = "Save Item";
     saveBtn.setAttribute('onclick', "saveOrUpdateItem('add')");
     document.getElementById('btnCancelEdit').classList.add('hidden');
   }
-
   function toggleDeployLoc() {
     const type = document.getElementById('mDeployType').value;
     document.getElementById('mDeployLoc').classList.toggle('hidden', type !== 'Deployable');
   }
-
   function editLoc(name) {
     const loc = db.locations.find(l => l.locationName === name);
-    if(!loc) return;
-    
+    if(!loc) return;    
     document.getElementById('locFormTitle').innerText = "Edit Location: " + name;
     document.getElementById('mLname').value = loc.locationName;
     document.getElementById('mLname').disabled = true; 
@@ -2347,28 +1986,23 @@ async function fetchData(callback) {
     renderLocGroupsUI(loc.lbacGroups || ""); 
     document.getElementById('mLDesc').value = loc.description || "";
     document.getElementById('mLImg').value = loc.img || "";
-    document.getElementById('mLNotes').value = loc.notes || "";
-    
+    document.getElementById('mLNotes').value = loc.notes || "";    
     const previewLoc = document.getElementById('mLImgPreview');
     if (loc.imgFile || loc.img) {
       previewLoc.src = loc.imgFile || loc.img;
       previewLoc.classList.remove('hidden');
     } else {
       previewLoc.classList.add('hidden');
-    }
-    
-    toggleDeployLoc();
-    
+    }    
+    toggleDeployLoc();    
     const btn = document.getElementById('btnSaveLoc');
     btn.innerText = "Update Location";
     btn.setAttribute('onclick', "saveOrUpdateLoc('edit')");
-    document.getElementById('btnCancelEditLoc').classList.remove('hidden');
-    
+    document.getElementById('btnCancelEditLoc').classList.remove('hidden');    
     showView('management');
     switchMgmt('loc');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-
   function cancelEditLoc() {
     document.getElementById('locFormTitle').innerText = "Add New Location";
     document.getElementById('mLname').value = "";
@@ -2383,14 +2017,12 @@ async function fetchData(callback) {
     document.getElementById('mLNotes').value = "";
     document.getElementById('mLImgPreview').classList.add('hidden');
     document.getElementById('mLImgPreview').src = "";
-    toggleDeployLoc();
-    
+    toggleDeployLoc();    
     const btn = document.getElementById('btnSaveLoc');
     btn.innerText = "Create Location";
     btn.setAttribute('onclick', "saveOrUpdateLoc('add')");
     document.getElementById('btnCancelEditLoc').classList.add('hidden');
-  }
-  
+  }  
   function editUser(email) {
     const u = db.users.find(x => x.email === email);
     if(!u) return;
@@ -2399,35 +2031,27 @@ async function fetchData(callback) {
     document.getElementById('uEmail').value = u.email;
     document.getElementById('uEmail').disabled = true;
     document.getElementById('uRole').value = u.role;
-    
-    // NEW: Load existing locations into checklist
     renderLocationChecklist(u.locations || "");
-    updateRoleDescription();
-    
+    updateRoleDescription();    
     const btn = document.getElementById('btnSaveUser');
     btn.innerText = "Update User";
     btn.setAttribute('onclick', "saveOrUpdateUser('edit')");
     document.getElementById('btnCancelEditUser').classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-  
+  }  
   function cancelEditUser() {
     document.getElementById('userFormTitle').innerText = "Add New User";
     document.getElementById('uName').value = "";
     document.getElementById('uEmail').value = "";
     document.getElementById('uEmail').disabled = false;
     document.getElementById('uRole').value = "";
-    
-    // NEW: Clear checklist
     renderLocationChecklist("");
-    updateRoleDescription();
-    
+    updateRoleDescription();    
     const btn = document.getElementById('btnSaveUser');
     btn.innerText = "Add User";
     btn.setAttribute('onclick', "saveOrUpdateUser('add')");
     document.getElementById('btnCancelEditUser').classList.add('hidden');
   }
-
   function sortMgmt(type, colIdx) {
     if (currentSort[type].col === colIdx) {
       currentSort[type].asc = !currentSort[type].asc;
@@ -2437,8 +2061,7 @@ async function fetchData(callback) {
     }
     applySorts();
     updateMgmtTables();
-  }
-  
+  }  
   function sortSerials(col) {
     if (currentSerialSort.col === col) {
       currentSerialSort.asc = !currentSerialSort.asc;
@@ -2448,63 +2071,46 @@ async function fetchData(callback) {
     }
     refreshItemStockBadges(activeBc);
   }
-
   function runSearch(e) {
     const q = (e.target ? e.target.value : e).toLowerCase().trim(); 
     const res = document.getElementById('searchResults');
     if (q.length < 1) { res.classList.add('hidden'); return; }
-    
-    // NEW: Helper function to safely highlight text without breaking HTML
     const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const highlight = (text, query) => {
         if (!text) return "";
         if (!query) return text;
         const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
-        // Wraps matches in a bright yellow background with dark text
         return text.replace(regex, '<mark class="p-0 px-1 bg-warning text-dark rounded">$1</mark>');
-    };
-    
+    };    
     const matches = db.items.filter(i => {
-       if (i.status !== 'Active') return false;
-       
+       if (i.status !== 'Active') return false;       
        const basicMatch = i.barcode.toLowerCase().includes(q) || 
                           i.make.toLowerCase().includes(q) || 
                           i.model.toLowerCase().includes(q) || 
                           i.description.toLowerCase().includes(q) ||
-                          i.notes.toLowerCase().includes(q);
-                          
-       if (basicMatch) return true;
-       
+                          i.notes.toLowerCase().includes(q);                          
+       if (basicMatch) return true;       
        const serialMatch = db.logs.some(l => l.barcode === i.barcode && l.serial && l.serial.toLowerCase().includes(q));
        return serialMatch;
-    });
-    
+    });    
     res.innerHTML = matches.map(i => {
       const total = getStockBalance(i.barcode);
       const imgSrc = i.imgFile || i.img || '';
       const imgHtml = imgSrc ? `<img src="${imgSrc}" class="search-thumb me-3">` : `<div class="search-thumb me-3 d-flex align-items-center justify-content-center bg-light text-secondary border fs-4">📦</div>`;
-      
-      // NEW: Generate highlighted versions of our strings
       const hiMake = highlight(i.make, q);
       const hiModel = highlight(i.model, q);
       const hiBarcode = highlight(i.barcode, q);
-      
-      // NEW: Build the Description & Notes snippet
       let snippetHtml = '';
       let descStr = i.description ? i.description.trim() : '';
-      let notesStr = i.notes ? i.notes.trim() : '';
-      
+      let notesStr = i.notes ? i.notes.trim() : '';      
       if (descStr || notesStr) {
           let combinedSnippet = [];
           if (descStr) combinedSnippet.push(`<strong>Desc:</strong> ${highlight(descStr, q)}`);
           if (notesStr) combinedSnippet.push(`<strong>Notes:</strong> ${highlight(notesStr, q)}`);
-          
-          // Uses line-clamp to ensure massive notes don't break the UI drop-down
           snippetHtml = `<div class="text-muted mt-1" style="font-size: 0.75rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3;">
                            ${combinedSnippet.join(' | ')}
                          </div>`;
-      }
-      
+      }      
       return `<button class="list-group-item list-group-item-action py-2 px-3" onclick="viewItem('${i.barcode}')">
           <div class="d-flex justify-content-between align-items-center">
              <div class="d-flex align-items-center flex-grow-1" style="min-width: 0;">
@@ -2524,7 +2130,6 @@ async function fetchData(callback) {
     }).join('');
     res.classList.remove('hidden');
   }
-
   function exportCsv() {
     const isG = (currentLocName === "Everywhere");
     let csv = "Barcode,Make,Model,Category,Location,Spot,Type,Quantity,Price\n";
@@ -2534,13 +2139,11 @@ async function fetchData(callback) {
         db.logs.filter(l => l.barcode === i.barcode).forEach(l => {
           if (l.toLoc === loc.locationName && l.subLoc) spotsUsed.add(l.subLoc);
           if (l.fromLoc === loc.locationName && l.subLoc) spotsUsed.add(l.subLoc);
-        });
-        
+        });        
         let defaultQ = getStockBalance(i.barcode, loc.locationName, "");
         if (defaultQ > 0 && (isG || loc.locationName === currentLocName)) {
            csv += `"${i.barcode}","${i.make}","${i.model}","${i.category}","${loc.locationName}","Default","${loc.type}",${defaultQ},${i.price}\n`;
         }
-
         spotsUsed.forEach(spot => {
           let q = getStockBalance(i.barcode, loc.locationName, spot);
           if (q > 0 && (isG || loc.locationName === currentLocName)) {
@@ -2556,10 +2159,8 @@ async function fetchData(callback) {
     a.download = `Inventory_${currentLocName.replace(/\s/g, '_')}.csv`;
     a.click();
   }
-
   function renderGrid() {
-    const sort = document.getElementById('sortSelect').value;
-    
+    const sort = document.getElementById('sortSelect').value;    
     let data = db.locations.filter(loc => loc.status === 'Active').map(loc => {
       let qty = 0, last = null;
       db.logs.forEach(l => {
@@ -2567,8 +2168,7 @@ async function fetchData(callback) {
         if (l.fromLoc === loc.locationName) { qty -= Math.abs(l.quantity); last = l; }
       });
       return { ...loc, qty, last };
-    });
-    
+    });    
     let evQty = 0, evLast = null;
     db.logs.forEach(l => {
         const itm = db.items.find(itm => itm.barcode === l.barcode);
@@ -2579,21 +2179,15 @@ async function fetchData(callback) {
         }
     });
     data.push({ locationName: "Everywhere", type: "Global", deployType: "Physical Space", qty: evQty, last: evLast });
-
     if (sort === "az") {
-      data.sort((a,b) => a.locationName.localeCompare(b.locationName));
-    }
+      data.sort((a,b) => a.locationName.localeCompare(b.locationName));    }
     if (sort === "qtyDesc") data.sort((a,b) => b.qty - a.qty);
-    if (sort === "qtyAsc") data.sort((a,b) => a.qty - b.qty);
-    
+    if (sort === "qtyAsc") data.sort((a,b) => a.qty - b.qty);    
     const buildCard = (l) => {
       let meta = l.last ? `${(l.last.toLoc === l.locationName || l.locationName === "Everywhere") ? "Added" : "Removed"} ${fmtTime(l.last.timestamp)}<br>by ${getUserDisplayName(l.last.userEmail)}` : "No activity";
-      
       let imgHtml = (l.imgFile || l.img) ? `<img src="${l.imgFile || l.img}">` : `<div class="d-flex align-items-center justify-content-center bg-light text-secondary rounded mb-2" style="height:120px; font-size:3rem;">${l.deployType==='Deployable'?'🧰':'🏢'}</div>`;
       if (l.locationName === "Everywhere") imgHtml = `<div class="d-flex align-items-center justify-content-center bg-light text-primary rounded mb-2" style="height:120px; font-size:3rem;">🌎</div>`;
-
       let deployTag = l.deployType === 'Deployable' ? `<div class="cat-badge bg-info text-dark mt-1 mb-2">Deployed: ${l.deployLoc || 'Not Deployed'}</div>` : '';
-
       return `<div class="loc-card" onclick="viewLoc('${l.locationName}', '${l.type}')">
                   ${imgHtml}
                   <h6 class="mb-1">${l.locationName}</h6>
@@ -2603,12 +2197,9 @@ async function fetchData(callback) {
                   <div class="meta-text">${meta}</div>
                 </div>`;
       };
-
     const physicalData = data.filter(l => l.deployType !== 'Deployable');
     const deployableData = data.filter(l => l.deployType === 'Deployable');
-
-    document.getElementById('locationGridPhysical').innerHTML = physicalData.map(buildCard).join('');
-    
+    document.getElementById('locationGridPhysical').innerHTML = physicalData.map(buildCard).join('');    
     const deployableSection = document.getElementById('deployableSection');
     if (deployableData.length > 0) {
        deployableSection.classList.remove('hidden');
@@ -2617,20 +2208,16 @@ async function fetchData(callback) {
        deployableSection.classList.add('hidden');
     }
   }
-
   function viewLoc(n, t, isBack = false) { 
     if (!isBack) history.pushState({ view: 'loc', name: n, type: t }, "");
     hideAll(); 
-    document.getElementById('locationDetail').classList.remove('hidden'); 
-    
+    document.getElementById('locationDetail').classList.remove('hidden');     
     const isGlobal = (n === "Everywhere");
-    document.getElementById('selectedLocTitle').innerText = isGlobal ? "Global - Everywhere" : n;
-    
+    document.getElementById('selectedLocTitle').innerText = isGlobal ? "Global - Everywhere" : n;    
     if (isGlobal || currentUserRole === 'Viewer') {
         document.getElementById('btnEditLocInner').classList.add('hidden');
         document.getElementById('btnAuditLocInner').classList.add('hidden');
     } else {
-        // Operators can Audit, but STILL cannot Edit the location details
         if (currentUserRole === 'Operator') {
             document.getElementById('btnEditLocInner').classList.add('hidden');
         } else {
@@ -2638,14 +2225,11 @@ async function fetchData(callback) {
         }
         document.getElementById('btnAuditLocInner').classList.remove('hidden');
     }
-
     const locInfo = db.locations.find(l => l.locationName === n);
     if (locInfo && !isGlobal) {
-       document.getElementById('locInfoHeader').classList.remove('hidden');
-       
+       document.getElementById('locInfoHeader').classList.remove('hidden');       
        const imgEl = document.getElementById('locDetImg');
-       const emojiEl = document.getElementById('locDetEmoji');
-       
+       const emojiEl = document.getElementById('locDetEmoji');       
        if (locInfo.imgFile || locInfo.img) {
          imgEl.src = locInfo.imgFile || locInfo.img;
          imgEl.classList.remove('hidden');
@@ -2654,20 +2238,16 @@ async function fetchData(callback) {
          imgEl.classList.add('hidden');
          emojiEl.innerText = locInfo.deployType === 'Deployable' ? '🧰' : '🏢';
          emojiEl.classList.remove('hidden');
-       }
-       
-       document.getElementById('locDetType').innerText = locInfo.type;
-       
+       }       
+       document.getElementById('locDetType').innerText = locInfo.type;       
        const deployBadge = document.getElementById('locDetDeploy');
        if (locInfo.deployType === 'Deployable') {
          deployBadge.innerText = `Deployed to: ${locInfo.deployLoc || 'Unknown'}`;
          deployBadge.classList.remove('hidden');
        } else {
          deployBadge.classList.add('hidden');
-       }
-       
-       document.getElementById('locDetDesc').innerText = locInfo.description || "No description provided.";
-       
+       }       
+       document.getElementById('locDetDesc').innerText = locInfo.description || "No description provided.";       
        const notesEl = document.getElementById('locDetNotes');
        if (locInfo.notes) {
          notesEl.innerText = `Notes: ${locInfo.notes}`;
@@ -2678,15 +2258,12 @@ async function fetchData(callback) {
     } else {
        document.getElementById('locInfoHeader').classList.add('hidden');
     }
-
     renderItems(n); 
   }
-
   function renderItems(locName) {
     currentLocName = locName;
     const isG = (locName === "Everywhere");
-    const itemSort = document.getElementById('itemSortSelect').value;
-    
+    const itemSort = document.getElementById('itemSortSelect').value;    
     const stockMap = [];
     db.items.filter(i => i.status === 'Active').forEach(itm => {
       if (isG) {
@@ -2709,7 +2286,6 @@ async function fetchData(callback) {
         }
       }
     });
-
     stockMap.sort((a, b) => {
       switch(itemSort) {
         case 'cat_az': return a.item.category.localeCompare(b.item.category);
@@ -2723,19 +2299,15 @@ async function fetchData(callback) {
         default: return 0;
       }
     });
-
     const cont = document.getElementById('itemsContainer');
     cont.className = (layout === "grid") ? "dynamic-grid" : "";
-    let html = "";
-    
+    let html = "";    
     stockMap.forEach(entry => {
       const itm = entry.item;
       const bc = entry.barcode;
-      const sub = entry.locName;
-      
+      const sub = entry.locName;      
       const locLabel = isG ? entry.locDetails.join('<br>') : getLocLabel(sub);
-      const displayImg = itm.imgFile || itm.img || getPlaceholder(); 
-      
+      const displayImg = itm.imgFile || itm.img || getPlaceholder();      
       const last = [...db.logs].reverse().find(l => l.barcode === bc && (isG || l.toLoc === sub || l.fromLoc === sub));
       let itemMeta = "No record";
       if (last) {
@@ -2744,31 +2316,24 @@ async function fetchData(callback) {
         } else {
           itemMeta = `${Math.abs(last.quantity)} ${last.toLoc === sub ? "added" : "removed"} ${fmtTime(last.timestamp)} by ${getUserDisplayName(last.userEmail)}`;
         }
-      }
-      
+      }      
       if (layout === "grid") {
         html += `<div class="item-card" onclick="viewItem('${bc}')"><img src="${displayImg}"><span class="cat-badge">${itm.category}</span><h6 class="fw-bold mt-2 mb-1">${itm.make} ${itm.model}</h6><div class="qty-bubble mb-2">${entry.qty.toLocaleString('en-US')} Units</div><div class="meta-text">Barcode: ${bc}<br>${itemMeta}</div>${isG ? `<div class="meta-text text-primary fw-bold">${locLabel}</div>` : ''}</div>`;
       } else {
         html += `<div class="item-row" onclick="viewItem('${bc}')"><img src="${displayImg}"><div class="flex-grow-1"><span class="cat-badge">${itm.category}</span><div class="fw-bold">${itm.make} ${itm.model}</div><div class="meta-text">Barcode: ${bc}<br>${itemMeta}</div>${isG ? `<div class="meta-text text-primary mt-1">${locLabel}</div>` : ''}</div><div class="qty-bubble">${entry.qty.toLocaleString('en-US')}</div></div>`;
       }
     });
-
     cont.innerHTML = html || "<p class='text-center py-5'>Empty</p>";
   }
-
   function updateAvailableSpots(target) {
     const locName = document.getElementById(target === 'from' ? 'actLoc' : 'actToLoc').value;
-    const selectEl = document.getElementById(target === 'from' ? 'actSubLoc' : 'actToSubLoc');
-    
+    const selectEl = document.getElementById(target === 'from' ? 'actSubLoc' : 'actToSubLoc');    
     const currentVal = selectEl.value;
-
     const spots = new Set();
-    const stockBySpot = {};
-    
+    const stockBySpot = {};    
     db.logs.forEach(l => {
        if (l.toLoc === locName && l.subLoc) spots.add(l.subLoc);
-       if (l.fromLoc === locName && l.subLoc) spots.add(l.subLoc);
-       
+       if (l.fromLoc === locName && l.subLoc) spots.add(l.subLoc);       
        if (l.barcode === activeBc) {
            const spotKey = l.subLoc || "Default";
            if (!stockBySpot[spotKey]) stockBySpot[spotKey] = 0;
@@ -2776,43 +2341,33 @@ async function fetchData(callback) {
            if (l.fromLoc === locName) stockBySpot[spotKey] -= Math.abs(l.quantity);
        }
     });
-
-    let options = "";
-    
+    let options = "";    
     let defStock = stockBySpot["Default"] || 0;
     let defLabel = defStock > 0 ? `Default (No Specific Spot) [Stock: ${defStock}]` : `Default (No Specific Spot)`;
     options += `<option value="Default">${defLabel}</option>`;
-
     Array.from(spots).sort().forEach(spot => {
         let stk = stockBySpot[spot] || 0;
         let label = stk > 0 ? `${spot} [Stock: ${stk}]` : spot;
         options += `<option value="${spot}">${label}</option>`;
-    });
-    
+    });    
     options += `<option value="NEW_SPOT">+ Add New Spot/Bin...</option>`;
-
-    selectEl.innerHTML = options;
-    
+    selectEl.innerHTML = options;    
     if (Array.from(selectEl.options).some(o => o.value === currentVal)) {
         selectEl.value = currentVal;
     } else {
         selectEl.value = "Default";
-    }
-    
+    }    
     checkNewSpot(target); 
   }
-
   function checkNewSpot(target) {
     const selectEl = document.getElementById(target === 'from' ? 'actSubLoc' : 'actToSubLoc');
     const newSpotContainer = document.getElementById(target === 'from' ? 'newSpotContainer' : 'newToSpotContainer');
-
     if (selectEl.value === "NEW_SPOT") {
         newSpotContainer.classList.remove('hidden');
     } else {
         newSpotContainer.classList.add('hidden');
     }
   }
-
   function getAvailableSerials(barcode, location, subLoc = "") {
     const serials = {};
     db.logs.filter(l => l.barcode === barcode && l.serial).forEach(l => {
@@ -2823,20 +2378,15 @@ async function fetchData(callback) {
     });
     return Object.keys(serials).filter(s => serials[s] > 0).sort();
   }
-
   function updateAvailableSerials() {
     const itm = db.items.find(i => i.barcode === activeBc);
-    if (!itm || itm.serialized !== 'Yes') return;
-    
-    const loc = document.getElementById('actLoc').value;
-    
+    if (!itm || itm.serialized !== 'Yes') return;    
+    const loc = document.getElementById('actLoc').value;    
     let spot = document.getElementById('actSubLoc').value;
     if (spot === "NEW_SPOT") spot = document.getElementById('actNewSpot').value.trim();
     if (spot === "Default") spot = "";
-
     const avSerials = getAvailableSerials(activeBc, loc, spot);
-    const container = document.getElementById('availableSerialsCheckboxes');
-    
+    const container = document.getElementById('availableSerialsCheckboxes');    
     if (avSerials.length === 0) {
       container.innerHTML = `<span class="text-muted small d-block p-2">No serials are currently available at this specific spot.</span>`;
     } else {
@@ -2850,19 +2400,16 @@ async function fetchData(callback) {
       `}).join('');
     }
   }
-
   function refreshItemStockBadges(bc) {
     const itm = db.items.find(i => i.barcode === bc);
     const locs = {};
-    let visibleStockTotal = 0; // NEW: Track how much stock this user is actually allowed to see
-
+    let visibleStockTotal = 0;
     db.logs.filter(l => l.barcode === bc).forEach(l => {
       const toKey = l.toLoc + "|||" + (l.subLoc || "");
       const fromKey = l.fromLoc + "|||" + (l.subLoc || "");
       if(l.toLoc && !["External","Transit","Deployed"].includes(l.toLoc)) locs[toKey] = (locs[toKey] || 0) + l.quantity;
       if(l.fromLoc && !["External","Transit","Deployed"].includes(l.fromLoc)) locs[fromKey] = (locs[fromKey] || 0) - Math.abs(l.quantity);
-    });
-    
+    });    
     let h = "";
     for(let k in locs) {
       if(locs[k] > 0) {
@@ -2870,16 +2417,12 @@ async function fetchData(callback) {
         const locName = parts[0];
         const subLoc = parts[1];
         const locObj = db.locations.find(l => l.locationName === locName);
-        
-        // NEW: LBAC Filter! Hide location if user doesn't have access to it
         if (!locObj && !['Admin', 'Sub-Admin'].includes(currentUserRole)) continue;
-
-        visibleStockTotal += locs[k]; // Add to visible total
+        visibleStockTotal += locs[k];
         const locType = locObj ? locObj.type : 'Unknown';
         const safeK = locName.replace(/'/g, "\\'");
         const safeType = locType.replace(/'/g, "\\'");
-        const displayLabel = subLoc ? `${getLocLabel(locName)} (${subLoc})` : getLocLabel(locName);
-        
+        const displayLabel = subLoc ? `${getLocLabel(locName)} (${subLoc})` : getLocLabel(locName);        
         h += `<span class="badge stock-badge p-2 m-1 d-flex align-items-center" onclick="viewLoc('${safeK}', '${safeType}')">
                 <span class="me-2">${displayLabel}:</span> 
                 <span class="text-primary fs-6">${locs[k].toLocaleString('en-US')}</span>
@@ -2887,7 +2430,6 @@ async function fetchData(callback) {
       }
     }
     document.getElementById('detStock').innerHTML = h || '<span class="text-muted small">No stock in authorized locations.</span>';
-
     const serialListEl = document.getElementById('detSerialList');
     if (itm && itm.serialized === 'Yes') {
       const serialBalances = {};
@@ -2903,26 +2445,21 @@ async function fetchData(callback) {
           if(l.fromLoc && !["External","Transit","Deployed"].includes(l.fromLoc)) {
               serialBalances[s][fromKey] = (serialBalances[s][fromKey] || 0) - Math.abs(l.quantity);
           }
-      });
-      
+      });      
       let serialData = [];
       Object.keys(serialBalances).forEach(s => {
           for (let k in serialBalances[s]) {
               if (serialBalances[s][k] > 0) {
                   const parts = k.split("|||");
                   const locName = parts[0];
-                  
-                  // NEW: LBAC Filter for Serials!
                   const locObj = db.locations.find(l => l.locationName === locName);
                   if (!locObj && !['Admin', 'Sub-Admin'].includes(currentUserRole)) continue;
-
                   const subLoc = parts[1];
                   const displayLabel = subLoc ? `${getLocLabel(locName)} (${subLoc})` : getLocLabel(locName);
                   serialData.push({ serial: s, location: displayLabel });
               }
           }
       });
-
       if (serialData.length > 0) {
           serialData.sort((a, b) => {
              let valA = currentSerialSort.col === 'serial' ? a.serial : a.location;
@@ -2930,7 +2467,6 @@ async function fetchData(callback) {
              let cmp = valA.localeCompare(valB);
              return currentSerialSort.asc ? cmp : -cmp;
           });
-
           let sh = `<div class="w-100 mt-3 mb-1 small fw-bold text-muted text-uppercase">Active Serial Numbers</div>
                     <div class="scroll-area bg-white border w-100" style="max-height: 250px;">
                       <table class="table table-sm table-hover m-0" style="font-size:0.85rem;">
@@ -2940,12 +2476,10 @@ async function fetchData(callback) {
                             <th style="cursor:pointer;" onclick="sortSerials('location')">Location ${currentSerialSort.col === 'location' ? (currentSerialSort.asc ? '▲' : '▼') : '↕'}</th>
                           </tr>
                         </thead>
-                        <tbody>`;
-          
+                        <tbody>`;          
           serialData.forEach(row => {
               sh += `<tr><td class="fw-bold">${row.serial}</td><td><span class="badge bg-info text-dark">${row.location}</span></td></tr>`;
-          });
-          
+          });          
           sh += `</tbody></table></div>`;
           serialListEl.innerHTML = sh;
           serialListEl.classList.remove('hidden');
@@ -2957,8 +2491,6 @@ async function fetchData(callback) {
       serialListEl.innerHTML = "";
       serialListEl.classList.add('hidden');
     }
-
-    // NEW: Update the Total Value text to only reflect stock they are allowed to see
     const unitPrice = parseFloat(itm.price) || 0;
     const localTotalValue = visibleStockTotal * unitPrice;
     let priceText = "";
@@ -2966,7 +2498,6 @@ async function fetchData(callback) {
     if (localTotalValue > 0) priceText += (priceText ? ` | ` : ``) + `Visible Stock Value: ${appCurrency}${localTotalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     document.getElementById('detPrice').innerText = priceText;
   }
-
   function viewItem(bc, isBack = false) { 
     if (!isBack) history.pushState({ view: 'item', bc: bc }, "");
     hideAll(); 
@@ -2978,21 +2509,17 @@ async function fetchData(callback) {
     document.getElementById('detBc').innerText = "Barcode: " + bc;
     document.getElementById('detCat').innerText = itm.category;
     document.getElementById('detImg').src = itm.imgFile || itm.img || getPlaceholder(); 
-    document.getElementById('detSpecsArea').innerHTML = itm.specs ? `<a href="${itm.specs}" target="_blank" class="small fw-bold text-primary">View Technical Specs</a>` : "";
-    
+    document.getElementById('detSpecsArea').innerHTML = itm.specs ? `<a href="${itm.specs}" target="_blank" class="small fw-bold text-primary">View Technical Specs</a>` : "";    
     if (currentUserRole === 'Admin' || currentUserRole === 'Manager') {
         document.getElementById('btnEditItemInner').classList.remove('hidden');
     } else {
         document.getElementById('btnEditItemInner').classList.add('hidden');
     }
-
     refreshItemStockBadges(bc);
-
     document.getElementById('toLocContainer').classList.add('hidden');
     document.getElementById('toSubLocContainer').classList.add('hidden');
     document.getElementById('btnMove').innerText = 'MOVE';
-    document.getElementById('actQty').value = '1';
-    
+    document.getElementById('actQty').value = '1';    
     document.getElementById('actNewSpot').value = '';
     document.getElementById('actNewToSpot').value = '';
     document.getElementById('newSpotContainer').classList.add('hidden');
@@ -3001,11 +2528,9 @@ async function fetchData(callback) {
     document.getElementById('successMsg').classList.add('hidden');
     document.getElementById('btnIn').disabled = false;
     document.getElementById('btnOut').disabled = false;
-    document.getElementById('btnMove').disabled = false;
-    
+    document.getElementById('btnMove').disabled = false;    
     updateAvailableSpots('from');
     updateAvailableSpots('to');
-
     if (itm.serialized === 'Yes') {
       document.getElementById('detSerialized').classList.remove('hidden');
       document.getElementById('qtyContainer').classList.add('hidden');
@@ -3017,9 +2542,7 @@ async function fetchData(callback) {
       document.getElementById('qtyContainer').classList.remove('hidden');
       document.getElementById('serialContainer').classList.add('hidden');
     }
-
-    document.getElementById('detDesc').innerText = itm.description || "No description provided.";
-    
+    document.getElementById('detDesc').innerText = itm.description || "No description provided.";    
     const notesEl = document.getElementById('detNotes');
     if (itm.notes) {
        notesEl.innerText = "Notes: " + itm.notes;
@@ -3027,11 +2550,9 @@ async function fetchData(callback) {
     } else {
        notesEl.classList.add('hidden');
     }
-
     let hist = last ? `<b>Last Transaction:</b><br>${Math.abs(last.quantity)} ${last.quantity > 0 ? "added to" : "removed from"} ${last.quantity > 0 ? getLocLabel(last.toLoc) : getLocLabel(last.fromLoc)} on ${fmtTime(last.timestamp)}<br>By: ${getUserDisplayName(last.userEmail)}` : "No history.";
     document.getElementById('detUpdate').innerHTML = hist;
   }
-
   function handleMoveClick() {
     const toCont = document.getElementById('toLocContainer');
     if (toCont.classList.contains('hidden')) {
@@ -3042,42 +2563,31 @@ async function fetchData(callback) {
       submitInline('Move');
     }
   }
-
   async function submitInline(action) {
     document.getElementById('errorMsg').classList.add('hidden');
-    document.getElementById('successMsg').classList.add('hidden');
-    
-    const itm = db.items.find(i => i.barcode === activeBc);
-    
+    document.getElementById('successMsg').classList.add('hidden');    
+    const itm = db.items.find(i => i.barcode === activeBc);    
     const fromLoc = document.getElementById('actLoc').value;
     let fromSubLoc = document.getElementById('actSubLoc').value;
     if (fromSubLoc === "NEW_SPOT") fromSubLoc = document.getElementById('actNewSpot').value.trim();
     if (fromSubLoc === "Default") fromSubLoc = "";
-
     const toLoc = document.getElementById('actToLoc').value;
     let toSubLoc = document.getElementById('actToSubLoc').value;
     if (toSubLoc === "NEW_SPOT") toSubLoc = document.getElementById('actNewToSpot').value.trim();
-    if (toSubLoc === "Default") toSubLoc = "";
-    
+    if (toSubLoc === "Default") toSubLoc = "";    
     let qty = 0;
     let serialsArray = [];
-
     if (document.getElementById('actSubLoc').value === "NEW_SPOT" && !fromSubLoc) { showError("Please enter a name for the new From Spot/Bin."); return; }
     if (action === 'Move' && document.getElementById('actToSubLoc').value === "NEW_SPOT" && !toSubLoc) { showError("Please enter a name for the new Destination Spot/Bin."); return; }
-
     if (itm.serialized === 'Yes') {
       const rawIn = document.getElementById('actSerialsIn').value;
-      const scannedSerials = rawIn.split(/[\n,]+/).map(s => s.trim().toUpperCase()).filter(s => s !== "");
-      
+      const scannedSerials = rawIn.split(/[\n,]+/).map(s => s.trim().toUpperCase()).filter(s => s !== "");      
       const checkboxes = document.querySelectorAll('.serial-check:checked');
       const checkedSerials = [];
       checkboxes.forEach(cb => checkedSerials.push(cb.value.toUpperCase()));
-
       serialsArray = [...new Set([...scannedSerials, ...checkedSerials])];
-      qty = serialsArray.length;
-      
+      qty = serialsArray.length;      
       if (qty === 0) { showError(`Please scan or select at least one serial number to ${action.toUpperCase()}.`); return; }
-
       if (action === 'In') {
         let duplicate = false;
         serialsArray.forEach(s => {
@@ -3089,14 +2599,12 @@ async function fetchData(callback) {
            if (bal > 0) duplicate = s;
         });
         if (duplicate) { showError(`Serial number [${duplicate}] is already active in your inventory.`); return; }
-
       } else { 
         const availableAtFrom = getAvailableSerials(activeBc, fromLoc, fromSubLoc).map(s => s.toUpperCase());
         let missing = false;
         serialsArray.forEach(s => {
             if (!availableAtFrom.includes(s)) missing = s;
-        });
-        
+        });        
         if (missing) {
             const spotText = fromSubLoc ? ` (${fromSubLoc})` : "";
             showError(`Serial number [${missing}] is not currently located at ${getLocLabel(fromLoc)}${spotText}.`);
@@ -3108,13 +2616,11 @@ async function fetchData(callback) {
       qty = parseFloat(document.getElementById('actQty').value);
       if (isNaN(qty) || qty <= 0) { showError("Please enter a valid quantity greater than 0."); return; }
     }
-
     if (!fromLoc) { showError("Please select a location."); return; }
     if (action === 'Move') {
       if (!toLoc) { showError("Please select a destination location to move items to."); return; }
       if (fromLoc === toLoc && fromSubLoc === toSubLoc) { showError("Cannot move to the exact same location and spot."); return; }
-    }
-    
+    }    
     if (action === 'Out' || action === 'Move') {
       const available = getStockBalance(activeBc, fromLoc, fromSubLoc);
       if (qty > available) {
@@ -3123,16 +2629,13 @@ async function fetchData(callback) {
         return;
       }
     }
-
     document.getElementById('btnIn').disabled = true;
     document.getElementById('btnOut').disabled = true;
-    document.getElementById('btnMove').disabled = true;
-    
+    document.getElementById('btnMove').disabled = true;    
     const timestamp = new Date().toISOString();
     const injectLog = (f, t, q, tx, ser, sL) => {
       db.logs.unshift({ timestamp: timestamp, userEmail: currentUserEmail, barcode: activeBc, fromLoc: f, toLoc: t, quantity: q, type: tx, serial: ser, subLoc: sL });
     };
-
     if (itm.serialized === 'Yes') {
       serialsArray.forEach(s => {
         if (action === 'In') injectLog("External", toLoc, 1, "In", s, toSubLoc);
@@ -3150,10 +2653,8 @@ async function fetchData(callback) {
         injectLog("Transit", toLoc, qty, "Move-In", "", toSubLoc);
       }
     }
-
     viewItem(activeBc); 
     showSuccess(`Successfully processed ${qty} unit(s).`);
-
     let payload = { 
       barcode: activeBc, 
       transactionType: action, 
@@ -3164,7 +2665,6 @@ async function fetchData(callback) {
       toSubLoc: (action === 'In') ? fromSubLoc : toSubLoc,
       serials: serialsArray 
     };
-
     try {
       await apiCall('processTransaction', { data: payload });
       setTimeout(silentSync, 2000);
@@ -3172,53 +2672,43 @@ async function fetchData(callback) {
       showError("Transaction Failed: " + err.message);
     }
   }
-
   function showError(msg) {
     const err = document.getElementById('errorMsg');
     err.innerText = msg;
     err.classList.remove('hidden');
   }
-
   function showSuccess(msg) {
     const succ = document.getElementById('successMsg');
     succ.innerText = msg;
     succ.classList.remove('hidden');
     setTimeout(() => succ.classList.add('hidden'), 5000); 
   }
-
   function showGrid(isBack = false) { 
     if (!isBack) history.pushState({ view: 'grid' }, "");
     hideAll(); 
     renderGrid(); 
     document.getElementById('gridView').classList.remove('hidden'); 
   }
-
   function showView(v) { 
     document.getElementById('viewInventory').classList.toggle('hidden', v !== 'inventory'); 
-    document.getElementById('viewManagement').classList.toggle('hidden', v !== 'management'); 
-    
+    document.getElementById('viewManagement').classList.toggle('hidden', v !== 'management');    
     applyRolePermissions();
-    clearSearch(); 
-    
+    clearSearch();    
     if(v === 'inventory') {
       history.pushState({ view: 'grid' }, "");
       showGrid(true); 
     } else {
       history.pushState({ view: 'mgmt', tab: 'dash' }, "");
       switchMgmt('dash', true);
-      setTimeout(updateTabArrows, 50); // Refresh arrow visibility when opening mgmt
+      setTimeout(updateTabArrows, 50);
     }
   }
-
-  // --- SCROLLABLE TABS ENGINE ---
   function updateTabArrows() {
     const tabs = document.getElementById('mgmtTabs');
     const leftBtn = document.getElementById('scrollLeftBtn');
     const rightBtn = document.getElementById('scrollRightBtn');
-    if (!tabs || !leftBtn || !rightBtn) return;
-    
-    const isScrollable = tabs.scrollWidth > tabs.clientWidth;
-    
+    if (!tabs || !leftBtn || !rightBtn) return;    
+    const isScrollable = tabs.scrollWidth > tabs.clientWidth;    
     if (isScrollable) {
       leftBtn.classList.toggle('visible', tabs.scrollLeft > 5);
       rightBtn.classList.toggle('visible', Math.ceil(tabs.scrollLeft + tabs.clientWidth) < tabs.scrollWidth - 5);
@@ -3227,12 +2717,10 @@ async function fetchData(callback) {
       rightBtn.classList.remove('visible');
     }
   }
-
   function scrollTabs(offset) {
     const tabs = document.getElementById('mgmtTabs');
     if (tabs) tabs.scrollLeft += offset;
   }
-
   document.addEventListener('DOMContentLoaded', () => {
     const tabs = document.getElementById('mgmtTabs');
     if (tabs) {
@@ -3240,32 +2728,23 @@ async function fetchData(callback) {
       window.addEventListener('resize', updateTabArrows);
     }
   });
-
-  // --- GDPR CONSENT ENGINE ---
   function checkGDPR() {
     if (!localStorage.getItem('ims_gdpr_consent')) {
-      // Small delay so it smoothly slides up after the app loads
       setTimeout(() => {
         document.getElementById('gdprBanner').classList.add('visible');
       }, 1000);
     }
   }
-
   function acceptGDPR() {
     localStorage.setItem('ims_gdpr_consent', 'true');
     document.getElementById('gdprBanner').classList.remove('visible');
   }
-
-  // Hook GDPR check into the initial page load
   document.addEventListener('DOMContentLoaded', () => {
     checkGDPR();
   });
-
-  // --- BACK TO TOP ENGINE ---
   function scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-
   window.addEventListener('scroll', () => {
     const bttBtn = document.getElementById('backToTopBtn');
     if (bttBtn) {
@@ -3275,13 +2754,11 @@ async function fetchData(callback) {
             bttBtn.classList.remove('visible');
         }
     }
-  });
-  
+  });  
   function switchMgmt(t, isBack = false) { 
     if (!isBack) history.pushState({ view: 'mgmt', tab: t }, "");
     ['mDash','mItem','mLoc','mLog', 'mUser', 'mTheme'].forEach(id => document.getElementById(id).classList.add('hidden'));
-    ['t0','t1','t2','t3', 't4', 't5'].forEach(id => document.getElementById(id).classList.remove('active'));
-    
+    ['t0','t1','t2','t3', 't4', 't5'].forEach(id => document.getElementById(id).classList.remove('active'));    
     if(t === 'dash') { 
       document.getElementById('mDash').classList.remove('hidden'); 
       document.getElementById('t0').classList.add('active'); 
@@ -3307,43 +2784,32 @@ async function fetchData(callback) {
       document.getElementById('t4').classList.add('active'); 
       updateMgmtTables(); 
     }
-    // NEW: Open the Theme tab and populate fields
     if(t === 'theme') {
       document.getElementById('mTheme').classList.remove('hidden'); 
       document.getElementById('t5').classList.add('active');
       populateThemeForm();
     }
-  }
-  
+  }  
   function toggleLayout() { layout = document.getElementById('layoutToggle').checked ? "list" : "grid"; renderItems(currentLocName); }
   function hideAll() { 
 	 ['gridView','locationDetail','itemDetail','searchResults'].forEach(id => document.getElementById(id).classList.add('hidden')); 
-	document.getElementById('searchInput').value = ""; // NEW: Clears text on internal navigation
+	document.getElementById('searchInput').value = "";
   }
-  function clearSearch() { document.getElementById('searchInput').value = ""; document.getElementById('searchResults').classList.add('hidden'); }
-  
+  function clearSearch() { document.getElementById('searchInput').value = ""; document.getElementById('searchResults').classList.add('hidden'); }  
   function fillSelects() { 
     const actLocEl = document.getElementById('actLoc');
-    const actToLocEl = document.getElementById('actToLoc');
-    
+    const actToLocEl = document.getElementById('actToLoc');    
     const currFrom = actLocEl.value;
     const currTo = actToLocEl.value;
-
     const sortedLocs = [...db.locations].filter(l => l.status === 'Active').sort((a, b) => a.locationName.localeCompare(b.locationName));
-    const h = sortedLocs.map(l => `<option value="${l.locationName}">${l.type} - ${l.locationName}</option>`).join(''); 
-    
+    const h = sortedLocs.map(l => `<option value="${l.locationName}">${l.type} - ${l.locationName}</option>`).join('');     
     actLocEl.innerHTML = h; 
-    actToLocEl.innerHTML = h; 
-    
+    actToLocEl.innerHTML = h;     
     if (currFrom && Array.from(actLocEl.options).some(o => o.value === currFrom)) actLocEl.value = currFrom;
-    if (currTo && Array.from(actToLocEl.options).some(o => o.value === currTo)) actToLocEl.value = currTo;
-    
+    if (currTo && Array.from(actToLocEl.options).some(o => o.value === currTo)) actToLocEl.value = currTo;    
     updateAvailableSpots('from');
     updateAvailableSpots('to');
   }
-  
-// --- MANAGEMENT & STATUS TOGGLES ---
-
   async function renameSpot(locName, oldSpot) {
       const newSpot = prompt(`Enter new name to replace "${oldSpot}":`, oldSpot);
       if (!newSpot || newSpot.trim() === "" || newSpot === oldSpot) return;
@@ -3356,7 +2822,6 @@ async function fetchData(callback) {
           document.getElementById('spotManagerTitle').innerText = `Manage Spots: ${locName}`;
       }
   }
-
   async function deleteSpot(locName, oldSpot) {
       if (!confirm(`Are you sure you want to delete "${oldSpot}"?\n\nAny items currently in this spot will be moved to the Default (blank) spot for ${locName}.`)) return;
       document.getElementById('spotManagerTitle').innerText = "Processing...";
@@ -3368,14 +2833,12 @@ async function fetchData(callback) {
           document.getElementById('spotManagerTitle').innerText = `Manage Spots: ${locName}`;
       }
   }
-
   async function updateMinVal(bc, val) {
       try {
           await apiCall('updateMinStock', { data: { barcode: bc, newVal: val } });
           fetchData();
       } catch (err) { alert("Error: " + err.message); }
   }
-
   async function toggleStatusI(bc, current) {
       const next = current === 'Active' ? 'Inactive' : 'Active';
       if (next === 'Inactive' && getStockBalance(bc) !== 0) return alert("Safety Net: Cannot disable while stock remains.");
@@ -3384,7 +2847,6 @@ async function fetchData(callback) {
           fetchData();
       } catch (err) { alert("Error: " + err.message); }
   }
-
   async function toggleStatusL(name, type, current) {
       const next = current === 'Active' ? 'Inactive' : 'Active';
       let total = 0;
@@ -3395,7 +2857,6 @@ async function fetchData(callback) {
           fetchData();
       } catch (err) { alert("Error: " + err.message); }
   }
-
   async function toggleStatusU(email, current) {
       const next = current === 'Active' ? 'Inactive' : 'Active';
       if (email.toLowerCase() === currentUserEmail.toLowerCase()) return alert("Safety Net: You cannot disable your own account.");
@@ -3404,28 +2865,21 @@ async function fetchData(callback) {
           fetchData();
       } catch (err) { alert("Error: " + err.message); }
   }
-
-  // --- FORM SAVING LOGIC (ITEMS, LOCATIONS, USERS) ---
-
   async function saveOrUpdateItem(mode) {
-      // NEW: Check for barcode before doing anything else!
       const barcodeVal = document.getElementById('mBc').value.trim();
       if (!barcodeVal) {
           alert("Error: Barcode is a required field.");
-          return; // Stop the script here
+          return;
       }
-
       const btn = document.getElementById('btnSaveItem');
       const originalText = btn.innerText;
       btn.disabled = true;
       btn.innerText = "Processing Data...";
-
       const fileInput = document.getElementById('mImgFile');
       const file = fileInput.files[0];
       let cleanPrice = document.getElementById('mPrice').value.replace(/[^0-9.-]+/g,"");
-
       let payload = {
-          barcode: barcodeVal, // Use our validated variable
+          barcode: barcodeVal,
           make: document.getElementById('mMake').value,
           model: document.getElementById('mModel').value,
           category: document.getElementById('mCat').value,
@@ -3437,7 +2891,6 @@ async function fetchData(callback) {
           notes: document.getElementById('mNotes').value,
           serialized: document.getElementById('mSerialized').value
       };
-
       const executeItem = async () => {
           try {
               if (mode === 'edit') await apiCall('updateExistingItem', { data: payload });
@@ -3451,7 +2904,6 @@ async function fetchData(callback) {
               btn.innerText = originalText;
           }
       };
-
       if (file) {
           btn.innerText = "Uploading Image...";
           const reader = new FileReader();
@@ -3466,20 +2918,15 @@ async function fetchData(callback) {
           executeItem();
       }
   }
-
   async function saveOrUpdateLoc(mode) {
       const btn = document.getElementById('btnSaveLoc');
       const originalText = btn.innerText;
       btn.disabled = true;
       btn.innerText = "Processing Data...";
-
       const fileInput = document.getElementById('mLImgFile');
       const file = fileInput.files[0];
-
-      // NEW: Harvest the checked groups from the new UI
       let checkedGroups = [];
       document.querySelectorAll('.l-group-check:checked').forEach(cb => checkedGroups.push(cb.value));
-
       let payload = {
           name: document.getElementById('mLname').value,
           type: document.getElementById('mLtype').value,
@@ -3488,9 +2935,8 @@ async function fetchData(callback) {
           description: document.getElementById('mLDesc').value,
           img: document.getElementById('mLImg').value,
           notes: document.getElementById('mLNotes').value,
-          lbacGroups: checkedGroups.join(', ') // Saves the checked list
+          lbacGroups: checkedGroups.join(', ')
       };
-
       const executeLoc = async () => {
           try {
               if (mode === 'edit') await apiCall('updateExistingLocation', { data: payload });
@@ -3504,7 +2950,6 @@ async function fetchData(callback) {
               btn.innerText = originalText;
           }
       };
-
       if (file) {
           btn.innerText = "Uploading Image...";
           const reader = new FileReader();
@@ -3519,34 +2964,28 @@ async function fetchData(callback) {
           executeLoc();
       }
   }
-
   async function saveOrUpdateUser(mode) {
       const btn = document.getElementById('btnSaveUser');
       const originalText = btn.innerText;
       btn.disabled = true;
       btn.innerText = "Processing Data...";
-
-      // NEW: Gather selected locations
       const role = document.getElementById('uRole').value;
       let locs = [];
       if (role === 'Manager' || role === 'Operator' || role === 'Viewer') {
           document.querySelectorAll('.u-loc-check:checked').forEach(cb => locs.push(cb.value));
       }
-
       let payload = {
           name: document.getElementById('uName').value,
           email: document.getElementById('uEmail').value,
           role: role,
-          locations: locs.join(','), // NEW: Attach LBAC string
+          locations: locs.join(','),
           mode: mode
-      };
-      
+      };      
       if (!payload.email || !payload.role) {
          alert("Please provide both an email and a role.");
          btn.disabled = false; btn.innerText = originalText;
          return;
       }
-
       try {
           await apiCall('saveOrUpdateUser', { data: payload });
           await fetchData();
@@ -3558,27 +2997,17 @@ async function fetchData(callback) {
           btn.innerText = originalText;
       }
   }
-
-// --- IMAGE LIGHTBOX LOGIC ---
   function openLightbox(imageSrc) {
-      // Prevent zooming in on the generic "No Image" placeholder
-      if (imageSrc.includes('dummyimage.com')) return; 
-      
+      if (imageSrc.includes('dummyimage.com')) return;       
       document.getElementById('lightboxImg').src = imageSrc;
       document.getElementById('imageLightbox').classList.remove('hidden');
   }
-
   function closeLightbox() {
       document.getElementById('imageLightbox').classList.add('hidden');
-      // Clear the image source after it hides so the old image doesn't flash next time it opens
       setTimeout(() => { document.getElementById('lightboxImg').src = ""; }, 200);
   }
-
-// --- HTML5-QRCODE LIVE CAMERA LOGIC ---
-  
   let html5QrCode;
   let currentTargetInput = "";
-
   function playBeep() {
       try {
           const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -3595,11 +3024,9 @@ async function fetchData(callback) {
           osc.stop(ctx.currentTime + 0.15); 
       } catch (e) { console.warn("Beep audio not supported on this browser."); }
   }
-
   function startCamera(targetId) {
       currentTargetInput = targetId;
-      document.getElementById('cameraOverlay').classList.remove('hidden');
-      
+      document.getElementById('cameraOverlay').classList.remove('hidden');      
       if (targetId === 'actSerialsIn' || targetId === 'saScanInput') {
           document.getElementById('cameraModalTitle').innerText = "Continuous Serial Scan";
           document.getElementById('cameraModalInstructions').innerText = "Scan serials one by one. They will be added automatically.";
@@ -3607,7 +3034,6 @@ async function fetchData(callback) {
           document.getElementById('cameraModalTitle').innerText = "Scan Barcode";
           document.getElementById('cameraModalInstructions').innerText = "Point camera at a barcode. It will close automatically.";
       }
-
       html5QrCode = new Html5Qrcode("reader");
       html5QrCode.start(
           { facingMode: "environment" }, 
@@ -3619,7 +3045,6 @@ async function fetchData(callback) {
           stopCamera();
       });
   }
-
   function stopCamera() {
       if (html5QrCode) {
           html5QrCode.stop().then(() => {
@@ -3632,48 +3057,33 @@ async function fetchData(callback) {
           document.getElementById('cameraOverlay').classList.add('hidden');
       }
   }
-
   let lastScannedText = "";
   let lastScanTime = 0;
-
   function onScanSuccess(decodedText, decodedResult) {
       const now = Date.now();
-      if (decodedText === lastScannedText && (now - lastScanTime) < 1500) return; 
-      
+      if (decodedText === lastScannedText && (now - lastScanTime) < 1500) return;      
       lastScannedText = decodedText;
       lastScanTime = now;
-      playBeep(); 
-
+      playBeep();
       const inputEl = document.getElementById(currentTargetInput);
       if (!inputEl) return;
-
       if (currentTargetInput === 'actSerialsIn' || currentTargetInput === 'saScanInput') {
           let currentVal = inputEl.value;
-          if (currentVal.length > 0 && !currentVal.endsWith('\n')) currentVal += '\n'; 
-          
-          inputEl.value = currentVal + decodedText + '\n';
-          
+          if (currentVal.length > 0 && !currentVal.endsWith('\n')) currentVal += '\n';          
+          inputEl.value = currentVal + decodedText + '\n';          
           const overlay = document.getElementById('cameraOverlay');
           overlay.style.backgroundColor = "rgba(40, 167, 69, 0.9)";
           setTimeout(() => overlay.style.backgroundColor = "rgba(0,0,0,0.85)", 300);
       } else {
           inputEl.value = decodedText;
-          
-          // 1. Close the camera FIRST so it never gets stuck
           stopCamera();
-          
-          // 2. Safely trigger the search function natively
           if (currentTargetInput === 'searchInput') {
               inputEl.dispatchEvent(new Event('input')); 
           }
       }
   }
-
   function onScanFailure(error) {
-      // Ignored to prevent console spam
   }
-
-// --- LOCATION GROUPS UI LOGIC ---
   function renderLocGroupsUI(assignedStr = "") {
       const assigned = assignedStr.split(',').map(s => s.trim().toLowerCase()).filter(s => s);
       const container = document.getElementById('locGroupChecklist');
@@ -3684,15 +3094,11 @@ async function fetchData(callback) {
               if (l.lbacGroups) l.lbacGroups.split(',').forEach(g => { if(g.trim()) allGroups.add(g.trim()); });
           });
       }
-      
-      // Include currently assigned groups (even if they don't exist in the DB yet)
       assignedStr.split(',').forEach(g => { if(g.trim()) allGroups.add(g.trim()); });
-
       if (allGroups.size === 0) {
           container.innerHTML = '<small class="text-muted">No groups exist yet. Create one below.</small>';
           return;
       }
-
       container.innerHTML = Array.from(allGroups).sort().map(g => {
           const isChecked = assigned.includes(g.toLowerCase()) ? 'checked' : '';
           const safeVal = g.replace(/"/g, '&quot;');
@@ -3704,15 +3110,12 @@ async function fetchData(callback) {
           `;
       }).join('');
   }
-
   function addNewGroupTag() {
       const input = document.getElementById('newLocGroupIn');
       const newTag = input.value.trim();
-      if (!newTag) return;
-      
+      if (!newTag) return;      
       const container = document.getElementById('locGroupChecklist');
-      if (container.innerHTML.includes('No groups exist')) container.innerHTML = '';
-      
+      if (container.innerHTML.includes('No groups exist')) container.innerHTML = '';      
       const safeVal = newTag.replace(/"/g, '&quot;');
       if (!document.getElementById(`lgrp_${safeVal}`)) {
           const html = `
@@ -3725,40 +3128,31 @@ async function fetchData(callback) {
       }
       input.value = "";
   }
-
-// --- THEME / TEMPLATE MANAGER LOGIC ---
   function populateThemeForm() {
       if (!db.template) return;
       const t = db.template;
       const keys = ['appTitle','appShortName','companyName','developerName','loginUseShortName','footerText','adminContact','currencySymbol','logoUrl','defaultImgUrl','googleClientId','driveFolderId','syncInterval','lightTheme','darkTheme','lightBg','lightCard','lightText','darkBg','darkCard','darkText'];
-      
       keys.forEach(k => {
           const el = document.getElementById('cfg_' + k);
           if (el && t[k]) {
               el.value = t[k];
-              // Update the color picker box visually if it's a color field
               const colorEl = document.getElementById('cfg_' + k + '_color');
               if (colorEl) colorEl.value = t[k];
           }
       });
   }
-
   async function saveThemeSettings() {
       const btn = document.getElementById('btnSaveTheme');
       btn.innerText = "Saving & Applying...";
       btn.disabled = true;
-
       const keys = ['appTitle','appShortName','companyName','developerName','loginUseShortName','footerText','adminContact','currencySymbol','logoUrl','defaultImgUrl','googleClientId','driveFolderId','syncInterval','lightTheme','darkTheme','lightBg','lightCard','lightText','darkBg','darkCard','darkText'];
-      const payload = {};
-      
+      const payload = {};      
       keys.forEach(k => {
           const el = document.getElementById('cfg_' + k);
           if (el) payload[k] = el.value.trim();
       });
-
       try {
           await apiCall('saveTemplateSettings', { data: payload });
-          // Force a hard reload so new CSS variables, logos, and Google Client ID re-initialize cleanly
           window.location.reload(); 
       } catch (err) {
           alert("Error saving theme: " + err.message);
@@ -3766,25 +3160,19 @@ async function fetchData(callback) {
           btn.disabled = false;
       }
   }
-
-// --- LEGAL & PRIVACY LOGIC ---
   function showLegalModal(e) {
-      if (e) e.preventDefault();
-      
+      if (e) e.preventDefault();      
       const t = db.template || {};
       const company = t.companyName || "The Company";
       const dev = t.developerName || "Jack Vu";
       const appName = t.appTitle || "Inventory Management System";
       const contact = t.adminContact || "your system administrator";
       const contactLink = t.adminContact ? `mailto:${t.adminContact}` : '#';
-
       const legalHtml = `
         <h6 class="fw-bold" style="color: var(--brand-color);">1. Introduction & Acceptance</h6>
         <p>This Privacy Policy and Terms of Service govern the use of the ${appName} ("The Application"). By accessing, authenticating, or utilizing this system, you ("The User") agree to be bound by these terms in full. If you do not agree to these terms, you must exit The Application immediately.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--brand-color);">2. Intellectual Property & Ownership</h6>
         <p>The Application was independently architected, engineered, and developed by <span class="fw-bold">${dev}</span> on personal time. It utilizes open-source UI frameworks (GitHub Pages) and Google Workspace APIs (Apps Script, Sheets, Drive). While the inventory data processed within The Application is the exclusive property of <span class="fw-bold">${company}</span>, the underlying architecture, logic, source code, and design patterns of The Application remain the sole intellectual property of <span class="fw-bold">${dev}</span>, unless otherwise stipulated in a formally executed written agreement.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--brand-color);">3. Data Collection, Privacy, CCPA & GDPR Compliance</h6>
         <p>In compliance with the California Consumer Privacy Act (CCPA), the General Data Protection Regulation (GDPR), and applicable state laws, we disclose the following regarding data processing:</p>
         <ul>
@@ -3793,37 +3181,26 @@ async function fetchData(callback) {
           <li><strong>User Rights (GDPR/CCPA):</strong> You retain the right to request access to, rectification of, or erasure (Right to be Forgotten) of your personal data. Note that erasure of immutable audit logs may be legally restricted by <span class="fw-bold">${company}</span>'s legitimate compliance or security requirements.</li>
           <li><strong>Third-Party Sharing:</strong> Zero user or inventory data is sold, monetized, or shared with external third parties. All data is securely contained within <span class="fw-bold">${company}</span>'s Google Workspace infrastructure.</li>
         </ul>
-
         <h6 class="fw-bold mt-4" style="color: var(--brand-color);">4. Prohibited Data & Sensitive Information</h6>
         <p>The Application is designed exclusively for standard physical inventory tracking and is <strong>NOT</strong> compliant with HIPAA, FERPA, or PCI-DSS standard out-of-the-box. Users are strictly prohibited from entering, uploading, or storing highly sensitive regulated data within any text field, note, or image upload. This includes, but is not limited to: Protected Health Information (PHI), Personally Identifiable Information (PII) of minors, Social Security Numbers, or primary payment card details.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--brand-color);">5. System Security & Acceptable Use</h6>
         <p>Access to the backend infrastructure is strictly restricted. You agree to interface with The Application solely through the provided front-end User Interface. You agree not to reverse engineer, scrape, bypass security protocols, or intentionally disrupt the API. You are solely responsible for maintaining the security of your Google account credentials.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--brand-color);">6. Disclaimer of Warranties ("As-Is" Provision)</h6>
         <p>The Application is provided strictly "AS IS" and "AS AVAILABLE" without any warranties of any kind, whether express, implied, or statutory. <span class="fw-bold">${dev}</span> expressly disclaims any implied warranties of merchantability, fitness for a particular purpose, non-infringement, or guarantee of continuous, error-free operation.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--brand-color);">7. Limitation of Liability & Indemnification</h6>
         <p>Under no circumstances shall <span class="fw-bold">${dev}</span> be held liable for any direct, indirect, incidental, consequential, or special damages arising out of or in connection with your use of The Application. This includes, but is not limited to, data loss, inventory discrepancies, business interruption, or financial loss. By using this system, <span class="fw-bold">${company}</span> and its authorized users agree to indemnify and hold harmless <span class="fw-bold">${dev}</span> from any claims, damages, or liabilities resulting from its use.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--brand-color);">8. Modifications & Governing Law</h6>
         <p>These terms may be updated at any time. Continued use of The Application implies ongoing consent to any revisions. These terms shall be governed by and construed in accordance with the laws of the State of California and the State of Arizona, without regard to conflict of law principles.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--brand-color);">9. Contact & Data Privacy Requests</h6>
         <p>If you wish to request a record of your data, report a vulnerability, or request the deletion of your user profile in accordance with state or international privacy rights, please contact: <a href="${contactLink}" class="fw-bold" style="color: var(--brand-color);">${contact}</a>.</p>
       `;
-
-      document.getElementById('legalModalBody').innerHTML = legalHtml;
-      
+      document.getElementById('legalModalBody').innerHTML = legalHtml;      
       const legalModal = new bootstrap.Modal(document.getElementById('legalModal'));
       legalModal.show();
   }
-
-// --- BROWSER HISTORY ENGINE ---
   window.addEventListener('popstate', (e) => {
       if (e.state) {
-          const state = e.state;
-          
+          const state = e.state;          
           if (state.view === 'mgmt') {
               document.getElementById('viewInventory').classList.add('hidden');
               document.getElementById('viewManagement').classList.remove('hidden');
@@ -3833,17 +3210,14 @@ async function fetchData(callback) {
           }
           applyRolePermissions();
           clearSearch();
-
           if (state.view === 'grid') showGrid(true);
           else if (state.view === 'loc') viewLoc(state.name, state.type, true);
           else if (state.view === 'item') viewItem(state.bc, true);
-          else if (state.view === 'mgmt') switchMgmt(state.tab, true);
-          
+          else if (state.view === 'mgmt') switchMgmt(state.tab, true);          
       } else {
           showGrid(true);
       }
   });
-
 </script>
 </body>
 </html>
