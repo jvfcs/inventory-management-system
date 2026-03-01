@@ -497,6 +497,19 @@
             </div>
         </div>
 
+        <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom border-primary pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashGroups" aria-expanded="true">
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0">Location Groups</h6>
+            <span class="text-primary fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseDashGroups" class="collapse show mb-4 bg-light p-3 rounded border">
+            <select id="dashGroupSelect" class="form-select border-primary mb-3 shadow-sm" onchange="renderDashGroupCards()">
+                <option value="">Select an Access Group...</option>
+            </select>
+            <div class="row g-3" id="dashLocationCardsGroup">
+                <div class="col-12 text-muted small">Please select a group from the dropdown to view its locations.</div>
+            </div>
+        </div>
+
         <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashPhys" aria-expanded="true">
             <h6 class="fw-bold text-uppercase letter-spacing-1 text-muted small m-0">Physical Spaces</h6>
             <span class="text-muted fw-bold toggle-icon">▼</span>
@@ -1207,20 +1220,24 @@
   function applyRolePermissions() {
       const isMgmtActive = !document.getElementById('viewManagement').classList.contains('hidden');
       
-      // UPDATED: Added Sub-Admin to the management view logic
+      // UPDATED: Management & Edit Permissions
       if (currentUserRole === 'Admin' || currentUserRole === 'Sub-Admin' || currentUserRole === 'Manager') {
           document.getElementById('btnNavManagement').classList.toggle('d-none', isMgmtActive);
-          
           document.getElementById('btnEditLocInner').classList.remove('hidden');
           document.getElementById('btnEditItemInner').classList.remove('hidden');
-          document.getElementById('btnAuditLocInner').classList.remove('hidden');
-          document.getElementById('btnCsvLoc').classList.remove('hidden'); // NEW: Show CSV
+          document.getElementById('btnCsvLoc').classList.remove('hidden'); 
       } else {
           document.getElementById('btnNavManagement').classList.add('d-none');
           document.getElementById('btnEditLocInner').classList.add('hidden');
           document.getElementById('btnEditItemInner').classList.add('hidden');
+          document.getElementById('btnCsvLoc').classList.add('hidden'); 
+      }
+
+      // NEW: Audit Permissions (Operators get access, Viewers do not)
+      if (['Admin', 'Sub-Admin', 'Manager', 'Operator'].includes(currentUserRole)) {
+          document.getElementById('btnAuditLocInner').classList.remove('hidden');
+      } else {
           document.getElementById('btnAuditLocInner').classList.add('hidden');
-          document.getElementById('btnCsvLoc').classList.add('hidden'); // NEW: Hide CSV
       }
 
       if (currentUserRole === 'Admin') {
@@ -1470,7 +1487,7 @@ async function fetchData(callback) {
     const locationStats = {};
 
     db.locations.filter(l => l.status === 'Active').forEach(l => {
-      locationStats[l.locationName] = { type: l.type, units: 0, value: 0, deployType: l.deployType || 'Physical Space' };
+      locationStats[l.locationName] = { type: l.type, units: 0, value: 0, deployType: l.deployType || 'Physical Space', groups: l.lbacGroups || '' };
     });
 
     const activeItems = db.items.filter(i => i.status === 'Active');
@@ -1566,6 +1583,64 @@ async function fetchData(callback) {
     } else {
       depSec.classList.add('hidden');
     }
+
+    // NEW: Populate the Location Groups Dropdown
+    window.currentDashStats = locationStats; // Save for the dropdown to access
+    let dashGroups = new Set();
+    Object.values(locationStats).forEach(stat => {
+        if (stat.groups) stat.groups.split(',').forEach(g => { if (g.trim()) dashGroups.add(g.trim()); });
+    });
+    
+    const grpSelect = document.getElementById('dashGroupSelect');
+    const currentGrp = grpSelect.value;
+    if (dashGroups.size > 0) {
+        grpSelect.innerHTML = '<option value="">Select an Access Group...</option>' + 
+            Array.from(dashGroups).sort().map(g => `<option value="${g}">${g}</option>`).join('');
+        if (dashGroups.has(currentGrp)) grpSelect.value = currentGrp;
+    } else {
+        grpSelect.innerHTML = '<option value="">No groups available</option>';
+    }
+    
+    renderDashGroupCards();
+  }
+
+  // NEW: Render the specific group cards based on the dropdown selection
+  function renderDashGroupCards() {
+      const grp = document.getElementById('dashGroupSelect').value;
+      const container = document.getElementById('dashLocationCardsGroup');
+      
+      if (!grp || !window.currentDashStats) {
+          container.innerHTML = '<div class="col-12 text-muted small">Please select a group from the dropdown to view its locations.</div>';
+          return;
+      }
+      
+      const buildCard = (locName, stat) => `
+        <div class="col-md-6 col-lg-4">
+          <div class="card p-3 border border-primary h-100 mb-0 shadow-sm bg-white" style="cursor:pointer;" onclick="showView('inventory'); viewLoc('${locName.replace(/'/g, "\\'")}', '${stat.type}')">
+            <h6 class="fw-bold mb-1 text-primary">${stat.type} - ${locName}</h6>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <div>
+                <small class="text-muted d-block">Items</small>
+                <span class="fw-bold fs-5 text-dark">${stat.units.toLocaleString('en-US')}</span>
+              </div>
+              <div class="text-end">
+                <small class="text-muted d-block">Value</small>
+                <span class="fw-bold fs-5 text-success">${appCurrency}${stat.value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      let html = '';
+      for (const locName in window.currentDashStats) {
+          const stat = window.currentDashStats[locName];
+          if (stat.groups) {
+              const locGroups = stat.groups.split(',').map(g => g.trim());
+              if (locGroups.includes(grp)) html += buildCard(locName, stat);
+          }
+      }
+      container.innerHTML = html || '<div class="col-12 text-muted small">No locations found for this group.</div>';
   }
 
   function exportLogCsv() {
@@ -2391,11 +2466,16 @@ async function fetchData(callback) {
     const isGlobal = (n === "Everywhere");
     document.getElementById('selectedLocTitle').innerText = isGlobal ? "Global - Everywhere" : n;
     
-    if (isGlobal || currentUserRole === 'Operator' || currentUserRole === 'Viewer') {
+    if (isGlobal || currentUserRole === 'Viewer') {
         document.getElementById('btnEditLocInner').classList.add('hidden');
         document.getElementById('btnAuditLocInner').classList.add('hidden');
     } else {
-        document.getElementById('btnEditLocInner').classList.remove('hidden');
+        // Operators can Audit, but STILL cannot Edit the location details
+        if (currentUserRole === 'Operator') {
+            document.getElementById('btnEditLocInner').classList.add('hidden');
+        } else {
+            document.getElementById('btnEditLocInner').classList.remove('hidden');
+        }
         document.getElementById('btnAuditLocInner').classList.remove('hidden');
     }
 
