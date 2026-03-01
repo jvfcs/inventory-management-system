@@ -724,7 +724,7 @@
       <div id="mTheme" class="hidden">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <div>
-            <h6 class="fw-bold m-0">Theme & White-Label Settings</h6>
+            <h6 class="fw-bold m-0">Theme & Branding Settings</h6>
             <small class="text-muted">Customize the platform's appearance and system variables.</small>
           </div>
           <button class="btn btn-primary fw-bold px-4 shadow-sm" id="btnSaveTheme" onclick="saveThemeSettings()">Save & Apply Changes</button>
@@ -734,50 +734,50 @@
           <div class="col-lg-6">
             <div class="card p-3 bg-light shadow-sm mb-4">
               <h6 class="fw-bold mb-3 border-bottom pb-2">General App Settings</h6>
-              <label class="fw-bold small">App Title (appTitle)</label>
+              <label class="fw-bold small">Title</label>
               <input type="text" id="cfg_appTitle" class="form-control form-control-sm mb-1">
-              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">The full name of your platform (e.g., Inventory Management System). Used in the browser tab and loading screen.</small>
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">The full name of your platform (e.g., Inventory Management System). Used in the browser tab and login screen.</small>
 
-              <label class="fw-bold small">Short Name (appShortName)</label>
+              <label class="fw-bold small">Short Title</label>
               <input type="text" id="cfg_appShortName" class="form-control form-control-sm mb-1">
-              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Abbreviated name for mobile layouts (e.g., IMS).</small>
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Abbreviated title for mobile layouts (e.g., IMS).</small>
 
-              <label class="fw-bold small">Use Short Name on Login? (loginUseShortName)</label>
+              <label class="fw-bold small">Use Short Title on Login?</label>
               <select id="cfg_loginUseShortName" class="form-select form-select-sm mb-1"><option value="Yes">Yes</option><option value="No">No</option></select>
-              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Select 'Yes' to display the Short Name on the login screen instead of the Full Title.</small>
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Select 'Yes' to display the Short Title on the login screen instead of the Full Title.</small>
 
-              <label class="fw-bold small">Currency Symbol (currencySymbol)</label>
+              <label class="fw-bold small">Currency Symbol</label>
               <input type="text" id="cfg_currencySymbol" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Symbol used for total valuations (e.g., $, €, £).</small>
 
-              <label class="fw-bold small">Footer Text (footerText)</label>
+              <label class="fw-bold small">Footer Text</label>
               <input type="text" id="cfg_footerText" class="form-control form-control-sm mb-1">
-              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Text displayed at the very bottom of the app (e.g., Developed by Your Company).</small>
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Text displayed at the very bottom of the app (e.g., Your Company).</small>
 
-              <label class="fw-bold small">Admin Contact Email (adminContact)</label>
+              <label class="fw-bold small">Admin Contact</label>
               <input type="text" id="cfg_adminContact" class="form-control form-control-sm mb-1">
-              <small class="text-muted d-block mb-2" style="font-size:0.7rem;">Displayed to users who hit the Access Denied screen.</small>
+              <small class="text-muted d-block mb-2" style="font-size:0.7rem;">Displayed to users who hit the Access Denied screen (e.g., support@company.com; Please contact support@company.com to request access.).</small>
             </div>
 
             <div class="card p-3 bg-light shadow-sm">
               <h6 class="fw-bold mb-3 border-bottom pb-2">Assets & Integrations</h6>
-              <label class="fw-bold small">Logo Image URL (logoUrl)</label>
+              <label class="fw-bold small">Logo Image URL</label>
               <input type="text" id="cfg_logoUrl" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Direct link to your company logo (PNG/JPG).</small>
 
-              <label class="fw-bold small">Default 'No Image' Graphic (defaultImgUrl)</label>
+              <label class="fw-bold small">Default 'No Image' Graphic</label>
               <input type="text" id="cfg_defaultImgUrl" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Optional: Custom placeholder for items without photos.</small>
 
-              <label class="fw-bold small text-danger">Google Client ID (googleClientId)</label>
+              <label class="fw-bold small text-danger">Google Client ID</label>
               <input type="text" id="cfg_googleClientId" class="form-control form-control-sm border-danger mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">OAuth 2.0 Client ID for Google Login. Do not change unless migrating servers.</small>
 
-              <label class="fw-bold small text-danger">Drive Folder ID (driveFolderId)</label>
+              <label class="fw-bold small text-danger">Google Drive Folder ID</label>
               <input type="text" id="cfg_driveFolderId" class="form-control form-control-sm border-danger mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Google Drive folder ID where uploaded item/location images are saved.</small>
 
-              <label class="fw-bold small">Sync Interval (syncInterval)</label>
+              <label class="fw-bold small">Sync Interval</label>
               <input type="number" id="cfg_syncInterval" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-2" style="font-size:0.7rem;">How often the app checks for background updates (in seconds). Default: 15.</small>
             </div>
@@ -786,34 +786,40 @@
           <div class="col-lg-6">
             <div class="card p-3 bg-light shadow-sm mb-4">
               <h6 class="fw-bold mb-3 border-bottom pb-2">☀️ Light Mode Palette</h6>
-              <label class="fw-bold small text-primary">Primary Brand Color (lightTheme)</label>
+              <label class="fw-bold small text-primary">Primary Brand Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_lightTheme_color" class="form-control form-control-color p-1" oninput="document.getElementById('cfg_lightTheme').value = this.value"><input type="text" id="cfg_lightTheme" class="form-control form-control-sm" oninput="document.getElementById('cfg_lightTheme_color').value = this.value"></div>
-              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Used for main titles, active tabs, buttons, and badges.</small>
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Used for main titles, active tabs, buttons, and badges. Default: #00008B</small>
 
-              <label class="fw-bold small">Background Color (lightBg)</label>
+              <label class="fw-bold small">Background Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_lightBg_color" class="form-control form-control-color p-1" oninput="document.getElementById('cfg_lightBg').value = this.value"><input type="text" id="cfg_lightBg" class="form-control form-control-sm" oninput="document.getElementById('cfg_lightBg_color').value = this.value"></div>
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Default: #F4F7F6</small>
               
-              <label class="fw-bold small mt-2">Card/Panel Color (lightCard)</label>
+              <label class="fw-bold small mt-2">Card/Panel Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_lightCard_color" class="form-control form-control-color p-1" oninput="document.getElementById('cfg_lightCard').value = this.value"><input type="text" id="cfg_lightCard" class="form-control form-control-sm" oninput="document.getElementById('cfg_lightCard_color').value = this.value"></div>
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Default: #FFFFFF</small>
 
-              <label class="fw-bold small mt-2">Main Text Color (lightText)</label>
+              <label class="fw-bold small mt-2">Main Text Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_lightText_color" class="form-control form-control-color p-1" oninput="document.getElementById('cfg_lightText').value = this.value"><input type="text" id="cfg_lightText" class="form-control form-control-sm" oninput="document.getElementById('cfg_lightText_color').value = this.value"></div>
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Default: #212529</small>
             </div>
 
             <div class="card p-3 bg-dark text-white shadow-sm border-secondary">
               <h6 class="fw-bold mb-3 border-bottom border-secondary pb-2">🌙 Dark Mode Palette</h6>
-              <label class="fw-bold small text-info">Primary Brand Color (darkTheme)</label>
+              <label class="fw-bold small text-info">Primary Brand Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_darkTheme_color" class="form-control form-control-color p-1 bg-dark border-secondary" oninput="document.getElementById('cfg_darkTheme').value = this.value"><input type="text" id="cfg_darkTheme" class="form-control form-control-sm bg-dark text-white border-secondary" oninput="document.getElementById('cfg_darkTheme_color').value = this.value"></div>
-              <small class="text-white-50 d-block mb-3" style="font-size:0.7rem;">Often a lighter/brighter variation of your Brand Color so it pops on dark screens.</small>
+              <small class="text-white-50 d-block mb-3" style="font-size:0.7rem;">Often a lighter/brighter variation of your Brand Color so it pops on dark screens. Default: #1E90FF</small>
 
-              <label class="fw-bold small">Background Color (darkBg)</label>
+              <label class="fw-bold small">Background Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_darkBg_color" class="form-control form-control-color p-1 bg-dark border-secondary" oninput="document.getElementById('cfg_darkBg').value = this.value"><input type="text" id="cfg_darkBg" class="form-control form-control-sm bg-dark text-white border-secondary" oninput="document.getElementById('cfg_darkBg_color').value = this.value"></div>
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Default: #121212</small>
               
-              <label class="fw-bold small mt-2">Card/Panel Color (darkCard)</label>
+              <label class="fw-bold small mt-2">Card/Panel Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_darkCard_color" class="form-control form-control-color p-1 bg-dark border-secondary" oninput="document.getElementById('cfg_darkCard').value = this.value"><input type="text" id="cfg_darkCard" class="form-control form-control-sm bg-dark text-white border-secondary" oninput="document.getElementById('cfg_darkCard_color').value = this.value"></div>
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Default: #1E1E1E</small>
 
-              <label class="fw-bold small mt-2">Main Text Color (darkText)</label>
+              <label class="fw-bold small mt-2">Main Text Color</label>
               <div class="d-flex gap-2 mb-1"><input type="color" id="cfg_darkText_color" class="form-control form-control-color p-1 bg-dark border-secondary" oninput="document.getElementById('cfg_darkText').value = this.value"><input type="text" id="cfg_darkText" class="form-control form-control-sm bg-dark text-white border-secondary" oninput="document.getElementById('cfg_darkText_color').value = this.value"></div>
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Default: #E0E0E0</small>
             </div>
           </div>
         </div>
