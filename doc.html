@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IMS Documentation</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* CSS Variables for Theming */
+    :root {
+      --bg-color: #f9fafb;
+      --sidebar-bg: #ffffff;
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --accent: #4f46e5;
+      --border-color: #e5e7eb;
+      --input-bg: #f3f4f6;
+      --callout-bg: #eff6ff;
+      --list-bg: #ffffff;
+      --modal-bg: #ffffff;
+      --hover-bg: #f3f4f6;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #111827;
+      --sidebar-bg: #1f2937;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --accent: #6366f1;
+      --border-color: #374151;
+      --input-bg: #374151;
+      --callout-bg: #1e1b4b;
+      --list-bg: #1f2937;
+      --modal-bg: #1f2937;
+      --hover-bg: rgba(99, 102, 241, 0.15);
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    /* Layout */
+    .docs-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      overflow-y: auto;
+      padding: 2rem 1.5rem;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    .sidebar-logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Sidebar Search Trigger */
+    .sidebar-search-trigger {
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+      transition: border-color 0.2s;
+    }
+    .sidebar-search-trigger:hover {
+      border-color: var(--accent);
+    }
+    .shortcut-key {
+      background: var(--border-color);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
+
+    .sidebar-nav {
+      flex-grow: 1;
+    }
+    .sidebar-nav a {
+      display: block;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 0.2rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .sidebar-nav a:hover {
+      background-color: var(--hover-bg);
+      color: var(--text-main);
+    }
+    .sidebar-nav a.active {
+      background-color: rgba(99, 102, 241, 0.15);
+      color: var(--accent);
+    }
+    .sidebar-heading {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 1.5rem 0 0.5rem 0.75rem;
+    }
+
+    /* Theme Slider Toggle */
+    .theme-switch-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: auto;
+      padding-top: 1.5rem;
+    }
+    .theme-switch {
+      position: relative;
+      display: inline-block;
+      width: 64px;
+      height: 34px;
+    }
+    .theme-switch input { 
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #d1d5db;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "☀️";
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    [data-theme="dark"] .slider {
+      background-color: var(--accent);
+    }
+    [data-theme="dark"] .slider:before {
+      transform: translateX(30px);
+      content: "🌙";
+      background-color: #1f2937;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 3rem 4rem;
+      max-width: 1000px;
+    }
+
+    /* Search Modal Overlay */
+    .search-overlay {
+      display: none; /* Hidden by default */
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 10vh;
+    }
+    .search-modal {
+      width: 90%;
+      max-width: 600px;
+      background: var(--modal-bg);
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .search-modal-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+    }
+    .search-modal-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 1.2rem;
+      outline: none;
+      margin-left: 10px;
+    }
+    .search-results-container {
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+    .search-result-item {
+      display: block;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      text-decoration: none;
+      transition: background-color 0.2s;
+    }
+    .search-result-item:hover {
+      background-color: var(--hover-bg);
+    }
+    .search-result-title {
+      color: var(--accent);
+      font-weight: bold;
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+    .search-result-snippet {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .search-footer {
+      padding: 0.5rem 1.5rem;
+      background: var(--input-bg);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    /* Content Typography */
+    .doc-section {
+      margin-bottom: 4rem;
+      scroll-margin-top: 100px;
+    }
+    .doc-section h2 {
+      font-weight: 800;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+    .doc-section h3 {
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+    .doc-section p, .doc-section li {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+    }
+    .doc-section strong {
+      color: var(--text-main);
+    }
+    .list-group-item {
+      background-color: var(--list-bg);
+      border-color: var(--border-color);
+      color: var(--text-muted);
+    }
+    .badge-role {
+      font-size: 0.75rem;
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent);
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 700;
+    }
+    .callout {
+      background: var(--callout-bg);
+      border-left: 4px solid var(--accent);
+      padding: 1rem 1.5rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1.5rem 0;
+    }
+    code {
+      background: rgba(0,0,0,0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      color: var(--accent);
+    }
+    [data-theme="dark"] code {
+      background: rgba(255,255,255,0.1);
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0; padding: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="search-overlay" id="searchOverlay" onclick="closeSearchModal(event)">
+  <div class="search-modal" onclick="event.stopPropagation()">
+    <div class="search-modal-header">
+      <span style="font-size:1.2rem; color: var(--accent);">🔍</span>
+      <input type="text" id="modalSearchInput" class="search-modal-input" placeholder="Search documentation..." autocomplete="off" onkeyup="executeSearch()">
+    </div>
+    <div class="search-results-container" id="searchResultsContainer">
+      <div class="p-4 text-center text-muted" style="font-size:0.85rem;">Type to start searching...</div>
+    </div>
+    <div class="search-footer">
+      Press <kbd style="background:var(--border-color); color:var(--text-main);">ESC</kbd> to close
+    </div>
+  </div>
+</div>
+
+<div class="docs-layout">
+  
+  <aside class="sidebar">
+    <div class="sidebar-logo">📦 IMS Docs</div>
+    
+    <div class="sidebar-search-trigger" onclick="openSearchModal()">
+      <span>🔍 Search...</span>
+      <span class="shortcut-key">⌘K</span>
+    </div>
+
+    <nav class="sidebar-nav" id="toc">
+      <div class="sidebar-heading">Getting Started</div>
+      <a href="#intro" class="nav-link active">Introduction</a>
+      <a href="#roles" class="nav-link">Roles & Permissions</a>
+      <a href="#lbac" class="nav-link">Location-Based Access (LBAC)</a>
+      
+      <div class="sidebar-heading">Daily Operations</div>
+      <a href="#dashboard" class="nav-link">Dashboard & Analytics</a>
+      <a href="#transactions" class="nav-link">Check In, Out & Move</a>
+      <a href="#audits" class="nav-link">Performing Audits</a>
+      
+      <div class="sidebar-heading">Management</div>
+      <a href="#manage-items" class="nav-link">Managing Items</a>
+      <a href="#manage-locations" class="nav-link">Managing Locations</a>
+      
+      <div class="sidebar-heading">Administration</div>
+      <a href="#deploy-backend" class="nav-link">1. Deploy Backend</a>
+      <a href="#deploy-oauth" class="nav-link">2. Setup Google OAuth</a>
+      <a href="#deploy-frontend" class="nav-link">3. Deploy Frontend</a>
+      <a href="#theming" class="nav-link">Theme & Branding</a>
+    </nav>
+    
+    <div class="theme-switch-wrapper">
+      <label class="theme-switch" title="Toggle Dark/Light Mode">
+        <input type="checkbox" id="themeToggleCheckbox" onchange="toggleDocsTheme()">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    
+    <div id="docContent">
+
+      <section id="intro" class="doc-section">
+        <h2>Introduction</h2>
+        <p>Welcome to the Inventory Management System (IMS). This platform is a modern, Single-Page Application (SPA) designed to track hardware, deployable assets, and physical spaces.</p>
+        <p>The system is completely white-labeled and powered entirely by Google Workspace (Google Sheets for the database, Apps Script for the API, and Google Drive for image storage). It requires zero traditional server hosting costs.</p>
+      </section>
+
+      <section id="roles" class="doc-section">
+        <h2>Roles & Permissions</h2>
+        <p>IMS utilizes strict role-based access control to ensure users only see what they need to see.</p>
+        <ul class="list-group list-group-flush mb-3">
+          <li class="list-group-item"><strong>Admin:</strong> Full system access. Can edit users, change system themes, view all logs, and manage all inventory.</li>
+          <li class="list-group-item"><strong>Sub-Admin:</strong> Global access to manage all inventory, locations, and view logs, but cannot edit Users or System Themes.</li>
+          <li class="list-group-item"><strong>Manager:</strong> <span class="badge-role">Restricted</span> Can manage inventory and perform audits, but <strong>only</strong> for their assigned locations.</li>
+          <li class="list-group-item"><strong>Operator:</strong> <span class="badge-role">Restricted</span> Can check-in, check-out, and move items, and perform audits. Cannot access the Management dashboard. Restricted to assigned locations.</li>
+          <li class="list-group-item"><strong>Viewer:</strong> <span class="badge-role">Restricted</span> Read-only access to view stock levels for their assigned locations.</li>
+        </ul>
+      </section>
+
+      <section id="lbac" class="doc-section">
+        <h2>Location-Based Access Control (LBAC)</h2>
+        <p>If a user is a Manager, Operator, or Viewer, they are subjected to LBAC filters. If an Admin does not explicitly assign them to a Location, that location does not exist to them.</p>
+        <h3>Access Groups</h3>
+        <p>To make assigning locations easier, Admins can create "Access Groups" (e.g., <i>West Coast</i>, <i>Arizona</i>). When editing a location, you can tag it with a group. When assigning a user, you can assign them the entire group with one click, instantly granting them access to all locations bearing that tag.</p>
+      </section>
+
+      <section id="dashboard" class="doc-section">
+        <h2>Dashboard & Analytics</h2>
+        <p>The Dashboard provides a real-time financial and operational snapshot of the inventory.</p>
+        <ul>
+          <li><strong>Global Snapshot:</strong> Visible to Admins and Sub-Admins. Shows total unit counts and financial valuations across the entire company.</li>
+          <li><strong>Location Groups Snapshot:</strong> Allows you to select an Access Group from a dropdown (e.g., "Arizona") and instantly recalculate the financial valuation and unit count strictly for assets within that region.</li>
+          <li><strong>Low Stock Alerts:</strong> Automatically surfaces items that have fallen below their defined "Min Stock" threshold.</li>
+        </ul>
+      </section>
+
+      <section id="transactions" class="doc-section">
+        <h2>Transactions (Check In, Out & Move)</h2>
+        <p>To execute a transaction, click on an item in the inventory grid to open its Details page. At the bottom, you will find the Action Form.</p>
+        
+        <h3>Bulk vs. Serialized Actions</h3>
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <strong>Bulk Items (e.g., Cables, Screws)</strong>
+            <p class="small mt-1">Simply type in the quantity you wish to move and select the destination. The system will math out the balances.</p>
+          </div>
+          <div class="col-md-6">
+            <strong>Serialized Items (e.g., Cameras, Laptops)</strong>
+            <p class="small mt-1">The quantity field is hidden. You must either click the checkboxes of the specific serials you are moving, or use the camera/barcode scanner to rapidly scan serial numbers into the text box.</p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Pro-Tip: Using the Camera Scanner</strong><br>
+          Click the 📷 icon next to the Serial Input box. The system supports rapid continuous scanning. Point your phone at a barcode, wait for the beep, and move to the next. It will automatically list them on new lines.
+        </div>
+      </section>
+
+      <section id="audits" class="doc-section">
+        <h2>Performing Audits</h2>
+        <p>Audits are true-ups of physical stock compared to what the system expects. Only Admins, Sub-Admins, Managers, and Operators can perform audits.</p>
+        <ol>
+          <li>Navigate to a Location and click the yellow <strong>Audit</strong> button in the top right.</li>
+          <li>The system will generate a list of everything it expects to find in that location, broken down by specific Spots/Bins.</li>
+          <li><strong>For Bulk Items:</strong> Simply type the actual number of items you count on the shelf. The row will turn yellow if there is a discrepancy.</li>
+          <li><strong>For Serialized Items:</strong> Click the "Audit" button. A modal will appear. Scan all physical serial numbers you find on the shelf. The system will cross-reference your scans, flag missing expected serials, and register unexpected found serials.</li>
+          <li>Click <strong>Submit True-Up</strong>. The system will automatically generate Adjustment logs to fix the inventory balances.</li>
+        </ol>
+      </section>
+
+      <section id="manage-items" class="doc-section">
+        <h2>Managing Items (Catalog)</h2>
+        <p>The Item Master is where you define the catalog of equipment your company owns.</p>
+        <ul>
+          <li><strong>Barcode:</strong> Must be unique. This is the primary identifier.</li>
+          <li><strong>Tracking Type:</strong> Choose between "Bulk Quantity" (just count numbers) or "Individual Serials" (track exact units). <i>Note: Once items are logged, changing this can skew historical data.</i></li>
+          <li><strong>Image Uploads:</strong> You can paste an image URL from the web, or upload a file directly. Uploaded files are automatically saved to your configured Google Drive folder and securely linked.</li>
+        </ul>
+      </section>
+
+      <section id="manage-locations" class="doc-section">
+        <h2>Managing Locations</h2>
+        <p>Locations are where items reside. They come in two types:</p>
+        <ul>
+          <li><strong>Physical Spaces:</strong> Standard rooms, offices, or buildings.</li>
+          <li><strong>Deployable Assets:</strong> Things like Trucks, Golf Carts, or Storage Cases that contain inventory but move around.</li>
+        </ul>
+        <h3>Spots / Bins</h3>
+        <p>You do not need to pre-create Spots/Bins. When moving an item into a location, a user can simply type a new Spot name (e.g., "Shelf A3"), and the system will dynamically create it. To rename or delete an existing Spot, click the "Spots" button next to the location in the Location Master table.</p>
+      </section>
+
+      <section id="deploy-backend" class="doc-section">
+        <h2>1. Deploying the Backend (Google)</h2>
+        <p>The entire database runs on a single Google Sheet and Google Drive folder.</p>
+        <ol>
+          <li><strong>Create a Google Drive Folder:</strong> Create a new folder in Google Drive (e.g., "IMS Images"). 
+            <div class="callout py-2 my-2">
+              <strong>Security Note:</strong> Do <strong>not</strong> share this folder publicly. Keep it restricted to the Admin/Creator only. The backend script will securely upload images here and handle specific file-level sharing automatically.
+            </div>
+          </li>
+          <li><strong>Copy the Folder ID:</strong> Look at the URL of the folder. Copy the string of letters/numbers after <code>/folders/</code>. You will need this later.</li>
+          <li><strong>Create a Google Sheet:</strong> Create a blank Google Sheet. This will act as your database.</li>
+          <li><strong>Add the Apps Script:</strong> In the Sheet, click <strong>Extensions > Apps Script</strong>. Delete the default code and paste the entirety of your <code>Code.gs</code> file. Save the project.</li>
+          <li><strong>Deploy the API:</strong> In Apps Script, click the blue <strong>Deploy</strong> button in the top right, then select <strong>New deployment</strong>.
+            <ul>
+              <li><strong>Select type:</strong> Web App</li>
+              <li><strong>Description:</strong> IMS v1</li>
+              <li><strong>Execute as:</strong> Me (Your Email)</li>
+              <li><strong>Who has access:</strong> Anyone</li>
+            </ul>
+          </li>
+          <li>Click <strong>Deploy</strong>. Copy the generated <strong>Web App URL</strong>. You will need to paste this into your <code>index.html</code> file on line 542 where it says <code>const GAS_URL = "...";</code></li>
+        </ol>
+      </section>
+
+      <section id="deploy-oauth" class="doc-section">
+        <h2>2. Setting up Google OAuth</h2>
+        <p>To allow users to log in securely with their Google accounts, you must create an OAuth Client ID via Google Cloud.</p>
+        <ol>
+          <li>Go to the <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> and sign in with your Admin account.</li>
+          <li>Click the project dropdown in the top left and select <strong>New Project</strong>. Name it "IMS Login" and click Create.</li>
+          <li>In the left sidebar, navigate to <strong>APIs & Services > OAuth consent screen</strong>.</li>
+          <li>Select <strong>Internal</strong> (if restricting to your specific company Google Workspace) or <strong>External</strong> (if allowing any Google account), and click Create.</li>
+          <li>Fill out the required App Information (App name, support email) and click Save and Continue through the remaining steps.</li>
+          <li>In the left sidebar, click <strong>Credentials</strong>.</li>
+          <li>Click <strong>+ CREATE CREDENTIALS</strong> at the top and select <strong>OAuth client ID</strong>.</li>
+          <li>Select Application type: <strong>Web application</strong>. Name it "IMS Web App".</li>
+          <li>Under <strong>Authorized JavaScript origins</strong>, click <strong>+ ADD URI</strong>. You must enter the exact URL where your UI will be hosted. 
+            <ul>
+              <li><i>Example for GitHub Pages:</i> <code>https://yourusername.github.io</code></li>
+              <li><i>Example for Custom Domain:</i> <code>https://ims.yourcompany.com</code></li>
+              <li><i>Note:</i> Do not include trailing slashes or file paths (no <code>/index.html</code>).</li>
+            </ul>
+          </li>
+          <li>Click <strong>Create</strong>. A modal will appear with your <strong>Client ID</strong> (a long string ending in <code>.apps.googleusercontent.com</code>). Copy this ID!</li>
+        </ol>
+      </section>
+
+      <section id="deploy-frontend" class="doc-section">
+        <h2>3. Deploying the Frontend (UI)</h2>
+        <p>The frontend is a single <code>index.html</code> file. Because there is no server-side logic required, it can be hosted literally anywhere for free.</p>
+        <div class="callout mb-4">
+          <strong>Important pre-requisite:</strong> Before uploading, open your <code>index.html</code> file in a text editor and ensure the <code>GAS_URL</code> variable is set to the Web App URL you generated in Step 1.
+        </div>
+
+        <ul class="nav nav-tabs" id="deployTabs" role="tablist">
+          <li class="nav-item" role="presentation"><button class="nav-link active fw-bold" data-bs-toggle="tab" data-bs-target="#gh-web" type="button" role="tab">GitHub (Web UI)</button></li>
+          <li class="nav-item" role="presentation"><button class="nav-link fw-bold" data-bs-toggle="tab" data-bs-target="#gh-cli" type="button" role="tab">GitHub (Git CLI)</button></li>
+          <li class="nav-item" role="presentation"><button class="nav-link fw-bold" data-bs-toggle="tab" data-bs-target="#hosting" type="button" role="tab">Standard Hosting (GoDaddy, etc.)</button></li>
+        </ul>
+        
+        <div class="tab-content border border-top-0 p-4 bg-white" style="background: var(--sidebar-bg) !important;" id="deployTabsContent">
+          <div class="tab-pane fade show active" id="gh-web" role="tabpanel">
+            <h4>Deploying via GitHub Website (Easiest)</h4>
+            <ol>
+              <li>Go to GitHub.com and create a new public repository (e.g., <code>ims-app</code>).</li>
+              <li>In the repository, click <strong>Add file > Upload files</strong>.</li>
+              <li>Drag and drop your <code>index.html</code> file into the browser and click <strong>Commit changes</strong>.</li>
+              <li>Click the <strong>Settings</strong> tab at the top of the repository.</li>
+              <li>On the left sidebar, click <strong>Pages</strong>.</li>
+              <li>Under "Build and deployment", set the Source to <strong>Deploy from a branch</strong>.</li>
+              <li>Under "Branch", select <code>main</code> and click <strong>Save</strong>.</li>
+              <li>Wait 1-2 minutes. Refresh the page, and GitHub will provide you with a live URL where your app is now hosted!</li>
+            </ol>
+          </div>
+
+          <div class="tab-pane fade" id="gh-cli" role="tabpanel">
+            <h4>Deploying via Git Command Line</h4>
+            <ol>
+              <li>Create a new repository on GitHub.</li>
+              <li>Open your terminal and navigate to the folder containing your <code>index.html</code> file.</li>
+              <li>Run the following commands:
+                <pre class="bg-dark text-light p-3 rounded mt-2"><code>git init
+git add index.html
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/yourusername/your-repo.git
+git push -u origin main</code></pre>
+              </li>
+              <li>Go to your repository settings on GitHub, navigate to <strong>Pages</strong>, and set the branch to <code>main</code> to deploy.</li>
+            </ol>
+          </div>
+
+          <div class="tab-pane fade" id="hosting" role="tabpanel">
+            <h4>Deploying to Standard Web Hosting (cPanel, GoDaddy, HostGator)</h4>
+            <ol>
+              <li>Log in to your hosting provider's dashboard and open the <strong>File Manager</strong> (usually found in cPanel).</li>
+              <li>Navigate to your <code>public_html</code> directory (or the specific folder for your domain/subdomain).</li>
+              <li>Click <strong>Upload</strong> and select your <code>index.html</code> file.</li>
+              <li>That's it! Navigate to your custom domain in a web browser, and the app will instantly load.</li>
+            </ol>
+          </div>
+        </div>
+        
+        <h3 class="mt-5">Finalizing the Setup</h3>
+        <p>The very first time you visit your deployed URL, the system will prompt you to log in via Google. <strong>The very first user to log into a completely blank database is automatically granted the Admin role.</strong></p>
+        <p>Once logged in, go to Management > Theme, and input the <strong>Google Client ID</strong> and <strong>Drive Folder ID</strong> you gathered in Steps 1 and 2, then click Save.</p>
+      </section>
+
+      <section id="theming" class="doc-section">
+        <h2>Theme & Branding</h2>
+        <p>Admins can access the <strong>Theme</strong> tab in the Management dashboard to completely white-label the software.</p>
+        <p>You can define separate color palettes for Light Mode and Dark Mode. When a user clicks the ☀️/🌙 toggle, the app instantly repaints all buttons, headers, notification badges, and background panels to match your corporate branding. You can also configure the Legal Text and Support Emails here.</p>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  // --- THEME ENGINE ---
+  // Default to dark mode if no preference is saved
+  const savedTheme = localStorage.getItem('ims_docs_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    // Set the slider state based on the loaded theme
+    const cb = document.getElementById('themeToggleCheckbox');
+    if (savedTheme === 'dark') cb.checked = true;
+  });
+
+  function toggleDocsTheme() {
+    const htmlEl = document.documentElement;
+    const cb = document.getElementById('themeToggleCheckbox');
+    const newTheme = cb.checked ? 'dark' : 'light';
+    
+    htmlEl.setAttribute('data-theme', newTheme);
+    localStorage.setItem('ims_docs_theme', newTheme);
+  }
+
+  // --- SEARCH MODAL ENGINE ---
+  const modal = document.getElementById('searchOverlay');
+  const searchInput = document.getElementById('modalSearchInput');
+
+  function openSearchModal() {
+    modal.style.display = 'flex';
+    setTimeout(() => searchInput.focus(), 50); // Focus after rendering
+  }
+
+  function closeSearchModal(e) {
+    // If an event is passed, check if the click was outside the modal box
+    if (e && e.target !== modal) return;
+    modal.style.display = 'none';
+    searchInput.value = '';
+    executeSearch(); // clears results
+  }
+
+  // Add keyboard shortcut (Ctrl+K or Cmd+K) to open search, and Esc to close
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      openSearchModal();
+    }
+    if (e.key === 'Escape' && modal.style.display === 'flex') {
+      closeSearchModal();
+    }
+  });
+
+  function executeSearch() {
+    const query = searchInput.value.toLowerCase().trim();
+    const resContainer = document.getElementById('searchResultsContainer');
+    
+    if (!query) {
+      resContainer.innerHTML = '<div class="p-4 text-center text-muted" style="font-size:0.85rem;">Type to start searching...</div>';
+      return;
+    }
+
+    let html = '';
+    let matchCount = 0;
+    const sections = document.querySelectorAll('.doc-section');
+
+    sections.forEach(sec => {
+      const text = sec.innerText.toLowerCase();
+      if (text.includes(query)) {
+        matchCount++;
+        const titleEl = sec.querySelector('h2');
+        const title = titleEl ? titleEl.innerText : 'Documentation Section';
+        const id = sec.getAttribute('id');
+        
+        // Find a relevant snippet near the matched word
+        const rawText = sec.innerText.replace(/\n/g, ' ');
+        const matchIdx = text.indexOf(query);
+        const startIdx = Math.max(0, matchIdx - 40);
+        let snippet = rawText.substring(startIdx, matchIdx + query.length + 80);
+        if (startIdx > 0) snippet = '...' + snippet;
+        snippet += '...';
+
+        html += `
+          <a href="#${id}" class="search-result-item" onclick="closeSearchModal(null)">
+            <div class="search-result-title">${title}</div>
+            <div class="search-result-snippet">${snippet}</div>
+          </a>
+        `;
+      }
+    });
+
+    if (matchCount === 0) {
+      resContainer.innerHTML = '<div class="p-4 text-center text-muted" style="font-size:0.85rem;">No results found for your search.</div>';
+    } else {
+      resContainer.innerHTML = html;
+    }
+  }
+
+  // --- SCROLLSPY LOGIC ---
+  const sections = document.querySelectorAll('.doc-section');
+  const navLinks = document.querySelectorAll('.sidebar-nav a.nav-link');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      if (scrollY >= sectionTop - 150) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === `#${current}`) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
