@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
+<html lang="en" data-theme="light"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IMS Documentation</title>
@@ -546,6 +545,40 @@
     .tab-scroll-btn.left-arrow { left: 0; border-radius: 6px 0 0 0; box-shadow: 3px 0 8px rgba(0,0,0,0.1); }
     .tab-scroll-btn.right-arrow { right: 0; border-radius: 0 6px 0 0; box-shadow: -3px 0 8px rgba(0,0,0,0.1); }
 
+    /* Screenshot Styling */
+    .doc-screenshot {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      margin: 1.5rem 0;
+      background-color: var(--sidebar-bg); /* Fallback while image loads */
+    }
+
+    /* Admin Editor Styles */
+    .doc-section.editing-active {
+      outline: 2px dashed #ef4444;
+      outline-offset: 10px;
+      border-radius: 8px;
+      background: rgba(239, 68, 68, 0.03);
+    }
+    .doc-section.editing-active:focus {
+      outline: 3px solid #ef4444;
+      background: rgba(239, 68, 68, 0.05);
+    }
+    /* Image Interactive Styles during Edit Mode */
+    .doc-section.editing-active img {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .doc-section.editing-active img:hover {
+      outline: 4px solid #ef4444;
+      opacity: 0.6;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+    }
+
     /* Responsive Mobile CSS */
     @media (max-width: 768px) {
       .mobile-header { display: flex; }
@@ -606,17 +639,17 @@
     <div class="sidebar-nav-wrapper">
       <nav class="sidebar-nav" id="toc">
         <div class="sidebar-heading">Getting Started</div>
-        <a href="#intro" class="nav-link active">Introduction</a>
-        <a href="#ui-nav" class="nav-link">UI & Navigation Features</a>
+        <a href="#intro" class="nav-link">Introduction</a>
+        <a href="#ui-nav" class="nav-link">UI &amp; Navigation Features</a>
         <a href="#mobile-pwa" class="nav-link">Mobile App (PWA) Setup</a>
 	<a href="#requirements" class="nav-link">System Requirements</a>
-        <a href="#roles" class="nav-link">Roles & Permissions</a>
+        <a href="#roles" class="nav-link">Roles &amp; Permissions</a>
         <a href="#lbac" class="nav-link">Location Access (LBAC)</a>
         
         <div class="sidebar-heading">Daily Operations</div>
-        <a href="#dashboard" class="nav-link">Dashboard & Alerts</a>
-        <a href="#finding-data" class="nav-link">Finding & Viewing Items</a>
-        <a href="#transactions" class="nav-link">Check In, Out & Move</a>
+        <a href="#dashboard" class="nav-link">Dashboard &amp; Alerts</a>
+        <a href="#finding-data" class="nav-link">Finding &amp; Viewing Items</a>
+        <a href="#transactions" class="nav-link">Check In, Out &amp; Move</a>
         <a href="#audits" class="nav-link">Performing Audits</a>
         <a href="#exporting" class="nav-link">Exporting Data (CSV)</a>
         
@@ -628,7 +661,7 @@
         
         <div class="sidebar-heading">System Engine</div>
         <a href="#sync-engine" class="nav-link">Background Sync Engine</a>
-        <a href="#theming" class="nav-link">Theme & Branding</a>
+        <a href="#theming" class="nav-link active">Theme &amp; Branding</a>
         
         <div class="sidebar-heading">Deployment Setup</div>
         <a href="#deploy-drive" class="nav-link">1. Drive Setup</a>
@@ -639,8 +672,8 @@
         
         <div class="sidebar-heading">Help</div>
         <a href="#mistakes" class="nav-link text-warning">Common Mistakes to Avoid</a>
-        <a href="#faq" class="nav-link text-danger">Troubleshooting & FAQ</a>
-	<a href="#" class="nav-link" onclick="showLegalModal(event)">Terms & Privacy Policy</a>
+        <a href="#faq" class="nav-link text-danger">Troubleshooting &amp; FAQ</a>
+	<a href="#" class="nav-link" onclick="showLegalModal(event)">Terms &amp; Privacy Policy</a>
       </nav>
     </div>
     
@@ -663,7 +696,7 @@
       </section>
 
       <section id="ui-nav" class="doc-section">
-        <h2>UI & Navigation Features</h2>
+        <h2>UI &amp; Navigation Features</h2>
         <p>The IMS is built as a Single Page Application, meaning it operates more like a native app on your phone than a traditional website. It is packed with quality-of-life features:</p>
         <ul>
           <li><strong>Loading Screen:</strong> When you boot the app, a loading screen appears. During this brief window, the app is downloading your custom Theme, pulling your permissions, and fetching the entire inventory database to your device for lightning-fast usage.</li>
@@ -695,7 +728,7 @@
       </section>
 
       <section id="roles" class="doc-section">
-        <h2>Roles & Permissions</h2>
+        <h2>Roles &amp; Permissions</h2>
         
         <div class="callout border-danger mb-4">
           <strong class="text-danger">⚠️ The "First Login" Security Trap (Admin Bootstrapping)</strong><br>
@@ -716,12 +749,13 @@
         <h2>Location-Based Access Control (LBAC)</h2>
         <p>If a user is a Manager, Operator, or Viewer, they are subjected to LBAC filters. If an Admin does not explicitly assign them to a Location, that location literally does not exist to them in the app. It will not appear on their dashboard, in their grid, or in their transaction dropdowns.</p>
         <h3>Access Groups</h3>
-        <p>To make assigning locations easier, Admins can create "Access Groups" (e.g., <i>West Coast</i>, <i>Arizona</i>). When editing a location, you can tag it with a group. When assigning a user, you can assign them the entire group with one click, instantly granting them access to all locations bearing that tag.</p>
+        <p>To make assigning locations easier, Admins can create "Access Groups" (e.g., <i>West Coast</i>, <i>Arizona</i>). When editing a location, you can tag it with a group. When assigning a user, you can assign them the entire group with one click, instantly granting them access to all locations bearing that tag.</p><p><img src="docs/screenshot-lbac.png" class="doc-screenshot" alt="Documentation Image"></p>
       </section>
 
       <section id="dashboard" class="doc-section">
-        <h2>Dashboard & Alerts</h2>
+        <h2>Dashboard &amp; Alerts</h2>
         <p>The Dashboard (found in the Management tab) provides a real-time financial and operational snapshot of the inventory.</p>
+        <img src="docs/screenshot-dashboard.png" class="doc-screenshot" alt="IMS Dashboard Snapshot">
         <ul>
           <li><strong>Global Snapshot:</strong> Visible to Admins and Sub-Admins. Shows total unit counts and financial valuations across the entire company.</li>
           <li><strong>Location Groups Snapshot:</strong> Allows you to select an Access Group from a dropdown (e.g., "Arizona") and instantly recalculate the financial valuation and unit count strictly for assets within that region.</li>
@@ -736,16 +770,16 @@
       </section>
 
       <section id="finding-data" class="doc-section">
-        <h2>Finding & Viewing Items</h2>
+        <h2>Finding &amp; Viewing Items</h2>
         <p>The main screen of the application is the <strong>Location Grid</strong>. Clicking a location card opens it to reveal all the items currently stored inside it.</p>
-        
+        <img src="docs/screenshot-locgrid.png" class="doc-screenshot" alt="Item Details View">
         <ul>
           <li><strong>Global "Everywhere" Location:</strong> At the end of the Physical Spaces grid is a special blue 🌎 card called "Everywhere". This is a system-generated master view. Clicking it will show you every single item across your entire company in one massive list.</li>
           <li><strong>Sorting:</strong> When viewing a location, use the dropdown in the top right to sort items alphabetically (A-Z, Z-A) or by Quantity (High-Low).</li>
           <li><strong>Grid vs. List View:</strong> Next to the sort dropdown is a physical toggle switch. Click it to swap between a visual "Grid" layout (large images, square cards) and a condensed "List" layout (small thumbnails, compact rows).</li>
           <li><strong>Image Zoom (Lightbox):</strong> If you click on an item's main image on its Detail Page, it will pop out into a high-resolution Lightbox overlay. Click the background to close it.</li>
           <li><strong>Quick Edit Shortcut:</strong> If you are an Admin/Manager looking at an Item or Location detail page, you will see a small "✎ Edit" button under the image. Clicking this instantly teleports you directly to the Management form for that specific entity, saving you time!</li>
-        </ul>
+        </ul><div><img src="docs/screenshot-item.png" class="doc-screenshot" alt="Documentation Image"></div>
 
         <h3>Global Search Engine</h3>
         <p>The Search Bar at the top of the app is incredibly powerful. As you type, the app searches through Barcodes, Make, Model, Descriptions, Notes, and Serial Numbers. Matches are highlighted in yellow. Click any result to jump directly to that item.</p>
@@ -761,8 +795,9 @@
       </section>
 
       <section id="transactions" class="doc-section">
-        <h2>Transactions (Check In, Out & Move)</h2>
-        <p>To execute a transaction, go to the Item Detail page. At the bottom, you will find the Action Form.</p>
+        <h2>Transactions (Check In, Out &amp; Move)</h2>
+        <p>To execute a transaction, go to the Item Detail page. At the bottom, you will find the Action Form.</p><p><img src="docs/screenshot-transactionbulk.png" class="doc-screenshot" alt="Documentation Image"></p>
+        <img src="docs/screenshot-transaction.png" class="doc-screenshot" alt="Action Form">
         
         <h3>Bulk vs. Serialized Actions</h3>
         <div class="row mt-2">
@@ -785,6 +820,7 @@
       <section id="audits" class="doc-section">
         <h2>Performing Audits</h2>
         <p>Audits are true-ups of physical stock compared to what the system expects. Only Admins, Sub-Admins, Managers, and Operators can perform audits.</p>
+        <img src="docs/screenshot-audit.png" class="doc-screenshot" alt="Audit Mode">
         <ol>
           <li>Navigate to a Location and click the yellow <strong>Audit</strong> button in the top right.</li>
           <li>The system will generate a list of everything it expects to find in that location, broken down by specific Spots/Bins.</li>
@@ -799,7 +835,7 @@
         <p>The system allows you to easily extract data for external reporting or spreadsheets.</p>
         <ul>
           <li><strong>Location Inventory CSV:</strong> <i>(Access: Admin, Sub-Admin, Manager, Operator)</i>. Navigate to any Location (or the Global "Everywhere" view) and click the green <strong>Download CSV</strong> button in the top right. This generates a clean spreadsheet of every item, its category, exact spot/bin, quantity, and unit price for that specific location.</li>
-          <li><strong>Transaction Logs CSV:</strong> <i>(Access: Admin, Sub-Admin, Manager)</i>. Go to Management > Logs. In the top right, there is a small input box and a green Download button. Enter the exact number of rows you want to export (e.g., 500, or 5000) and click Download. This exports the raw, chronological history of every movement in the system.</li>
+          <li><strong>Transaction Logs CSV:</strong> <i>(Access: Admin, Sub-Admin, Manager)</i>. Go to Management &gt; Logs. In the top right, there is a small input box and a green Download button. Enter the exact number of rows you want to export (e.g., 500, or 5000) and click Download. This exports the raw, chronological history of every movement in the system.</li>
         </ul>
       </section>
 
@@ -809,7 +845,7 @@
         <p>The Items tab is where you define the catalog of equipment your company owns. In the data tables, <strong>click the column headers (blue underlined text)</strong> to instantly sort the database.</p>
         <ul>
           <li><strong>Barcode (Required):</strong> The most important field. Must be completely unique (e.g., a UPC code or internal SKU).</li>
-          <li><strong>Make & Model:</strong> The manufacturer (e.g., Sony) and the product name (e.g., FX6 Camera).</li>
+          <li><strong>Make &amp; Model:</strong> The manufacturer (e.g., Sony) and the product name (e.g., FX6 Camera).</li>
           <li><strong>Category:</strong> A high-level grouping used for filtering (e.g., CCTV, Cable, Accessories).</li>
           <li><strong>Tracking Type:</strong> Choose between "Bulk Quantity" (just count numbers) or "Individual Serials" (track exact units). <i>Note: Do not change this after stock has been added, or your history will break!</i></li>
           <li><strong>Description:</strong> A brief overview of what the item is. This is globally searchable!</li>
@@ -821,7 +857,7 @@
           <li><strong>Notes:</strong> Any special handling instructions. This is also globally searchable!</li>
         </ul>
         
-        <h3>Enabling & Disabling Items</h3>
+        <h3>Enabling &amp; Disabling Items</h3>
         <p>In the Items table, you will see a toggle button in the Actions column. Disabling an item removes it from searches and dropdowns so it can no longer be interacted with. <strong>Safety Net:</strong> The system will block you from disabling an item if there is still active stock in the system. You must remove/audit the stock to zero before retiring the item.</p>
       </section>
 
@@ -835,14 +871,14 @@
           <li><strong>Type:</strong> Choose between <strong>Physical Space</strong> (a permanent building) or <strong>Deployable</strong> (an asset that moves, like a Truck or Storage Case).</li>
           <li><strong>Deployment Location:</strong> If you select "Deployable" above, a new box appears asking *where* this truck/case is currently deployed to.</li>
           <li><strong>Access Groups (LBAC):</strong> A checklist of groups (e.g., Arizona, West Coast). Check the boxes to assign this location to those groups. You can quickly create new groups by typing a tag and clicking "Add".</li>
-          <li><strong>Description & Notes:</strong> Add details about the location, access codes, or contact info.</li>
+          <li><strong>Description &amp; Notes:</strong> Add details about the location, access codes, or contact info.</li>
           <li><strong>Image URL / File Upload:</strong> Give the location a photo! Just like items, File Uploads override Image URLs.</li>
         </ul>
         
         <h3>Spots / Bins</h3>
         <p>You do not need to pre-create Spots/Bins. When a user is moving an item into a location on their device, they can simply type a new Spot name (e.g., "Shelf A3"), and the system will dynamically create it. To rename or delete an existing Spot, click the blue <strong>Spots</strong> button next to the location in the Location Management table.</p>
 
-        <h3>Enabling & Disabling Locations</h3>
+        <h3>Enabling &amp; Disabling Locations</h3>
         <p>Like Items, Locations can be disabled. <strong>Safety Net:</strong> You cannot disable a location if it currently holds inventory.</p>
 
         <h3>Access Group Summary Dashboard</h3>
@@ -859,14 +895,14 @@
       <section id="manage-users" class="doc-section">
         <h2>Management: Users</h2>
         <p><i>Access: Admin Only</i></p>
-        <p>The Users tab controls who can log in. If an email is not in this list, they will hit an "Access Denied" screen.</p>
+        <p>The Users tab controls who can log in. If an email is not in this list, they will hit an "Access Denied" screen.</p><p><img src="docs/screenshot-users.png" class="doc-screenshot" alt="Documentation Image"></p>
         <ul>
           <li><strong>Full Name (Optional):</strong> By default, the system tries to guess a user's display name from their email address (e.g., <code>john.doe@company.com</code> becomes "John Doe"). If their email is weird (e.g., <code>admin123@company.com</code>), you can type their actual name here to override the system guess!</li>
           <li><strong>Email Address:</strong> Their exact Google login email.</li>
-          <li><strong>Role:</strong> See the "Roles & Permissions" section for details on access levels.</li>
+          <li><strong>Role:</strong> See the "Roles &amp; Permissions" section for details on access levels.</li>
           <li><strong>Assign Locations (LBAC):</strong> If the user is a Restricted role, a checklist will appear. Check the Groups or specific Locations they are allowed to access.</li>
         </ul>
-        <h3>Enabling & Disabling Users</h3>
+        <h3>Enabling &amp; Disabling Users</h3>
         <p>You can instantly revoke a user's access by clicking the Disable button in the table. <strong>Safety Net:</strong> The system will prevent you from accidentally disabling your own Admin account.</p>
       </section>
 
@@ -881,9 +917,9 @@
       </section>
 
       <section id="theming" class="doc-section">
-        <h2>Administration: Theme & Branding</h2>
+        <h2>Administration: Theme &amp; Branding</h2>
         <p><i>Access: Admin Only</i></p>
-        <p>The Theme tab allows Admins to completely white-label the software without ever touching code. Here is a breakdown of every field:</p>
+        <p>The Theme tab allows Admins to completely white-label the software without ever touching code. Here is a breakdown of every field:</p><p><img src="docs/screenshot-theme.png" class="doc-screenshot" alt="Documentation Image"></p>
         <ul>
           <li><strong>Company Name:</strong> Legal entity name. This is automatically injected into the dynamically generated Legal/Privacy Modal in the footer.</li>
           <li><strong>Developer Name:</strong> Name of the primary architect (injected into the Legal Modal).</li>
@@ -895,7 +931,7 @@
           <li><strong>Admin Contact:</strong> The email address shown to users if they hit the "Access Denied" screen, telling them who to contact for access.</li>
           <li><strong>Logo Image URL:</strong> A web link to your company logo. This displays on the login screen, loading screen, and top navigation bar.</li>
           <li><strong>Default 'No Image' Graphic:</strong> If an item doesn't have a photo, the app generates a gray "No Image" box. You can replace that with a custom branded placeholder by pasting an image URL here.</li>
-          <li><strong>Google Client ID & Drive Folder ID:</strong> The critical connection strings required for Google Login and Image Uploads.</li>
+          <li><strong>Google Client ID &amp; Drive Folder ID:</strong> The critical connection strings required for Google Login and Image Uploads.</li>
           <li><strong>Sync Interval:</strong> How often the Background Sync Engine silently pings the database (in seconds). Default is 15.</li>
           <li><strong>Light Mode / Dark Mode Palettes:</strong> Define Primary Brand Colors, Background Colors, Card Colors, and Text Colors for both display modes. When a user toggles the sun/moon icon, the app repaints itself instantly using these rules.</li>
         </ul>
@@ -922,7 +958,7 @@
         <ol>
           <li>Go to the <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a> and sign in.</li>
           <li>Click the project dropdown in the top left and select <strong>New Project</strong>. Name it "IMS Login" and click Create.</li>
-          <li>In the left sidebar, navigate to <strong>APIs & Services > OAuth consent screen</strong>.</li>
+          <li>In the left sidebar, navigate to <strong>APIs &amp; Services &gt; OAuth consent screen</strong>.</li>
           <li>Select <strong>Internal</strong> (if you only want employees in your company's Google Workspace to use it) or <strong>External</strong> (if you want anyone with a Gmail account to be able to use it), and click Create.</li>
           <li>Fill out the required App Information (App name, support email) and click <strong>Save and Continue</strong> through the remaining steps.</li>
           <li>In the left sidebar, click <strong>Credentials</strong>.</li>
@@ -962,11 +998,11 @@
               </li>
               <li>Tab 6: <strong>Dashboard</strong>
                 <br><span class="small text-muted">Paste this EXACT formula into cell <strong>A1</strong>:</span>
-                <pre class="bg-dark text-light p-2 rounded mt-1 mb-2" style="font-size: 0.75rem;"><code>=IFERROR(QUERY({ARRAYFORMULA(TO_TEXT(Log!C1:C)), ARRAYFORMULA(TO_TEXT(Log!E1:E)), Log!F1:G}, "SELECT Col1, Col2, SUM(Col3) WHERE Col1 <> '' GROUP BY Col1, Col2 PIVOT Col4 LABEL Col1 'Barcode'"), "No Transaction Data Found")</code></pre>
+                <pre class="bg-dark text-light p-2 rounded mt-1 mb-2" style="font-size: 0.75rem;"><code>=IFERROR(QUERY({ARRAYFORMULA(TO_TEXT(Log!C1:C)), ARRAYFORMULA(TO_TEXT(Log!E1:E)), Log!F1:G}, "SELECT Col1, Col2, SUM(Col3) WHERE Col1 &lt;&gt; '' GROUP BY Col1, Col2 PIVOT Col4 LABEL Col1 'Barcode'"), "No Transaction Data Found")</code></pre>
               </li>
               <li>Tab 7: <strong>Alerts</strong>
                 <br><span class="small text-muted">Paste this EXACT formula into cell <strong>A1</strong>:</span>
-                <pre class="bg-dark text-light p-2 rounded mt-1 mb-2" style="font-size: 0.75rem;"><code>=ARRAYFORMULA(QUERY({Items!A2:B, Items!E2:E, IFERROR(VLOOKUP(Items!A2:A, QUERY(Log!A:G, "SELECT C, SUM(F) GROUP BY C"), 2, FALSE), 0)}, "SELECT Col1, Col2, Col3, Col4 WHERE Col4 < Col3 AND Col1 IS NOT NULL LABEL Col1 'Barcode', Col2 'Item', Col3 'Min Threshold', Col4 'Total On Hand'"))</code></pre>
+                <pre class="bg-dark text-light p-2 rounded mt-1 mb-2" style="font-size: 0.75rem;"><code>=ARRAYFORMULA(QUERY({Items!A2:B, Items!E2:E, IFERROR(VLOOKUP(Items!A2:A, QUERY(Log!A:G, "SELECT C, SUM(F) GROUP BY C"), 2, FALSE), 0)}, "SELECT Col1, Col2, Col3, Col4 WHERE Col4 &lt; Col3 AND Col1 IS NOT NULL LABEL Col1 'Barcode', Col2 'Item', Col3 'Min Threshold', Col4 'Total On Hand'"))</code></pre>
               </li>
             </ul>
           </li>
@@ -983,7 +1019,7 @@
         <h2>Deployment Step 4: API Setup</h2>
         <p>Now we attach the brain to the database.</p>
         <ol>
-          <li>While still looking at your Google Sheet, click <strong>Extensions > Apps Script</strong> at the top.</li>
+          <li>While still looking at your Google Sheet, click <strong>Extensions &gt; Apps Script</strong> at the top.</li>
           <li>A new window will open. Erase all the default code in the editor.</li>
           <li>Open the <code>Code.gs</code> file that was provided to you, copy all of the text inside it, and paste it into the editor.</li>
           <li>Click the 💾 <strong>Save</strong> icon (disk icon).</li>
@@ -1013,13 +1049,13 @@
         </div>
 
         <div class="position-relative tabs-scroll-wrapper">
-          <button class="tab-scroll-btn left-arrow" id="scrollLeftBtn" onclick="scrollTabs(-150)">&#9664;</button>
+          <button class="tab-scroll-btn left-arrow" id="scrollLeftBtn" onclick="scrollTabs(-150)">◀</button>
           <ul class="nav nav-tabs flex-nowrap hide-scroll" id="deployTabs" role="tablist">
-            <li class="nav-item" role="presentation"><button class="nav-link active fw-bold text-nowrap" data-bs-toggle="tab" data-bs-target="#gh-web" type="button" role="tab">GitHub (Web UI)</button></li>
-            <li class="nav-item" role="presentation"><button class="nav-link fw-bold text-nowrap" data-bs-toggle="tab" data-bs-target="#gh-cli" type="button" role="tab">GitHub (Git CLI)</button></li>
-            <li class="nav-item" role="presentation"><button class="nav-link fw-bold text-nowrap" data-bs-toggle="tab" data-bs-target="#hosting" type="button" role="tab">Standard Hosting (GoDaddy, etc.)</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link active fw-bold text-nowrap" data-bs-toggle="tab" data-bs-target="#gh-web" type="button" role="tab" aria-selected="true">GitHub (Web UI)</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link fw-bold text-nowrap" data-bs-toggle="tab" data-bs-target="#gh-cli" type="button" role="tab" aria-selected="false" tabindex="-1">GitHub (Git CLI)</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link fw-bold text-nowrap" data-bs-toggle="tab" data-bs-target="#hosting" type="button" role="tab" aria-selected="false" tabindex="-1">Standard Hosting (GoDaddy, etc.)</button></li>
           </ul>
-          <button class="tab-scroll-btn right-arrow" id="scrollRightBtn" onclick="scrollTabs(150)">&#9654;</button>
+          <button class="tab-scroll-btn right-arrow" id="scrollRightBtn" onclick="scrollTabs(150)">▶</button>
         </div>
         
         <div class="tab-content border border-top-0 p-4 bg-white" style="background: var(--sidebar-bg) !important;" id="deployTabsContent">
@@ -1027,7 +1063,7 @@
             <h4>Deploying via GitHub Website (Easiest)</h4>
             <ol>
               <li>Go to GitHub.com and create a new public repository (e.g., name it <code>ims-app</code>).</li>
-              <li>In the repository, click <strong>Add file > Upload files</strong>.</li>
+              <li>In the repository, click <strong>Add file &gt; Upload files</strong>.</li>
               <li>Drag and drop your updated <code>index.html</code> file into the browser and click <strong>Commit changes</strong>.</li>
               <li>Click the <strong>Settings</strong> tab at the top of the repository.</li>
               <li>On the left sidebar, click <strong>Pages</strong>.</li>
@@ -1088,12 +1124,12 @@ git push -u origin main</code></pre>
 
         <div class="callout border-warning">
           <strong class="text-warning">3. If you edit the Apps Script, you MUST create a New Deployment.</strong><br>
-          <span class="text-muted small">If you ever open the <code>Code.gs</code> file to edit the backend code, simply clicking the "Save" icon is not enough. Google caches the API. You must click <strong>Deploy > Manage Deployments > Edit (Pencil Icon) > New Version > Deploy</strong> for your code changes to actually go live.</span>
+          <span class="text-muted small">If you ever open the <code>Code.gs</code> file to edit the backend code, simply clicking the "Save" icon is not enough. Google caches the API. You must click <strong>Deploy &gt; Manage Deployments &gt; Edit (Pencil Icon) &gt; New Version &gt; Deploy</strong> for your code changes to actually go live.</span>
         </div>
       </section>
 
       <section id="faq" class="doc-section">
-        <h2 class="text-danger">Troubleshooting & FAQ</h2>
+        <h2 class="text-danger">Troubleshooting &amp; FAQ</h2>
         
         <h3 class="text-danger mt-4">Help! The app is stuck on "Loading Database..."</h3>
         <p>This almost always means the <code>GAS_URL</code> inside your <code>index.html</code> file is incorrect, or you failed to deploy the Google Sheet correctly.</p>
@@ -1123,7 +1159,7 @@ git push -u origin main</code></pre>
         <p>Modern browsers strictly block camera access on unsecured connections.</p>
         <ul>
           <li>Make sure the website you are hosting the app on uses <code>https://</code>, not <code>http://</code>. GitHub Pages handles this automatically.</li>
-          <li>Check your browser settings (or your phone's Settings > Safari/Chrome) to ensure you haven't accidentally denied camera access for this specific website.</li>
+          <li>Check your browser settings (or your phone's Settings &gt; Safari/Chrome) to ensure you haven't accidentally denied camera access for this specific website.</li>
         </ul>
 
         <h3 class="text-danger mt-4">I hit an "Access Denied" screen.</h3>
@@ -1145,7 +1181,7 @@ git push -u origin main</code></pre>
         <p>Because your entire backend lives inside Google Workspace, creating a hard backup takes three seconds and requires no technical knowledge.</p>
         <ul>
           <li>Open your "IMS Database" Google Sheet.</li>
-          <li>Click <strong>File > Download > Microsoft Excel (.xlsx)</strong>.</li>
+          <li>Click <strong>File &gt; Download &gt; Microsoft Excel (.xlsx)</strong>.</li>
           <li>You now have a complete, offline, hard-copy backup of every item, location, user, and transaction log in your system! We recommend doing this once a month.</li>
         </ul>
 
@@ -1174,7 +1210,7 @@ git push -u origin main</code></pre>
 
       <div class="mt-5 pt-4 border-top text-center text-muted" style="font-size: 0.85rem; line-height: 1.5; padding-bottom: 2rem;">
         <p class="mb-1">Developed by Jack Vu</p>
-        <p class="mb-0 mt-2"><a href="#" class="text-decoration-none fw-bold" style="color: var(--accent);" onclick="showLegalModal(event)">Terms & Privacy Policy</a></p>
+        <p class="mb-0 mt-2"><a href="#" class="text-decoration-none fw-bold" style="color: var(--accent);" onclick="showLegalModal(event)">Terms &amp; Privacy Policy</a></p>
       </div>
 
     </div>
@@ -1185,53 +1221,53 @@ git push -u origin main</code></pre>
   <div class="gdpr-content">
     <div style="font-size: 0.85rem; color: var(--text-main);" class="text-md-start text-center">
       <strong>We value your privacy.</strong> This documentation site uses essential browser storage strictly to save your Dark/Light mode theme preferences. We do not track you across the web or sell your data. By continuing to use this site, you consent to our 
-      <a href="#" onclick="showLegalModal(event)" style="color: var(--accent); font-weight: bold; text-decoration: none;">Privacy Policy & Terms</a>.
+      <a href="#" onclick="showLegalModal(event)" style="color: var(--accent); font-weight: bold; text-decoration: none;">Privacy Policy &amp; Terms</a>.
     </div>
-    <button class="btn btn-sm text-white fw-bold text-nowrap px-4" style="background-color: var(--accent);" onclick="acceptGDPR()">I Understand & Accept</button>
+    <button class="btn btn-sm text-white fw-bold text-nowrap px-4" style="background-color: var(--accent);" onclick="acceptGDPR()">I Understand &amp; Accept</button>
   </div>
 </div>
 
-<button id="backToTopBtn" onclick="scrollToTop()" title="Go to top">↑</button>
+<button id="backToTopBtn" onclick="scrollToTop()" title="Go to top" class="visible">↑</button>
 
 <div class="modal fade" id="legalModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
     <div class="modal-content" style="background-color: var(--modal-bg); border: 1px solid var(--border-color); border-radius: 12px;">
       <div class="modal-header border-bottom" style="border-color: var(--border-color) !important;">
-        <h5 class="modal-title fw-bold" style="color: var(--accent) !important;">Terms & Privacy Policy</h5>
+        <h5 class="modal-title fw-bold" style="color: var(--accent) !important;">Terms &amp; Privacy Policy</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: document.documentElement.getAttribute('data-theme') === 'dark' ? 'invert(1)' : 'none';"></button>
       </div>
       <div class="modal-body text-muted" style="font-size: 0.85rem; line-height: 1.6; color: var(--text-muted) !important;">
-        <h6 class="fw-bold" style="color: var(--accent);">1. Introduction & Acceptance</h6>
+        <h6 class="fw-bold" style="color: var(--accent);">1. Introduction &amp; Acceptance</h6>
         <p>This Privacy Policy and Terms of Service govern the use of the Inventory Management System ("The Application"). By accessing, authenticating, or utilizing this system, you ("The User") agree to be bound by these terms in full. If you do not agree to these terms, you must exit The Application immediately.</p>
 
-        <h6 class="fw-bold mt-4" style="color: var(--accent);">2. Intellectual Property & Ownership</h6>
+        <h6 class="fw-bold mt-4" style="color: var(--accent);">2. Intellectual Property &amp; Ownership</h6>
         <p>The Application was independently architected, engineered, and developed by Jack Vu on personal time. It utilizes open-source UI frameworks (GitHub Pages) and Google Workspace APIs (Apps Script, Sheets, Drive). While the inventory data processed within The Application is the exclusive property of The Company, the underlying architecture, logic, source code, and design patterns of The Application remain the sole intellectual property of Jack Vu, unless otherwise stipulated in a formally executed written agreement.</p>
 
-        <h6 class="fw-bold mt-4" style="color: var(--accent);">3. Data Collection, Privacy, CCPA & GDPR Compliance</h6>
+        <h6 class="fw-bold mt-4" style="color: var(--accent);">3. Data Collection, Privacy, CCPA &amp; GDPR Compliance</h6>
         <p>In compliance with the California Consumer Privacy Act (CCPA), the General Data Protection Regulation (GDPR), and applicable state laws, we disclose the following regarding data processing:</p>
         <ul>
-          <li><strong>Identity Data & Legal Basis:</strong> We collect your email address exclusively via secure Google Workspace OAuth. The legal basis for this processing is legitimate operational interest for system authentication, role-based access control, and security auditing.</li>
+          <li><strong>Identity Data &amp; Legal Basis:</strong> We collect your email address exclusively via secure Google Workspace OAuth. The legal basis for this processing is legitimate operational interest for system authentication, role-based access control, and security auditing.</li>
           <li><strong>Activity Data:</strong> Interactions (e.g., checking items in/out, moving assets) are permanently logged with your email and a timestamp to maintain a secure chain of custody.</li>
           <li><strong>User Rights (GDPR/CCPA):</strong> You retain the right to request access to, rectification of, or erasure (Right to be Forgotten) of your personal data. Note that erasure of immutable audit logs may be legally restricted by The Company's legitimate compliance or security requirements.</li>
           <li><strong>Third-Party Sharing:</strong> Zero user or inventory data is sold, monetized, or shared with external third parties. All data is securely contained within The Company's Google Workspace infrastructure.</li>
         </ul>
 
-        <h6 class="fw-bold mt-4" style="color: var(--accent);">4. Prohibited Data & Sensitive Information</h6>
+        <h6 class="fw-bold mt-4" style="color: var(--accent);">4. Prohibited Data &amp; Sensitive Information</h6>
         <p>The Application is designed exclusively for standard physical inventory tracking and is <strong>NOT</strong> compliant with HIPAA, FERPA, or PCI-DSS standard out-of-the-box. Users are strictly prohibited from entering, uploading, or storing highly sensitive regulated data within any text field, note, or image upload. This includes, but is not limited to: Protected Health Information (PHI), Personally Identifiable Information (PII) of minors, Social Security Numbers, or primary payment card details.</p>
 
-        <h6 class="fw-bold mt-4" style="color: var(--accent);">5. System Security & Acceptable Use</h6>
+        <h6 class="fw-bold mt-4" style="color: var(--accent);">5. System Security &amp; Acceptable Use</h6>
         <p>Access to the backend infrastructure is strictly restricted. You agree to interface with The Application solely through the provided front-end User Interface. You agree not to reverse engineer, scrape, bypass security protocols, or intentionally disrupt the API. You are solely responsible for maintaining the security of your Google account credentials.</p>
 
         <h6 class="fw-bold mt-4" style="color: var(--accent);">6. Disclaimer of Warranties ("As-Is" Provision)</h6>
         <p>The Application is provided strictly "AS IS" and "AS AVAILABLE" without any warranties of any kind, whether express, implied, or statutory. Jack Vu expressly disclaims any implied warranties of merchantability, fitness for a particular purpose, non-infringement, or guarantee of continuous, error-free operation.</p>
 
-        <h6 class="fw-bold mt-4" style="color: var(--accent);">7. Limitation of Liability & Indemnification</h6>
+        <h6 class="fw-bold mt-4" style="color: var(--accent);">7. Limitation of Liability &amp; Indemnification</h6>
         <p>Under no circumstances shall Jack Vu be held liable for any direct, indirect, incidental, consequential, or special damages arising out of or in connection with your use of The Application. This includes, but is not limited to, data loss, inventory discrepancies, business interruption, or financial loss. By using this system, The Company and its authorized users agree to indemnify and hold harmless Jack Vu from any claims, damages, or liabilities resulting from its use.</p>
 
-        <h6 class="fw-bold mt-4" style="color: var(--accent);">8. Modifications & Governing Law</h6>
+        <h6 class="fw-bold mt-4" style="color: var(--accent);">8. Modifications &amp; Governing Law</h6>
         <p>These terms may be updated at any time. Continued use of The Application implies ongoing consent to any revisions. These terms shall be governed by and construed in accordance with the laws of the State of California and the State of Arizona, without regard to conflict of law principles.</p>
 
-        <h6 class="fw-bold mt-4" style="color: var(--accent);">9. Contact & Data Privacy Requests</h6>
+        <h6 class="fw-bold mt-4" style="color: var(--accent);">9. Contact &amp; Data Privacy Requests</h6>
         <p>If you wish to request a record of your data, report a vulnerability, or request the deletion of your user profile in accordance with state or international privacy rights, please contact: <strong>your system administrator</strong>.</p>
       </div>
       <div class="modal-footer border-top" style="border-color: var(--border-color) !important; background-color: var(--input-bg);">
@@ -1534,7 +1570,104 @@ git push -u origin main</code></pre>
       }
     });
   });
+
+  // --- ADMIN EDITOR ENGINE (CTRL+SHIFT+E) ---
+  let isEditingDocs = false;
+
+  window.addEventListener('keydown', (e) => {
+    // Listen for Ctrl + Shift + E (or Cmd + Shift + E on Mac)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'e') {
+      e.preventDefault();
+      toggleEditorMode();
+    }
+  });
+
+  function toggleEditorMode() {
+    isEditingDocs = !isEditingDocs;
+    const sections = document.querySelectorAll('.doc-section');
+    const contentArea = document.getElementById('docContent');
+    
+    if (isEditingDocs) {
+      clearDocHighlights(); 
+      
+      sections.forEach(sec => {
+        sec.setAttribute('contenteditable', 'true');
+        sec.classList.add('editing-active');
+      });
+
+      // Listen for clicks on images to edit/delete them
+      contentArea.addEventListener('click', handleImageEdit);
+
+      const toolbar = document.createElement('div');
+      toolbar.id = 'adminDocsToolbar';
+      toolbar.innerHTML = `
+        <div style="position:fixed; top:0; left:0; right:0; background:#dc2626; color:white; padding:12px 20px; z-index:100000; display:flex; justify-content:space-between; align-items:center; font-family:sans-serif; box-shadow:0 4px 15px rgba(0,0,0,0.3);">
+          <div style="font-size:0.9rem;"><strong>🛠️ Admin Edit Mode</strong> &nbsp;|&nbsp; Click text to edit. Click any image to edit/delete.</div>
+          <div style="display:flex; gap:10px;">
+            <button onmousedown="event.preventDefault(); insertAdminImage()" style="background:transparent; border:1px solid white; color:white; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">🖼️ Insert Image</button>
+            <button onclick="toggleEditorMode()" style="background:transparent; border:1px solid white; color:white; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:bold;">Cancel</button>
+            <button onclick="saveDocsFile()" style="background:white; color:#dc2626; border:none; padding:6px 16px; border-radius:6px; font-weight:bold; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.2);">💾 Save & Download</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(toolbar);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } else {
+      sections.forEach(sec => {
+        sec.removeAttribute('contenteditable');
+        sec.classList.remove('editing-active');
+      });
+      contentArea.removeEventListener('click', handleImageEdit);
+      const toolbar = document.getElementById('adminDocsToolbar');
+      if(toolbar) toolbar.remove();
+    }
+  }
+
+  function handleImageEdit(e) {
+    if (!isEditingDocs) return;
+    if (e.target.tagName === 'IMG') {
+      const img = e.target;
+      const currentSrc = img.getAttribute('src');
+      
+      const newSrc = prompt("Edit Image File Path or URL.\n\nTo DELETE this image, completely erase the text in this box and click OK.", currentSrc);
+      
+      if (newSrc === null) return; // User clicked Cancel
+      
+      if (newSrc.trim() === "") {
+        img.remove(); // User cleared the box, so delete the image!
+      } else {
+        img.src = newSrc.trim();
+        img.classList.add('doc-screenshot'); // Ensure it keeps the standard border styling
+      }
+    }
+  }
+
+  function insertAdminImage() {
+    // The onmousedown=preventDefault in the HTML button ensures the text editor doesn't lose your cursor position!
+    const url = prompt("Enter the new image path or URL (e.g., docs/my-new-screenshot.png):");
+    if (!url || url.trim() === "") return;
+    
+    // Inject the HTML exactly where the flashing text cursor currently is
+    const imgHTML = `<img src="${url.trim()}" class="doc-screenshot" alt="Documentation Image">`;
+    document.execCommand('insertHTML', false, imgHTML);
+  }
+
+  function saveDocsFile() {
+    toggleEditorMode();
+    setTimeout(() => {
+      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "docs.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      alert("✅ File Downloaded!\n\nCheck your Downloads folder for the new 'docs.html' file. Drag and drop it into your GitHub repository to overwrite the old one and apply your changes live.");
+    }, 100);
+  }
 </script>
 
-</body>
-</html>
+
+</body></html>
