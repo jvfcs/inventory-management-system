@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light"><head>
+<html lang="en" data-theme="light">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IMS Documentation</title>
@@ -14,7 +15,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <style>
-    /* CSS Variables for Theming */
+    /* --- THEME VARIABLES --- */
     :root {
       --bg-color: #f9fafb;
       --sidebar-bg: #ffffff;
@@ -51,13 +52,13 @@
       margin: 0;
     }
     
-    /* Layout */
+    /* --- LAYOUT --- */
     .docs-layout {
       display: flex;
       min-height: 100vh;
     }
 
-    /* Mobile Header */
+    /* --- MOBILE HEADER --- */
     .mobile-header {
       display: none;
       justify-content: space-between;
@@ -78,7 +79,7 @@
       backdrop-filter: blur(2px);
     }
     
-    /* Sidebar Structure */
+    /* --- SIDEBAR --- */
     .sidebar {
       width: 280px;
       background: var(--sidebar-bg);
@@ -91,11 +92,10 @@
       transition: transform 0.3s ease, background-color 0.3s, border-color 0.3s;
     }
     
-    /* Sticky Sidebar Components */
     .sidebar-header {
-      padding: 2rem 1.5rem 0 1.5rem; /* Removed bottom padding */
+      padding: 2rem 1.5rem 0 1.5rem;
       flex-shrink: 0;
-      background: var(--sidebar-bg); /* Ensures header covers scrolling text */
+      background: var(--sidebar-bg);
       position: relative;
       z-index: 10;
     }
@@ -119,7 +119,7 @@
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-      margin-bottom: 0.75rem; /* Perfect spacing between Search and PDF button */
+      margin-bottom: 0.75rem;
       transition: border-color 0.2s;
     }
     .sidebar-search-trigger:hover {
@@ -133,17 +133,15 @@
       font-weight: bold;
     }
 
-    /* Scrolling Navigation Menu */
     .sidebar-nav-wrapper {
       flex-grow: 1;
       overflow-y: auto;
-      padding: 1.25rem 1.5rem 0 1.5rem; /* Gap is now part of the scrollable canvas! */
-      /* Hide Scrollbar */
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE */
+      padding: 1.25rem 1.5rem 0 1.5rem;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
     .sidebar-nav-wrapper::-webkit-scrollbar {
-      display: none; /* Chrome, Safari, Edge */
+      display: none;
     }
     
     .sidebar-nav a {
@@ -174,10 +172,10 @@
       margin: 1.5rem 0 0.5rem 0.75rem;
     }
     .sidebar-heading:first-of-type {
-      margin-top: 0; /* Prevents double-spacing at the very top of the list */
+      margin-top: 0;
     }
 
-    /* Theme Slider Toggle */
+    /* --- THEME TOGGLE --- */
     .theme-switch-wrapper {
       padding: 1.5rem;
       flex-shrink: 0;
@@ -222,15 +220,15 @@
       background-color: #1f2937;
     }
 
-    /* Main Content */
+    /* --- MAIN CONTENT --- */
     .main-content {
       flex: 1;
       margin-left: 280px;
       padding: 3rem 4rem;
-      min-width: 0; /* CRITICAL: Prevents long text/tabs from stretching the screen width */
+      min-width: 0;
     }
 
-    /* Search Modal Overlay */
+    /* --- SEARCH MODAL --- */
     .search-overlay {
       display: none; 
       position: fixed;
@@ -304,7 +302,6 @@
       color: var(--text-muted);
       text-align: right;
     }
-    
     .search-highlight {
       background-color: rgba(99, 102, 241, 0.3);
       color: var(--text-main);
@@ -317,7 +314,7 @@
       color: #ffffff;
     }
 
-    /* In-Document Global Highlighter */
+    /* --- HIGHLIGHTERS --- */
     .doc-highlight {
       background-color: rgba(255, 193, 7, 0.5);
       color: inherit;
@@ -329,8 +326,6 @@
       background-color: rgba(255, 193, 7, 0.3);
       color: #fff;
     }
-    
-    /* Sidebar Section Highlighter */
     .sidebar-nav a.sidebar-highlight {
       background-color: rgba(255, 193, 7, 0.15) !important;
       color: var(--text-main);
@@ -338,7 +333,6 @@
       border-radius: 0 6px 6px 0;
     }
 
-    /* Shift Clear Highlights to bottom center to make room for Back To Top */
     #clearHighlightsBtn {
       position: fixed;
       bottom: 30px;
@@ -363,7 +357,7 @@
     }
     #clearHighlightsBtn:hover { background: #3730a3; }
 
-    /* Back To Top Button */
+    /* --- BACK TO TOP --- */
     #backToTopBtn {
       position: fixed;
       bottom: 30px;
@@ -389,7 +383,7 @@
     #backToTopBtn.visible { opacity: 1; pointer-events: auto; }
     #backToTopBtn:hover { background: #3730a3; transform: translateY(-3px); }
 
-    /* GDPR Consent Banner */
+    /* --- GDPR BANNER --- */
     #gdprBanner {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 10500;
       background: var(--sidebar-bg); border-top: 1px solid var(--border-color);
@@ -405,7 +399,7 @@
       .gdpr-content { flex-direction: row; justify-content: space-between; }
     }
 
-    /* PDF Generation & Print Styling */
+    /* --- PDF / PRINT STYLING --- */
     @media print {
       body, .main-content { background: white !important; color: black !important; margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
       .sidebar, .mobile-header, .search-bar, #backToTopBtn, #clearHighlightsBtn, .theme-switch-wrapper, .sidebar-search-trigger { display: none !important; }
@@ -419,7 +413,7 @@
       * { transition: none !important; }
     }
 
-    /* Content Typography */
+    /* --- TYPOGRAPHY & COMPONENTS --- */
     .doc-section {
       margin-bottom: 4rem;
       scroll-margin-top: 100px;
@@ -450,7 +444,6 @@
       font-weight: 800;
     }
 
-    /* Bootstrap Overrides for Dark Mode Compatibility */
     [data-theme="dark"] .text-muted { color: var(--text-muted) !important; }
     [data-theme="dark"] .text-dark { color: var(--text-main) !important; }
     [data-theme="dark"] .bg-white, [data-theme="dark"] .bg-light { background-color: var(--sidebar-bg) !important; }
@@ -490,10 +483,10 @@
       border-radius: 4px;
       font-size: 0.9em;
       color: var(--accent);
-      word-break: break-word; /* Prevents long URLs from breaking mobile width */
+      word-break: break-word;
     }
     pre {
-      white-space: pre-wrap; /* Forces long formulas to wrap to the next line */
+      white-space: pre-wrap;
       word-wrap: break-word;
       overflow-x: auto;
     }
@@ -501,28 +494,28 @@
       background: rgba(255,255,255,0.1);
     }
 
-    /* Scrollable Tabs UI */
+    /* --- SCROLLABLE TABS --- */
     .tabs-scroll-wrapper {
       position: relative;
       width: 100%;
-      max-width: 100%; /* Contains the wrapper */
+      max-width: 100%;
     }
     .hide-scroll {
       display: flex;
       flex-wrap: nowrap;
       overflow-x: auto;
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE/Edge */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
       scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch; /* Buttery smooth swipe scrolling on iOS */
+      -webkit-overflow-scrolling: touch;
     }
     .hide-scroll::-webkit-scrollbar {
-      display: none; /* Chrome/Safari */
+      display: none;
     }
     .tab-scroll-btn {
       position: absolute;
       top: 0;
-      bottom: 1px; /* Align perfectly with bottom border of tabs */
+      bottom: 1px;
       width: 32px;
       background: var(--bg-color);
       border: 1px solid var(--border-color);
@@ -545,7 +538,7 @@
     .tab-scroll-btn.left-arrow { left: 0; border-radius: 6px 0 0 0; box-shadow: 3px 0 8px rgba(0,0,0,0.1); }
     .tab-scroll-btn.right-arrow { right: 0; border-radius: 0 6px 0 0; box-shadow: -3px 0 8px rgba(0,0,0,0.1); }
 
-    /* Screenshot Styling */
+    /* --- SCREENSHOTS & ADMIN MODE --- */
     .doc-screenshot {
       display: block;
       max-width: 100%;
@@ -554,10 +547,9 @@
       border-radius: 8px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
       margin: 1.5rem 0;
-      background-color: var(--sidebar-bg); /* Fallback while image loads */
+      background-color: var(--sidebar-bg);
     }
 
-    /* Admin Editor Styles */
     .doc-section.editing-active {
       outline: 2px dashed #ef4444;
       outline-offset: 10px;
@@ -568,7 +560,6 @@
       outline: 3px solid #ef4444;
       background: rgba(239, 68, 68, 0.05);
     }
-    /* Image Interactive Styles during Edit Mode */
     .doc-section.editing-active img {
       cursor: pointer;
       transition: all 0.2s ease;
@@ -579,7 +570,7 @@
       box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
     }
 
-    /* Responsive Mobile CSS */
+    /* --- MOBILE RESPONSIVE --- */
     @media (max-width: 768px) {
       .mobile-header { display: flex; }
       .sidebar { 
@@ -642,7 +633,7 @@
         <a href="#intro" class="nav-link">Introduction</a>
         <a href="#ui-nav" class="nav-link">UI &amp; Navigation Features</a>
         <a href="#mobile-pwa" class="nav-link">Mobile App (PWA) Setup</a>
-	<a href="#requirements" class="nav-link">System Requirements</a>
+        <a href="#requirements" class="nav-link">System Requirements</a>
         <a href="#roles" class="nav-link">Roles &amp; Permissions</a>
         <a href="#lbac" class="nav-link">Location Access (LBAC)</a>
         
@@ -673,7 +664,7 @@
         <div class="sidebar-heading">Help</div>
         <a href="#mistakes" class="nav-link text-warning">Common Mistakes to Avoid</a>
         <a href="#faq" class="nav-link text-danger">Troubleshooting &amp; FAQ</a>
-	<a href="#" class="nav-link" onclick="showLegalModal(event)">Terms &amp; Privacy Policy</a>
+        <a href="#" class="nav-link" onclick="showLegalModal(event)">Terms &amp; Privacy Policy</a>
       </nav>
     </div>
     
@@ -686,7 +677,6 @@
   </aside>
 
   <main class="main-content">
-    
     <div id="docContent">
 
       <section id="intro" class="doc-section">
@@ -749,7 +739,8 @@
         <h2>Location-Based Access Control (LBAC)</h2>
         <p>If a user is a Manager, Operator, or Viewer, they are subjected to LBAC filters. If an Admin does not explicitly assign them to a Location, that location literally does not exist to them in the app. It will not appear on their dashboard, in their grid, or in their transaction dropdowns.</p>
         <h3>Access Groups</h3>
-        <p>To make assigning locations easier, Admins can create "Access Groups" (e.g., <i>West Coast</i>, <i>Arizona</i>). When editing a location, you can tag it with a group. When assigning a user, you can assign them the entire group with one click, instantly granting them access to all locations bearing that tag.</p><p><img src="docs/screenshot-lbac.png" class="doc-screenshot" alt="Documentation Image"></p>
+        <p>To make assigning locations easier, Admins can create "Access Groups" (e.g., <i>West Coast</i>, <i>Arizona</i>). When editing a location, you can tag it with a group. When assigning a user, you can assign them the entire group with one click, instantly granting them access to all locations bearing that tag.</p>
+        <p><img src="docs/screenshot-lbac.png" class="doc-screenshot" alt="Documentation Image"></p>
       </section>
 
       <section id="dashboard" class="doc-section">
@@ -779,7 +770,8 @@
           <li><strong>Grid vs. List View:</strong> Next to the sort dropdown is a physical toggle switch. Click it to swap between a visual "Grid" layout (large images, square cards) and a condensed "List" layout (small thumbnails, compact rows).</li>
           <li><strong>Image Zoom (Lightbox):</strong> If you click on an item's main image on its Detail Page, it will pop out into a high-resolution Lightbox overlay. Click the background to close it.</li>
           <li><strong>Quick Edit Shortcut:</strong> If you are an Admin/Manager looking at an Item or Location detail page, you will see a small "✎ Edit" button under the image. Clicking this instantly teleports you directly to the Management form for that specific entity, saving you time!</li>
-        </ul><div><img src="docs/screenshot-item.png" class="doc-screenshot" alt="Documentation Image"></div>
+        </ul>
+        <div><img src="docs/screenshot-item.png" class="doc-screenshot" alt="Documentation Image"></div>
 
         <h3>Global Search Engine</h3>
         <p>The Search Bar at the top of the app is incredibly powerful. As you type, the app searches through Barcodes, Make, Model, Descriptions, Notes, and Serial Numbers. Matches are highlighted in yellow. Click any result to jump directly to that item.</p>
@@ -796,7 +788,8 @@
 
       <section id="transactions" class="doc-section">
         <h2>Transactions (Check In, Out &amp; Move)</h2>
-        <p>To execute a transaction, go to the Item Detail page. At the bottom, you will find the Action Form.</p><p><img src="docs/screenshot-transactionbulk.png" class="doc-screenshot" alt="Documentation Image"></p>
+        <p>To execute a transaction, go to the Item Detail page. At the bottom, you will find the Action Form.</p>
+        <p><img src="docs/screenshot-transactionbulk.png" class="doc-screenshot" alt="Documentation Image"></p>
         <img src="docs/screenshot-transaction.png" class="doc-screenshot" alt="Action Form">
         
         <h3>Bulk vs. Serialized Actions</h3>
@@ -895,7 +888,8 @@
       <section id="manage-users" class="doc-section">
         <h2>Management: Users</h2>
         <p><i>Access: Admin Only</i></p>
-        <p>The Users tab controls who can log in. If an email is not in this list, they will hit an "Access Denied" screen.</p><p><img src="docs/screenshot-users.png" class="doc-screenshot" alt="Documentation Image"></p>
+        <p>The Users tab controls who can log in. If an email is not in this list, they will hit an "Access Denied" screen.</p>
+        <p><img src="docs/screenshot-users.png" class="doc-screenshot" alt="Documentation Image"></p>
         <ul>
           <li><strong>Full Name (Optional):</strong> By default, the system tries to guess a user's display name from their email address (e.g., <code>john.doe@company.com</code> becomes "John Doe"). If their email is weird (e.g., <code>admin123@company.com</code>), you can type their actual name here to override the system guess!</li>
           <li><strong>Email Address:</strong> Their exact Google login email.</li>
@@ -919,7 +913,8 @@
       <section id="theming" class="doc-section">
         <h2>Administration: Theme &amp; Branding</h2>
         <p><i>Access: Admin Only</i></p>
-        <p>The Theme tab allows Admins to completely white-label the software without ever touching code. Here is a breakdown of every field:</p><p><img src="docs/screenshot-theme.png" class="doc-screenshot" alt="Documentation Image"></p>
+        <p>The Theme tab allows Admins to completely white-label the software without ever touching code. Here is a breakdown of every field:</p>
+        <p><img src="docs/screenshot-theme.png" class="doc-screenshot" alt="Documentation Image"></p>
         <ul>
           <li><strong>Company Name:</strong> Legal entity name. This is automatically injected into the dynamically generated Legal/Privacy Modal in the footer.</li>
           <li><strong>Developer Name:</strong> Name of the primary architect (injected into the Legal Modal).</li>
@@ -1291,7 +1286,6 @@ git push -u origin main</code></pre>
     const htmlEl = document.documentElement;
     const cb = document.getElementById('themeToggleCheckbox');
     const newTheme = cb.checked ? 'dark' : 'light';
-    
     htmlEl.setAttribute('data-theme', newTheme);
     localStorage.setItem('ims_docs_theme', newTheme);
   }
@@ -1304,27 +1298,24 @@ git push -u origin main</code></pre>
     overlay.classList.toggle('open');
   }
 
-  // Close mobile menu when clicking a sidebar link
   document.querySelectorAll('.sidebar-nav a.nav-link').forEach(link => {
       link.addEventListener('click', () => {
           document.getElementById('sidebar').classList.remove('open');
           document.getElementById('sidebarOverlay').classList.remove('open');
-          clearDocHighlights(); // Clear highlights if they manually click a nav link
+          clearDocHighlights();
       });
   });
 
-  // --- ESCAPE REGEX HELPER ---
+  // --- HIGHLIGHTER ENGINE ---
   const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-  // --- IN-DOCUMENT HIGHLIGHTER ENGINE ---
   function highlightInDoc(keyword) {
     clearDocHighlights();
     if(!keyword) return;
     
     const regex = new RegExp(`(${escapeRegExp(keyword)})`, 'gi');
-    
-    // 1. Highlight specific text matches ONLY in the Main Content
     const content = document.getElementById('docContent');
+    
     if (content) {
         const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
         const nodesToReplace = [];
@@ -1353,7 +1344,6 @@ git push -u origin main</code></pre>
         });
     }
 
-    // 2. Highlight the ENTIRE sidebar link for any section containing the match
     const sections = document.querySelectorAll('.doc-section');
     sections.forEach(sec => {
         if (sec.innerText.toLowerCase().includes(keyword.toLowerCase())) {
@@ -1365,12 +1355,10 @@ git push -u origin main</code></pre>
         }
     });
 
-    // Show the floating clear button
     document.getElementById('clearHighlightsBtn').classList.add('visible');
   }
 
   function clearDocHighlights() {
-    // Clear text highlights
     const marks = document.querySelectorAll('mark.doc-highlight');
     marks.forEach(mark => {
         const parent = mark.parentNode;
@@ -1380,32 +1368,30 @@ git push -u origin main</code></pre>
         }
     });
     
-    // Clear sidebar highlights
     const highlightedLinks = document.querySelectorAll('.sidebar-nav a.sidebar-highlight');
     highlightedLinks.forEach(link => link.classList.remove('sidebar-highlight'));
 
     document.getElementById('clearHighlightsBtn').classList.remove('visible');
   }
 
-  // --- SEARCH MODAL ENGINE ---
+  // --- SEARCH ENGINE ---
   const modal = document.getElementById('searchOverlay');
   const searchInput = document.getElementById('modalSearchInput');
 
   function openSearchModal() {
-    clearDocHighlights(); // Clear previous highlights when opening search
+    clearDocHighlights();
     modal.style.display = 'flex';
     setTimeout(() => searchInput.focus(), 50); 
   }
 
   function closeSearchModal(e, keyword = null) {
-    if (e && e.target !== modal) return; // Prevent closing if clicking inside the box
+    if (e && e.target !== modal) return;
     modal.style.display = 'none';
     searchInput.value = '';
     executeSearch(); 
     
     if (keyword) {
       setTimeout(() => highlightInDoc(keyword), 100); 
-      // Ensure mobile menu is closed so they can see the results
       document.getElementById('sidebar').classList.remove('open');
       document.getElementById('sidebarOverlay').classList.remove('open');
     }
@@ -1420,7 +1406,7 @@ git push -u origin main</code></pre>
       if (modal.style.display === 'flex') {
         closeSearchModal();
       } else {
-        clearDocHighlights(); // Hitting ESC also clears highlights on the page!
+        clearDocHighlights();
       }
     }
   });
@@ -1458,7 +1444,6 @@ git push -u origin main</code></pre>
         const highlightedSnippet = snippet.replace(regex, '<mark class="search-highlight">$1</mark>');
         const highlightedTitle = title.replace(regex, '<mark class="search-highlight">$1</mark>');
 
-        // Pass the query to the close function so it can trigger the global highlighter!
         const safeQuery = query.replace(/'/g, "\\'");
         html += `
           <a href="#${id}" class="search-result-item" onclick="closeSearchModal(null, '${safeQuery}')">
@@ -1483,13 +1468,10 @@ git push -u origin main</code></pre>
     const rightBtn = document.getElementById('scrollRightBtn');
     if (!tabs || !leftBtn || !rightBtn) return;
     
-    // Check if the tabs actually exceed the width of their container
     const isScrollable = tabs.scrollWidth > tabs.clientWidth;
     
     if (isScrollable) {
-      // Only show Left arrow if we aren't scrolled all the way to the left
       leftBtn.classList.toggle('visible', tabs.scrollLeft > 5);
-      // Only show Right arrow if we aren't scrolled all the way to the right
       rightBtn.classList.toggle('visible', Math.ceil(tabs.scrollLeft + tabs.clientWidth) < tabs.scrollWidth - 5);
     } else {
       leftBtn.classList.remove('visible');
@@ -1502,17 +1484,16 @@ git push -u origin main</code></pre>
     if (tabs) tabs.scrollLeft += offset;
   }
 
-  // Hook tab logic into page load, scroll, and resize events
   document.addEventListener('DOMContentLoaded', () => {
     const tabs = document.getElementById('deployTabs');
     if (tabs) {
       tabs.addEventListener('scroll', updateTabArrows);
       window.addEventListener('resize', updateTabArrows);
-      setTimeout(updateTabArrows, 100); // Small delay to allow CSS rendering to finish
+      setTimeout(updateTabArrows, 100);
     }
   });
 
-  // --- GDPR CONSENT ENGINE ---
+  // --- GDPR ENGINE ---
   function checkGDPR() {
     if (!localStorage.getItem('ims_docs_gdpr_consent')) {
       setTimeout(() => {
@@ -1532,7 +1513,7 @@ git push -u origin main</code></pre>
     checkGDPR();
   });
 
-  // --- UTILITY LOGIC (MODAL & BACK TO TOP) ---
+  // --- UTILITY LOGIC ---
   function showLegalModal(e) {
       if (e) e.preventDefault();
       const legalModal = new bootstrap.Modal(document.getElementById('legalModal'));
@@ -1543,12 +1524,11 @@ git push -u origin main</code></pre>
       window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // --- SCROLLSPY & SCROLL LISTENER LOGIC ---
+  // --- SCROLLSPY ENGINE ---
   const sections = document.querySelectorAll('.doc-section');
   const navLinks = document.querySelectorAll('.sidebar-nav a.nav-link');
 
   window.addEventListener('scroll', () => {
-    // Reveal Back To Top button after scrolling down 400px
     const bttBtn = document.getElementById('backToTopBtn');
     if (window.scrollY > 400) {
         bttBtn.classList.add('visible');
@@ -1571,11 +1551,10 @@ git push -u origin main</code></pre>
     });
   });
 
-  // --- ADMIN EDITOR ENGINE (CTRL+SHIFT+E) ---
+  // --- ADMIN EDITOR ENGINE ---
   let isEditingDocs = false;
 
   window.addEventListener('keydown', (e) => {
-    // Listen for Ctrl + Shift + E (or Cmd + Shift + E on Mac)
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'e') {
       e.preventDefault();
       toggleEditorMode();
@@ -1595,7 +1574,6 @@ git push -u origin main</code></pre>
         sec.classList.add('editing-active');
       });
 
-      // Listen for clicks on images to edit/delete them
       contentArea.addEventListener('click', handleImageEdit);
 
       const toolbar = document.createElement('div');
@@ -1629,26 +1607,23 @@ git push -u origin main</code></pre>
     if (e.target.tagName === 'IMG') {
       const img = e.target;
       const currentSrc = img.getAttribute('src');
-      
       const newSrc = prompt("Edit Image File Path or URL.\n\nTo DELETE this image, completely erase the text in this box and click OK.", currentSrc);
       
-      if (newSrc === null) return; // User clicked Cancel
+      if (newSrc === null) return; 
       
       if (newSrc.trim() === "") {
-        img.remove(); // User cleared the box, so delete the image!
+        img.remove(); 
       } else {
         img.src = newSrc.trim();
-        img.classList.add('doc-screenshot'); // Ensure it keeps the standard border styling
+        img.classList.add('doc-screenshot'); 
       }
     }
   }
 
   function insertAdminImage() {
-    // The onmousedown=preventDefault in the HTML button ensures the text editor doesn't lose your cursor position!
     const url = prompt("Enter the new image path or URL (e.g., docs/my-new-screenshot.png):");
     if (!url || url.trim() === "") return;
     
-    // Inject the HTML exactly where the flashing text cursor currently is
     const imgHTML = `<img src="${url.trim()}" class="doc-screenshot" alt="Documentation Image">`;
     document.execCommand('insertHTML', false, imgHTML);
   }
@@ -1669,5 +1644,5 @@ git push -u origin main</code></pre>
   }
 </script>
 
-
-</body></html>
+</body>
+</html>
