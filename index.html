@@ -2779,6 +2779,8 @@ async function fetchData(callback) {
   function refreshItemStockBadges(bc) {
     const itm = db.items.find(i => i.barcode === bc);
     const locs = {};
+    let visibleStockTotal = 0; // NEW: Track how much stock this user is actually allowed to see
+
     db.logs.filter(l => l.barcode === bc).forEach(l => {
       const toKey = l.toLoc + "|||" + (l.subLoc || "");
       const fromKey = l.fromLoc + "|||" + (l.subLoc || "");
@@ -2793,7 +2795,12 @@ async function fetchData(callback) {
         const locName = parts[0];
         const subLoc = parts[1];
         const locObj = db.locations.find(l => l.locationName === locName);
-        const locType = locObj ? locObj.type : '';
+        
+        // NEW: LBAC Filter! Hide location if user doesn't have access to it
+        if (!locObj && !['Admin', 'Sub-Admin'].includes(currentUserRole)) continue;
+
+        visibleStockTotal += locs[k]; // Add to visible total
+        const locType = locObj ? locObj.type : 'Unknown';
         const safeK = locName.replace(/'/g, "\\'");
         const safeType = locType.replace(/'/g, "\\'");
         const displayLabel = subLoc ? `${getLocLabel(locName)} (${subLoc})` : getLocLabel(locName);
@@ -2804,7 +2811,7 @@ async function fetchData(callback) {
               </span>`;
       }
     }
-    document.getElementById('detStock').innerHTML = h || "Out of Stock";
+    document.getElementById('detStock').innerHTML = h || '<span class="text-muted small">No stock in authorized locations.</span>';
 
     const serialListEl = document.getElementById('detSerialList');
     if (itm && itm.serialized === 'Yes') {
@@ -2829,6 +2836,11 @@ async function fetchData(callback) {
               if (serialBalances[s][k] > 0) {
                   const parts = k.split("|||");
                   const locName = parts[0];
+                  
+                  // NEW: LBAC Filter for Serials!
+                  const locObj = db.locations.find(l => l.locationName === locName);
+                  if (!locObj && !['Admin', 'Sub-Admin'].includes(currentUserRole)) continue;
+
                   const subLoc = parts[1];
                   const displayLabel = subLoc ? `${getLocLabel(locName)} (${subLoc})` : getLocLabel(locName);
                   serialData.push({ serial: s, location: displayLabel });
@@ -2870,6 +2882,14 @@ async function fetchData(callback) {
       serialListEl.innerHTML = "";
       serialListEl.classList.add('hidden');
     }
+
+    // NEW: Update the Total Value text to only reflect stock they are allowed to see
+    const unitPrice = parseFloat(itm.price) || 0;
+    const localTotalValue = visibleStockTotal * unitPrice;
+    let priceText = "";
+    if (unitPrice > 0) priceText += `Unit Price: ${appCurrency}${unitPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    if (localTotalValue > 0) priceText += (priceText ? ` | ` : ``) + `Visible Stock Value: ${appCurrency}${localTotalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    document.getElementById('detPrice').innerText = priceText;
   }
 
   function viewItem(bc, isBack = false) { 
@@ -2923,16 +2943,7 @@ async function fetchData(callback) {
       document.getElementById('serialContainer').classList.add('hidden');
     }
 
-    const stockBalance = getStockBalance(bc);
-    const unitPrice = parseFloat(itm.price) || 0;
-    const totalValue = stockBalance * unitPrice;
-    
     document.getElementById('detDesc').innerText = itm.description || "No description provided.";
-    
-    let priceText = "";
-    if (unitPrice > 0) priceText += `Unit Price: ${appCurrency}${unitPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-    if (totalValue > 0) priceText += (priceText ? ` | ` : ``) + `Total Stock Value: ${appCurrency}${totalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-    document.getElementById('detPrice').innerText = priceText;
     
     const notesEl = document.getElementById('detNotes');
     if (itm.notes) {
