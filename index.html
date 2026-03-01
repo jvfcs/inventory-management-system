@@ -599,10 +599,15 @@
             </select>
             <input type="text" id="mDeployLoc" class="form-control mb-2 hidden" placeholder="Deployment Location (e.g. Site Name)">
             
-            <label class="fw-bold small mb-0 text-primary mt-1">Access Groups (Optional)</label>
-            <input type="text" id="mLocGroups" class="form-control mb-2 border-primary" placeholder="e.g. Arizona, West Coast, VIP">
+            <label class="fw-bold small mb-1 text-primary mt-1">Access Groups (LBAC)</label>
+            <div id="locGroupChecklist" class="border border-primary rounded p-2 mb-2 bg-white shadow-sm" style="max-height: 120px; overflow-y: auto;">
+                </div>
+            <div class="input-group input-group-sm mb-3">
+                <input type="text" id="newLocGroupIn" class="form-control border-primary" placeholder="Create new group tag...">
+                <button class="btn btn-primary fw-bold" type="button" onclick="addNewGroupTag()">Add</button>
+            </div>
 
-            <textarea id="mLDesc" class="form-control mb-2 mt-2" placeholder="Description" rows="2"></textarea>
+            <textarea id="mLDesc" class="form-control mb-2" placeholder="Description" rows="2"></textarea>
             <input type="text" id="mLImg" class="form-control mb-2" placeholder="Image URL (Optional)">
             <label class="small fw-bold mb-0">Image Upload (Overrides URL)</label>
             <small class="text-muted d-block mb-1" style="font-size: 0.7rem;">PNG, JPG, or JPEG only</small>
@@ -631,6 +636,11 @@
                 </div>
             </div>
             
+            <div id="locGroupsSummaryContainer" class="mt-4 mb-4">
+                <h6 class="fw-bold mb-3 border-bottom pb-2">Access Group Summary</h6>
+                <div class="row g-2" id="locGroupsSummaryCards"></div>
+            </div>
+
             <div id="spotManagerContainer" class="hidden">
               <div class="d-flex justify-content-between align-items-center mb-3">
                   <h6 class="fw-bold m-0" id="spotManagerTitle">Manage Spots</h6>
@@ -944,14 +954,12 @@
           descEl.classList.add('hidden');
       }
       
-      // NEW: Show location checklist only for Restricted Roles
+     // NEW: Show location checklist only for Restricted Roles
       if (val === 'Manager' || val === 'Operator' || val === 'Viewer') {
-          renderLocationChecklist();
           locCont.classList.remove('hidden');
       } else {
           locCont.classList.add('hidden');
       }
-  }
 
   // NEW: Renders the Location Checkboxes dynamically (Groups + Locations)
   function renderLocationChecklist(assignedStr = "") {
@@ -1669,6 +1677,42 @@ async function fetchData(callback) {
         </td>
       </tr>`;
     }).join('');
+
+    // NEW: Render the Access Groups Summary
+    let groupMap = {};
+    if (db.rawLocations) {
+        db.rawLocations.forEach(l => {
+            if (l.lbacGroups) {
+                l.lbacGroups.split(',').forEach(g => { 
+                    const cleanG = g.trim();
+                    if(cleanG) {
+                        if (!groupMap[cleanG]) groupMap[cleanG] = [];
+                        groupMap[cleanG].push(l.locationName);
+                    }
+                });
+            }
+        });
+    }
+    const summaryContainer = document.getElementById('locGroupsSummaryCards');
+    if (summaryContainer) {
+        const groupKeys = Object.keys(groupMap).sort();
+        if (groupKeys.length === 0) {
+            summaryContainer.innerHTML = '<div class="col-12 text-muted small">No access groups have been created yet. Edit a location to create a group tag.</div>';
+        } else {
+            summaryContainer.innerHTML = groupKeys.map(g => `
+              <div class="col-md-6 col-lg-4">
+                <div class="card p-2 border border-secondary shadow-sm h-100">
+                  <h6 class="fw-bold text-primary mb-2 border-bottom pb-1">${g}</h6>
+                  <div class="small text-muted" style="font-size:0.75rem;">
+                    ${groupMap[g].sort().map(loc => `• ${loc}`).join('<br>')}
+                  </div>
+                </div>
+              </div>
+            `).join('');
+        }
+    }
+    // Keeps the checklist fresh if you are currently on the New Location form
+    if (document.getElementById('locFormTitle').innerText === "Add New Location") renderLocGroupsUI("");
       
     if (db.users && db.users.length > 0) {
         document.getElementById('bodyUsers').innerHTML = db.users.map(u => `
@@ -2064,7 +2108,7 @@ async function fetchData(callback) {
     document.getElementById('mLtype').value = loc.type;
     document.getElementById('mDeployType').value = loc.deployType || "Physical Space";
     document.getElementById('mDeployLoc').value = loc.deployLoc || "";
-    document.getElementById('mLocGroups').value = loc.lbacGroups || ""; 
+    renderLocGroupsUI(loc.lbacGroups || ""); 
     document.getElementById('mLDesc').value = loc.description || "";
     document.getElementById('mLImg').value = loc.img || "";
     document.getElementById('mLNotes').value = loc.notes || "";
@@ -2096,7 +2140,7 @@ async function fetchData(callback) {
     document.getElementById('mLtype').value = "";
     document.getElementById('mDeployType').value = "Physical Space";
     document.getElementById('mDeployLoc').value = "";
-    document.getElementById('mLocGroups').value = ""; 
+    renderLocGroupsUI(""); 
     document.getElementById('mLDesc').value = "";
     document.getElementById('mLImg').value = "";
     document.getElementById('mLImgFile').value = "";
@@ -3112,15 +3156,19 @@ async function fetchData(callback) {
       const fileInput = document.getElementById('mLImgFile');
       const file = fileInput.files[0];
 
+      // NEW: Harvest the checked groups from the new UI
+      let checkedGroups = [];
+      document.querySelectorAll('.l-group-check:checked').forEach(cb => checkedGroups.push(cb.value));
+
       let payload = {
           name: document.getElementById('mLname').value,
           type: document.getElementById('mLtype').value,
           deployType: document.getElementById('mDeployType').value,
           deployLoc: document.getElementById('mDeployLoc').value,
-          lbacGroups: document.getElementById('mLocGroups').value, 
           description: document.getElementById('mLDesc').value,
           img: document.getElementById('mLImg').value,
-          notes: document.getElementById('mLNotes').value
+          notes: document.getElementById('mLNotes').value,
+          lbacGroups: checkedGroups.join(', ') // Saves the checked list
       };
 
       const executeLoc = async () => {
@@ -3303,6 +3351,59 @@ async function fetchData(callback) {
 
   function onScanFailure(error) {
       // Ignored to prevent console spam
+  }
+
+// --- LOCATION GROUPS UI LOGIC ---
+  function renderLocGroupsUI(assignedStr = "") {
+      const assigned = assignedStr.split(',').map(s => s.trim().toLowerCase()).filter(s => s);
+      const container = document.getElementById('locGroupChecklist');
+      
+      let allGroups = new Set();
+      if (db.rawLocations) {
+          db.rawLocations.forEach(l => {
+              if (l.lbacGroups) l.lbacGroups.split(',').forEach(g => { if(g.trim()) allGroups.add(g.trim()); });
+          });
+      }
+      
+      // Include currently assigned groups (even if they don't exist in the DB yet)
+      assignedStr.split(',').forEach(g => { if(g.trim()) allGroups.add(g.trim()); });
+
+      if (allGroups.size === 0) {
+          container.innerHTML = '<small class="text-muted">No groups exist yet. Create one below.</small>';
+          return;
+      }
+
+      container.innerHTML = Array.from(allGroups).sort().map(g => {
+          const isChecked = assigned.includes(g.toLowerCase()) ? 'checked' : '';
+          const safeVal = g.replace(/"/g, '&quot;');
+          return `
+            <div class="form-check py-1 border-bottom">
+              <input class="form-check-input l-group-check" type="checkbox" value="${safeVal}" id="lgrp_${safeVal}" ${isChecked}>
+              <label class="form-check-label small fw-bold text-dark" for="lgrp_${safeVal}">${g}</label>
+            </div>
+          `;
+      }).join('');
+  }
+
+  function addNewGroupTag() {
+      const input = document.getElementById('newLocGroupIn');
+      const newTag = input.value.trim();
+      if (!newTag) return;
+      
+      const container = document.getElementById('locGroupChecklist');
+      if (container.innerHTML.includes('No groups exist')) container.innerHTML = '';
+      
+      const safeVal = newTag.replace(/"/g, '&quot;');
+      if (!document.getElementById(`lgrp_${safeVal}`)) {
+          const html = `
+            <div class="form-check py-1 border-bottom bg-light">
+              <input class="form-check-input l-group-check" type="checkbox" value="${safeVal}" id="lgrp_${safeVal}" checked>
+              <label class="form-check-label small fw-bold text-primary" for="lgrp_${safeVal}">${newTag}</label>
+            </div>
+          `;
+          container.insertAdjacentHTML('beforeend', html);
+      }
+      input.value = "";
   }
 
 // --- THEME / TEMPLATE MANAGER LOGIC ---
