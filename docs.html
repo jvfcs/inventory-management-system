@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IMS Documentation</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="IMS Docs">
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="manifest" href="site.webmanifest">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <style>
@@ -86,8 +94,11 @@
     
     /* Sticky Sidebar Components */
     .sidebar-header {
-      padding: 2rem 1.5rem 1rem 1.5rem;
+      padding: 2rem 1.5rem 0 1.5rem; /* Removed bottom padding */
       flex-shrink: 0;
+      background: var(--sidebar-bg); /* Ensures header covers scrolling text */
+      position: relative;
+      z-index: 10;
     }
     .sidebar-logo {
       font-size: 1.5rem;
@@ -109,6 +120,7 @@
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
+      margin-bottom: 0.75rem; /* Perfect spacing between Search and PDF button */
       transition: border-color 0.2s;
     }
     .sidebar-search-trigger:hover {
@@ -126,7 +138,7 @@
     .sidebar-nav-wrapper {
       flex-grow: 1;
       overflow-y: auto;
-      padding: 0 1.5rem;
+      padding: 1.25rem 1.5rem 0 1.5rem; /* Gap is now part of the scrollable canvas! */
       /* Hide Scrollbar */
       scrollbar-width: none; /* Firefox */
       -ms-overflow-style: none; /* IE */
@@ -161,6 +173,9 @@
       font-weight: 700;
       color: var(--text-main);
       margin: 1.5rem 0 0.5rem 0.75rem;
+    }
+    .sidebar-heading:first-of-type {
+      margin-top: 0; /* Prevents double-spacing at the very top of the list */
     }
 
     /* Theme Slider Toggle */
@@ -567,7 +582,7 @@
         <span class="shortcut-key">⌘K</span>
       </div>
 
-      <button class="btn btn-sm btn-outline-primary w-100 mb-3 fw-bold" onclick="window.print()" style="border-color: var(--accent); color: var(--accent); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='var(--accent)'; this.style.color='white'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--accent)'">
+      <button class="btn btn-sm btn-outline-primary w-100 fw-bold" onclick="window.print()" style="border-color: var(--accent); color: var(--accent); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='var(--accent)'; this.style.color='white'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--accent)'">
         📄 Save as PDF
       </button>
     </div>
@@ -578,6 +593,7 @@
         <a href="#intro" class="nav-link active">Introduction</a>
         <a href="#ui-nav" class="nav-link">UI & Navigation Features</a>
         <a href="#mobile-pwa" class="nav-link">Mobile App (PWA) Setup</a>
+	<a href="#requirements" class="nav-link">System Requirements</a>
         <a href="#roles" class="nav-link">Roles & Permissions</a>
         <a href="#lbac" class="nav-link">Location Access (LBAC)</a>
         
@@ -606,6 +622,7 @@
         <a href="#deploy-frontend" class="nav-link">5. UI Hosting</a>
         
         <div class="sidebar-heading">Help</div>
+        <a href="#mistakes" class="nav-link text-warning">Common Mistakes to Avoid</a>
         <a href="#faq" class="nav-link text-danger">Troubleshooting & FAQ</a>
       </nav>
     </div>
@@ -650,8 +667,24 @@
         </ul>
       </section>
 
+      <section id="requirements" class="doc-section">
+        <h2>System Requirements</h2>
+        <p>Because IMS is a modern Progressive Web App (PWA), it does not require a high-end computer or server. It runs entirely inside the user's web browser.</p>
+        <ul>
+          <li><strong>Desktop Browsers:</strong> Google Chrome, Microsoft Edge, Safari, or Firefox (Updated within the last 2 years).</li>
+          <li><strong>Mobile Devices:</strong> iOS 14+ (Safari/Chrome) or Android 10+ (Chrome).</li>
+          <li><strong>Network:</strong> A stable internet connection is required to sync with the Google Workspace backend. Offline mode is not currently supported.</li>
+        </ul>
+      </section>
+
       <section id="roles" class="doc-section">
         <h2>Roles & Permissions</h2>
+        
+        <div class="callout border-danger mb-4">
+          <strong class="text-danger">⚠️ The "First Login" Security Trap (Admin Bootstrapping)</strong><br>
+          <span class="text-muted small">When you deploy a brand-new, completely blank database, <strong>the very first Google account to log into the app is permanently and automatically granted the Admin role.</strong> Do not share your live URL with employees or testers until you have successfully logged in yourself to claim the Admin seat!</span>
+        </div>
+
         <p>IMS utilizes strict role-based access control to ensure users only see what they need to see.</p>
         <ul class="list-group list-group-flush mb-3">
           <li class="list-group-item"><strong>Admin:</strong> Full system access. Can edit users, change system themes, view all logs, and manage all inventory.</li>
@@ -766,7 +799,8 @@
           <li><strong>Unit Price:</strong> The financial cost of a single unit. The system uses this to calculate total inventory value on your dashboard.</li>
           <li><strong>Min Stock:</strong> The threshold at which this item triggers a "Low Stock" warning on the Dashboard.</li>
           <li><strong>Tech Specs URL:</strong> A link to a manual or website. A clickable link will appear on the Item Details page.</li>
-          <li><strong>Image URL / File Upload:</strong> You can paste an image link from the web, or upload a file directly from your computer. Uploaded files are automatically saved to your private Google Drive and securely linked. <i>Note: If you provide both an Image URL and a File Upload, the File Upload will override the URL.</i></li>
+          <li><strong>Image URL / File Upload:</strong> You can paste an image link from the web, or upload a file directly from your computer. Uploaded files are automatically saved to your private Google Drive and securely linked. <br>
+          <span class="text-warning small fw-bold">Important Limit:</span> <span class="text-muted small">Google Apps Script has strict payload limits. Do not upload raw, uncompressed photos (like 15MB 4K iPhone images). Keep uploaded image files under 3MB, or the database upload will timeout and fail. If you provide both an Image URL and a File Upload, the File Upload will override the URL.</span></li>
           <li><strong>Notes:</strong> Any special handling instructions. This is also globally searchable!</li>
         </ul>
         
@@ -1021,6 +1055,26 @@ git push -u origin main</code></pre>
         <p><strong>The very first user to log into a completely blank database is automatically granted the Admin role.</strong> Once you are logged in, click the Management button in the top right to start exploring your new system!</p>
       </section>
 
+      <section id="mistakes" class="doc-section">
+        <h2 class="text-warning">Common Mistakes to Avoid</h2>
+        <p>This system is incredibly resilient, but because it relies on a Google Sheet as its brain, certain manual actions by Admins can break it. Avoid these common pitfalls:</p>
+        
+        <div class="callout border-warning">
+          <strong class="text-warning">1. Do not rename tabs or delete columns in the Google Sheet.</strong><br>
+          <span class="text-muted small">The backend API specifically looks for tabs named "Items", "Locations", "Users", etc., and searches for specific column headers. You can <i>resize</i> columns, and you can add new rows, but renaming a tab or deleting the "Barcode" header will instantly crash the app.</span>
+        </div>
+
+        <div class="callout border-warning">
+          <strong class="text-warning">2. Do not change an item's Tracking Type after it has stock.</strong><br>
+          <span class="text-muted small">If you create an item as "Bulk Quantity", log 50 of them into a location, and then later edit the item to be "Individual Serials", the app will be completely confused because those 50 items don't have serial numbers attached to them. If you must change tracking types, audit the item down to 0 stock first.</span>
+        </div>
+
+        <div class="callout border-warning">
+          <strong class="text-warning">3. If you edit the Apps Script, you MUST create a New Deployment.</strong><br>
+          <span class="text-muted small">If you ever open the <code>Code.gs</code> file to edit the backend code, simply clicking the "Save" icon is not enough. Google caches the API. You must click <strong>Deploy > Manage Deployments > Edit (Pencil Icon) > New Version > Deploy</strong> for your code changes to actually go live.</span>
+        </div>
+      </section>
+
       <section id="faq" class="doc-section">
         <h2 class="text-danger">Troubleshooting & FAQ</h2>
         
@@ -1032,18 +1086,72 @@ git push -u origin main</code></pre>
           <li>Does the URL you pasted into <code>index.html</code> end in <code>/exec</code>? (If it ends in <code>/dev</code>, it will fail for everyone except you).</li>
         </ul>
 
-        <h3 class="text-danger mt-4">My camera scanner isn't turning on</h3>
+        <h3 class="text-danger mt-4">The Google Login button isn't appearing!</h3>
+        <p>If the login screen appears but the actual "Sign in with Google" button is missing, your web browser is blocking the script.</p>
+        <ul>
+          <li>Ensure you do not have an aggressive Ad-Blocker turned on for this site.</li>
+          <li>Browsers like Brave, Safari, or Firefox in "Strict Privacy" mode block 3rd-party cookies. Google Login requires these to function. Click the shield icon in your URL bar and disable tracking protection for your app's specific URL.</li>
+          <li>Ensure you properly pasted the Google Client ID into the <code>Template</code> tab of your Google Sheet.</li>
+        </ul>
+
+        <h3 class="text-danger mt-4">My uploaded images are showing up as broken gray squares.</h3>
+        <p>This is a strict IT policy issue within Corporate Google Workspace accounts.</p>
+        <ul>
+          <li>The app uploads images to your Google Drive and sets their permission to "Anyone with the link can view".</li>
+          <li>If your company's IT Administrator has configured Google Workspace to <i>"Prevent users from sharing files outside the organization"</i>, Google Drive will block the image from loading on your external website.</li>
+          <li><strong>The Fix:</strong> Ask your IT Admin to allow external link sharing for the specific account hosting the Drive Folder, or use a standard free <code>@gmail.com</code> account to host the database instead of a corporate account.</li>
+        </ul>
+
+        <h3 class="text-danger mt-4">My camera scanner isn't turning on.</h3>
         <p>Modern browsers strictly block camera access on unsecured connections.</p>
         <ul>
           <li>Make sure the website you are hosting the app on uses <code>https://</code>, not <code>http://</code>. GitHub Pages handles this automatically.</li>
-          <li>Check your browser settings to ensure you haven't blocked camera access for this specific domain.</li>
+          <li>Check your browser settings (or your phone's Settings > Safari/Chrome) to ensure you haven't accidentally denied camera access for this specific website.</li>
         </ul>
 
-        <h3 class="text-danger mt-4">I hit an "Access Denied" screen</h3>
+        <h3 class="text-danger mt-4">I hit an "Access Denied" screen.</h3>
         <p>The email you used to log into Google is not listed in the <code>Users</code> tab of the database.</p>
         <ul>
           <li>If you are the Admin, open your Google Sheet and ensure your email is typed perfectly in the Users tab with the Status set to "Active".</li>
           <li>If you are an employee, contact your system administrator to have your email added.</li>
+        </ul>
+
+        <h3 class="text-danger mt-4">I updated the UI, but I still see the old version.</h3>
+        <p>Web browsers love to cache (save) HTML files to make them load faster. If you deployed a new version of your <code>index.html</code> file but aren't seeing the changes, force your browser to fetch the new file:</p>
+        <ul>
+          <li><strong>Windows/PC:</strong> Press <code>Ctrl + F5</code> or <code>Ctrl + Shift + R</code>.</li>
+          <li><strong>Mac:</strong> Press <code>Cmd + Shift + R</code>.</li>
+          <li><strong>Mobile:</strong> Open your browser settings and clear the website data/cache.</li>
+        </ul>
+
+        <h3 class="text-danger mt-4">How do I back up my entire database?</h3>
+        <p>Because your entire backend lives inside Google Workspace, creating a hard backup takes three seconds and requires no technical knowledge.</p>
+        <ul>
+          <li>Open your "IMS Database" Google Sheet.</li>
+          <li>Click <strong>File > Download > Microsoft Excel (.xlsx)</strong>.</li>
+          <li>You now have a complete, offline, hard-copy backup of every item, location, user, and transaction log in your system! We recommend doing this once a month.</li>
+        </ul>
+
+        <h3 class="text-danger mt-4">How do I print Barcode/QR Code stickers?</h3>
+        <p>The IMS is designed to <i>read and track</i> barcodes, but it does not directly communicate with desktop printers to print them.</p>
+        <ul>
+          <li>You can use any standard label maker (like a Dymo, Zebra, or Brother printer) and its included software to generate and print your physical stickers.</li>
+          <li>Simply type the Barcode numbers you generated into the IMS "Barcode" field, and the scanner will instantly recognize them!</li>
+        </ul>
+
+        <h3 class="text-danger mt-4">I made a mistake. How do I delete a transaction log?</h3>
+        <p>You can't, and that is by design! The system operates on an <strong>Immutable Ledger</strong>.</p>
+        <ul>
+          <li>To prevent employee theft or "ghost inventory" manipulation, transaction history cannot be deleted or altered once submitted.</li>
+          <li>If an operator accidentally moves 50 cables to the wrong truck, they simply need to execute a new transaction moving those 50 cables back to the correct location. Both the mistake and the correction will be permanently logged for full accountability.</li>
+        </ul>
+
+        <h3 class="text-danger mt-4">How do I disconnect my Google Account from this app?</h3>
+        <p>If an employee leaves the company, or you simply wish to revoke the app's access to your Google profile, you can do this directly through Google's security portal.</p>
+        <ul>
+          <li>Go to <a href="https://myaccount.google.com/permissions" target="_blank">myaccount.google.com/permissions</a>.</li>
+          <li>Find the "IMS Web App" (or whatever you named your project in Step 2 of deployment) in the list of Third-Party apps.</li>
+          <li>Click it and select <strong>Remove Access</strong>. The app will immediately lose the ability to authenticate your email.</li>
         </ul>
       </section>
 
