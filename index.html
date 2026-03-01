@@ -498,15 +498,54 @@
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom border-primary pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashGroups" aria-expanded="true">
-            <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0">Location Groups</h6>
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0">Location Groups Snapshot</h6>
             <span class="text-primary fw-bold toggle-icon">▼</span>
         </div>
         <div id="collapseDashGroups" class="collapse show mb-4 bg-light p-3 rounded border">
-            <select id="dashGroupSelect" class="form-select border-primary mb-3 shadow-sm" onchange="renderDashGroupCards()">
-                <option value="">Select an Access Group...</option>
+            <select id="dashGroupSelect" class="form-select border-primary mb-3 shadow-sm fw-bold text-primary" onchange="renderDashGroupCards()">
+                <option value="">Select an Access Group to view snapshot...</option>
             </select>
+            
+            <div id="dashGroupStats" class="hidden">
+              <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                  <div class="stat-card stat-bg-1 shadow-sm h-100">
+                    <p>Unique Active Items</p>
+                    <h3 id="grpStatUnique">0</h3>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="stat-card stat-bg-2 shadow-sm h-100">
+                    <p>Total Units on Hand</p>
+                    <h3 id="grpStatTotalUnits">0</h3>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="stat-card stat-bg-3 shadow-sm h-100">
+                    <p>Total Inventory Value</p>
+                    <h3 id="grpStatTotalValue">$0.00</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <div class="stat-card stat-bg-4 shadow-sm h-100">
+                    <p>Physical Spaces Value</p>
+                    <h3 id="grpStatPhysValue">$0.00</h3>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="stat-card stat-bg-5 shadow-sm h-100">
+                    <p>Deployable Assets Value</p>
+                    <h3 id="grpStatDepValue">$0.00</h3>
+                  </div>
+                </div>
+              </div>
+              <h6 class="fw-bold mb-3 border-bottom border-secondary pb-2">Group Locations</h6>
+            </div>
+
             <div class="row g-3" id="dashLocationCardsGroup">
-                <div class="col-12 text-muted small">Please select a group from the dropdown to view its locations.</div>
+                <div class="col-12 text-muted small">Please select a group from the dropdown to view its snapshot.</div>
             </div>
         </div>
 
@@ -1604,16 +1643,21 @@ async function fetchData(callback) {
     renderDashGroupCards();
   }
 
-  // NEW: Render the specific group cards based on the dropdown selection
+  // UPGRADED: Render group cards AND calculate the 5 Snapshot Metrics
   function renderDashGroupCards() {
       const grp = document.getElementById('dashGroupSelect').value;
       const container = document.getElementById('dashLocationCardsGroup');
+      const statsBlock = document.getElementById('dashGroupStats');
       
       if (!grp || !window.currentDashStats) {
-          container.innerHTML = '<div class="col-12 text-muted small">Please select a group from the dropdown to view its locations.</div>';
+          statsBlock.classList.add('hidden');
+          container.innerHTML = '<div class="col-12 text-muted small">Please select a group from the dropdown to view its snapshot.</div>';
           return;
       }
       
+      let grpLocs = [];
+      let html = '';
+
       const buildCard = (locName, stat) => `
         <div class="col-md-6 col-lg-4">
           <div class="card p-3 border border-primary h-100 mb-0 shadow-sm bg-white" style="cursor:pointer;" onclick="showView('inventory'); viewLoc('${locName.replace(/'/g, "\\'")}', '${stat.type}')">
@@ -1631,15 +1675,56 @@ async function fetchData(callback) {
           </div>
         </div>
       `;
-      
-      let html = '';
+
+      // 1. Identify which locations belong to this group & build their HTML cards
       for (const locName in window.currentDashStats) {
           const stat = window.currentDashStats[locName];
           if (stat.groups) {
               const locGroups = stat.groups.split(',').map(g => g.trim());
-              if (locGroups.includes(grp)) html += buildCard(locName, stat);
+              if (locGroups.includes(grp)) {
+                  grpLocs.push({ name: locName, type: stat.deployType });
+                  html += buildCard(locName, stat);
+              }
           }
       }
+
+      // 2. Perform math to calculate metrics strictly for this group's locations
+      let grpUniqueItems = 0, grpTotalUnits = 0, grpTotalValue = 0, grpPhysValue = 0, grpDepValue = 0;
+
+      db.items.filter(i => i.status === 'Active').forEach(itm => {
+          const price = parseFloat(itm.price) || 0;
+          let itemTotalInGrp = 0;
+          let itemPhysInGrp = 0;
+          let itemDepInGrp = 0;
+
+          grpLocs.forEach(loc => {
+              let stk = getStockBalance(itm.barcode, loc.name);
+              if (stk > 0) {
+                  itemTotalInGrp += stk;
+                  if (loc.type === 'Deployable') itemDepInGrp += stk;
+                  else itemPhysInGrp += stk;
+              }
+          });
+
+          // Unique item counter constraint: Must have > 0 stock in the group to count
+          if (itemTotalInGrp > 0) {
+              grpUniqueItems++;
+              grpTotalUnits += itemTotalInGrp;
+              grpTotalValue += (itemTotalInGrp * price);
+              grpPhysValue += (itemPhysInGrp * price);
+              grpDepValue += (itemDepInGrp * price);
+          }
+      });
+
+      // 3. Inject the math into the UI
+      document.getElementById('grpStatUnique').innerText = grpUniqueItems.toLocaleString('en-US');
+      document.getElementById('grpStatTotalUnits').innerText = grpTotalUnits.toLocaleString('en-US');
+      document.getElementById('grpStatTotalValue').innerText = appCurrency + grpTotalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('grpStatPhysValue').innerText = appCurrency + grpPhysValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('grpStatDepValue').innerText = appCurrency + grpDepValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+      // 4. Reveal the UI
+      statsBlock.classList.remove('hidden');
       container.innerHTML = html || '<div class="col-12 text-muted small">No locations found for this group.</div>';
   }
 
