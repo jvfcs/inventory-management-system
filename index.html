@@ -160,6 +160,12 @@
     #backToTopBtn:hover { transform: translateY(-3px); filter: brightness(0.9); }
 
     /* Dark Mode Custom Overrides */
+    
+    /* Fix LBAC Checklists and Modal Text Visibility */
+    [data-bs-theme="dark"] .text-dark { color: var(--dark-text) !important; }
+    [data-bs-theme="dark"] .text-muted { color: #adb5bd !important; }
+    [data-bs-theme="dark"] .form-check-label { color: var(--dark-text) !important; }
+    [data-bs-theme="dark"] .modal-body .fw-bold { color: var(--dark-text) !important; }
     [data-bs-theme="dark"] body { background-color: var(--dark-bg); color: var(--dark-text); }
     
     /* Text overrides for dark mode */
