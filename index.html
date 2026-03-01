@@ -702,10 +702,11 @@
             
             <div class="mt-4 p-3 bg-light rounded border small text-muted">
               <h6 class="fw-bold mb-2">Role Permissions</h6>
-              <strong>Admin:</strong> Full access to inventory, locations, settings, and user management.<br>
-              <strong>Manager:</strong> Full access to manage inventory and locations. Cannot manage users.<br>
-              <strong>Operator:</strong> Can check-in, check-out, and move items. No access to the management dashboard.<br>
-              <strong>Viewer:</strong> Read-only access. Can browse and view inventory levels only.
+              <strong>Admin:</strong> Full system access, including User Access and Theme management.<br>
+              <strong>Sub-Admin:</strong> Global access to manage all Items, Locations, and view Logs. Cannot manage Users or Theme.<br>
+              <strong>Manager:</strong> Can manage Items, Locations, and Audits, but ONLY for their assigned locations. Cannot manage Users or Theme.<br>
+              <strong>Operator:</strong> Can Check-In, Check-Out, and Move inventory, but ONLY for their assigned locations. No access to management tab.<br>
+              <strong>Viewer:</strong> Read-only access to view inventory levels ONLY for their assigned locations. No access to management tab.
             </div>
           </div>
           <div class="col-lg-8">
@@ -1213,7 +1214,26 @@
 
     try {
       const d = await apiCall('getInitialData');
+      
+      // RE-APPLY THE LBAC FILTER AND RAW LOCATIONS DURING SYNC
       db = d; 
+      db.rawLocations = [...d.locations];
+
+      // Re-evaluate current user in case an Admin changed their permissions in the background!
+      const currentUser = db.users.find(u => u.email.toLowerCase() === currentUserEmail.toLowerCase());
+      if (currentUser) {
+          currentUserRole = currentUser.role;
+          currentUserLocations = (currentUser.locations || "").split(',').map(s => s.trim()).filter(s => s);
+      }
+
+      if (!['Admin', 'Sub-Admin'].includes(currentUserRole)) {
+          if (currentUserLocations.length > 0) {
+              db.locations = db.locations.filter(l => currentUserLocations.includes(l.locationName));
+          } else {
+              db.locations = []; 
+          }
+      }
+
       applySorts();
       softRefreshUI();
     } catch (e) {
