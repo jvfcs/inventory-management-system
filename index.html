@@ -734,6 +734,14 @@
           <div class="col-lg-6">
             <div class="card p-3 bg-light shadow-sm mb-4">
               <h6 class="fw-bold mb-3 border-bottom pb-2">General App Settings</h6>
+	      <label class="fw-bold small">Company Name</label>
+              <input type="text" id="cfg_companyName" class="form-control form-control-sm mb-1">
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Legal entity name used in Terms & Privacy generation.</small>
+
+              <label class="fw-bold small">Developer Name</label>
+              <input type="text" id="cfg_developerName" class="form-control form-control-sm mb-1">
+              <small class="text-muted d-block mb-3" style="font-size:0.7rem;">Name of the primary architect/developer.</small>
+
               <label class="fw-bold small">Title</label>
               <input type="text" id="cfg_appTitle" class="form-control form-control-sm mb-1">
               <small class="text-muted d-block mb-3" style="font-size:0.7rem;">The full name of your platform (e.g., Inventory Management System). Used in the browser tab and login screen.</small>
@@ -829,6 +837,7 @@
 
   <div class="mt-5 pt-4 border-top text-center text-muted" style="font-size: 0.75rem; line-height: 1.5;">
     <p class="mb-1" id="appFooterText">Developed by Jack Vu in 2026.</p>
+    <p class="mb-0 mt-2"><a href="#" class="text-decoration-none fw-bold" onclick="showLegalModal(event)">Terms & Privacy Policy</a></p>
   </div>
 
 </div>
@@ -853,6 +862,22 @@
            <button class="btn btn-warning fw-bold" onclick="saveSerialAudit()">Save Counts</button>
        </div>
    </div>
+</div>
+
+<div class="modal fade" id="legalModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+    <div class="modal-content bg-white" style="border-radius: 12px;">
+      <div class="modal-header border-bottom">
+        <h5 class="modal-title fw-bold text-primary" id="legalModalTitle">Terms & Privacy Policy</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-muted" style="font-size: 0.85rem; line-height: 1.6;" id="legalModalBody">
+        </div>
+      <div class="modal-footer border-top bg-light">
+        <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -3150,7 +3175,7 @@ async function fetchData(callback) {
   function populateThemeForm() {
       if (!db.template) return;
       const t = db.template;
-      const keys = ['appTitle','appShortName','loginUseShortName','footerText','adminContact','currencySymbol','logoUrl','defaultImgUrl','googleClientId','driveFolderId','syncInterval','lightTheme','darkTheme','lightBg','lightCard','lightText','darkBg','darkCard','darkText'];
+      const keys = ['appTitle','appShortName','companyName','developerName','loginUseShortName','footerText','adminContact','currencySymbol','logoUrl','defaultImgUrl','googleClientId','driveFolderId','syncInterval','lightTheme','darkTheme','lightBg','lightCard','lightText','darkBg','darkCard','darkText'];
       
       keys.forEach(k => {
           const el = document.getElementById('cfg_' + k);
@@ -3168,7 +3193,7 @@ async function fetchData(callback) {
       btn.innerText = "Saving & Applying...";
       btn.disabled = true;
 
-      const keys = ['appTitle','appShortName','loginUseShortName','footerText','adminContact','currencySymbol','logoUrl','defaultImgUrl','googleClientId','driveFolderId','syncInterval','lightTheme','darkTheme','lightBg','lightCard','lightText','darkBg','darkCard','darkText'];
+      const keys = ['appTitle','appShortName','companyName','developerName','loginUseShortName','footerText','adminContact','currencySymbol','logoUrl','defaultImgUrl','googleClientId','driveFolderId','syncInterval','lightTheme','darkTheme','lightBg','lightCard','lightText','darkBg','darkCard','darkText'];
       const payload = {};
       
       keys.forEach(k => {
@@ -3185,6 +3210,48 @@ async function fetchData(callback) {
           btn.innerText = "Save & Apply Changes";
           btn.disabled = false;
       }
+  }
+
+// --- LEGAL & PRIVACY LOGIC ---
+  function showLegalModal(e) {
+      if (e) e.preventDefault();
+      
+      const t = db.template || {};
+      const company = t.companyName || "The Company";
+      const dev = t.developerName || "The Developer";
+      const appName = t.appTitle || "Inventory Management System";
+      const contact = t.adminContact || "your system administrator";
+
+      const legalHtml = `
+        <h6 class="fw-bold text-dark">1. Introduction</h6>
+        <p>This Privacy Policy and Terms of Service govern the use of the ${appName} ("The Application"). By logging in and utilizing this system, you agree to the terms outlined below.</p>
+
+        <h6 class="fw-bold text-dark mt-4">2. Intellectual Property & Ownership</h6>
+        <p>The Application was independently developed by ${dev} on personal time and utilizes open-source UI frameworks (GitHub Pages) and Google Workspace APIs (Apps Script, Sheets, Drive). While the data processed within The Application is the property of ${company}, the underlying architecture, logic, and codebase of The Application remain the intellectual property of ${dev} unless otherwise stipulated in a formal written agreement.</p>
+
+        <h6 class="fw-bold text-dark mt-4">3. Data Collection & Privacy (CCPA Compliance)</h6>
+        <p>In compliance with the California Consumer Privacy Act (CCPA) and applicable Arizona state laws, we are transparent about the data we collect:</p>
+        <ul>
+          <li><strong>Identity Data:</strong> We collect your email address and basic profile information exclusively via Google Workspace OAuth for the purpose of authentication and role-based access control.</li>
+          <li><strong>Activity Data:</strong> All actions taken within the system (checking items in/out, moving assets, auditing) are permanently logged alongside your email address and a timestamp to maintain a secure chain of custody.</li>
+          <li><strong>Third-Party Sharing:</strong> Zero data is sold to, or shared with, external third parties. All data is securely stored within ${company}'s highly restricted Google Drive and Google Sheets environment.</li>
+        </ul>
+
+        <h6 class="fw-bold text-dark mt-4">4. System Security & Access</h6>
+        <p>Access to the backend infrastructure (Database and Codebase) is strictly restricted to the Application Administrator(${contact}). Standard users interface solely with the front-end UI. You are responsible for maintaining the security of your Google account credentials.</p>
+
+        <h6 class="fw-bold text-dark mt-4">5. "As-Is" Provision</h6>
+        <p>The Application is provided "as is" and "as available" without any warranties of any kind, either express or implied, including but not limited to the implied warranties of merchantability or fitness for a particular purpose.</p>
+
+        <h6 class="fw-bold text-dark mt-4">6. Contact & Data Deletion Requests</h6>
+        <p>If you wish to request a record of your data, or request the deletion of your user profile from the system in accordance with California Privacy Rights, please contact: <strong>${contact}</strong>.</p>
+      `;
+
+      document.getElementById('legalModalBody').innerHTML = legalHtml;
+      
+      // Use Bootstrap's native modal trigger
+      const legalModal = new bootstrap.Modal(document.getElementById('legalModal'));
+      legalModal.show();
   }
 
 // --- BROWSER HISTORY ENGINE ---
