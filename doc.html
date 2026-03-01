@@ -213,6 +213,7 @@
       flex: 1;
       margin-left: 280px;
       padding: 3rem 4rem;
+      min-width: 0; /* CRITICAL: Prevents long text/tabs from stretching the screen width */
     }
 
     /* Search Modal Overlay */
@@ -433,12 +434,16 @@
     .tabs-scroll-wrapper {
       position: relative;
       width: 100%;
+      max-width: 100%; /* Contains the wrapper */
     }
     .hide-scroll {
+      display: flex;
+      flex-wrap: nowrap;
       overflow-x: auto;
       scrollbar-width: none; /* Firefox */
       -ms-overflow-style: none; /* IE/Edge */
       scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch; /* Buttery smooth swipe scrolling on iOS */
     }
     .hide-scroll::-webkit-scrollbar {
       display: none; /* Chrome/Safari */
