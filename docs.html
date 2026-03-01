@@ -6,8 +6,7 @@
   <title>IMS Documentation</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="IMS Docs">
-  
+  <meta name="apple-mobile-web-app-title" content="IMS Docs">  
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -15,7 +14,6 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <style>
-    /* --- THEME VARIABLES --- */
     :root {
       --bg-color: #f9fafb;
       --sidebar-bg: #ffffff;
@@ -29,7 +27,6 @@
       --modal-bg: #ffffff;
       --hover-bg: #f3f4f6;
     }
-
     [data-theme="dark"] {
       --bg-color: #111827;
       --sidebar-bg: #1f2937;
@@ -43,7 +40,6 @@
       --modal-bg: #1f2937;
       --hover-bg: rgba(99, 102, 241, 0.15);
     }
-
     body {
       background-color: var(--bg-color);
       color: var(--text-main);
@@ -51,14 +47,10 @@
       transition: background-color 0.3s, color 0.3s;
       margin: 0;
     }
-    
-    /* --- LAYOUT --- */
     .docs-layout {
       display: flex;
       min-height: 100vh;
     }
-
-    /* --- MOBILE HEADER --- */
     .mobile-header {
       display: none;
       justify-content: space-between;
@@ -78,8 +70,6 @@
       z-index: 45;
       backdrop-filter: blur(2px);
     }
-    
-    /* --- SIDEBAR --- */
     .sidebar {
       width: 280px;
       background: var(--sidebar-bg);
@@ -90,8 +80,7 @@
       display: flex;
       flex-direction: column;
       transition: transform 0.3s ease, background-color 0.3s, border-color 0.3s;
-    }
-    
+    }    
     .sidebar-header {
       padding: 2rem 1.5rem 0 1.5rem;
       flex-shrink: 0;
@@ -132,7 +121,6 @@
       font-size: 0.7rem;
       font-weight: bold;
     }
-
     .sidebar-nav-wrapper {
       flex-grow: 1;
       overflow-y: auto;
@@ -142,8 +130,7 @@
     }
     .sidebar-nav-wrapper::-webkit-scrollbar {
       display: none;
-    }
-    
+    }    
     .sidebar-nav a {
       display: block;
       color: var(--text-muted);
@@ -174,8 +161,6 @@
     .sidebar-heading:first-of-type {
       margin-top: 0;
     }
-
-    /* --- THEME TOGGLE --- */
     .theme-switch-wrapper {
       padding: 1.5rem;
       flex-shrink: 0;
@@ -219,16 +204,12 @@
       content: "🌙";
       background-color: #1f2937;
     }
-
-    /* --- MAIN CONTENT --- */
     .main-content {
       flex: 1;
       margin-left: 280px;
       padding: 3rem 4rem;
       min-width: 0;
     }
-
-    /* --- SEARCH MODAL --- */
     .search-overlay {
       display: none; 
       position: fixed;
@@ -313,8 +294,6 @@
       background-color: rgba(99, 102, 241, 0.5);
       color: #ffffff;
     }
-
-    /* --- HIGHLIGHTERS --- */
     .doc-highlight {
       background-color: rgba(255, 193, 7, 0.5);
       color: inherit;
@@ -332,7 +311,6 @@
       border-left: 4px solid rgba(255, 193, 7, 0.8);
       border-radius: 0 6px 6px 0;
     }
-
     #clearHighlightsBtn {
       position: fixed;
       bottom: 30px;
@@ -356,8 +334,6 @@
       transform: translate(-50%, 0);
     }
     #clearHighlightsBtn:hover { background: #3730a3; }
-
-    /* --- BACK TO TOP --- */
     #backToTopBtn {
       position: fixed;
       bottom: 30px;
@@ -382,8 +358,6 @@
     }
     #backToTopBtn.visible { opacity: 1; pointer-events: auto; }
     #backToTopBtn:hover { background: #3730a3; transform: translateY(-3px); }
-
-    /* --- GDPR BANNER --- */
     #gdprBanner {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 10500;
       background: var(--sidebar-bg); border-top: 1px solid var(--border-color);
@@ -398,8 +372,6 @@
     @media (min-width: 768px) {
       .gdpr-content { flex-direction: row; justify-content: space-between; }
     }
-
-    /* --- PDF / PRINT STYLING --- */
     @media print {
       body, .main-content { background: white !important; color: black !important; margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; }
       .sidebar, .mobile-header, .search-bar, #backToTopBtn, #clearHighlightsBtn, .theme-switch-wrapper, .sidebar-search-trigger { display: none !important; }
@@ -412,8 +384,6 @@
       .badge-role { border: 1px solid #000 !important; color: #000 !important; background: transparent !important; }
       * { transition: none !important; }
     }
-
-    /* --- TYPOGRAPHY & COMPONENTS --- */
     .doc-section {
       margin-bottom: 4rem;
       scroll-margin-top: 100px;
@@ -443,7 +413,6 @@
       color: var(--text-main);
       font-weight: 800;
     }
-
     [data-theme="dark"] .text-muted { color: var(--text-muted) !important; }
     [data-theme="dark"] .text-dark { color: var(--text-main) !important; }
     [data-theme="dark"] .bg-white, [data-theme="dark"] .bg-light { background-color: var(--sidebar-bg) !important; }
@@ -455,8 +424,7 @@
       background-color: var(--sidebar-bg) !important; 
       color: var(--accent) !important; 
       border-color: var(--border-color) var(--border-color) var(--sidebar-bg) !important; 
-    }
-    
+    }    
     .list-group-item {
       background-color: var(--list-bg);
       border-color: var(--border-color);
@@ -493,8 +461,6 @@
     [data-theme="dark"] code {
       background: rgba(255,255,255,0.1);
     }
-
-    /* --- SCROLLABLE TABS --- */
     .tabs-scroll-wrapper {
       position: relative;
       width: 100%;
@@ -537,8 +503,6 @@
     .tab-scroll-btn:hover { background: var(--hover-bg); }
     .tab-scroll-btn.left-arrow { left: 0; border-radius: 6px 0 0 0; box-shadow: 3px 0 8px rgba(0,0,0,0.1); }
     .tab-scroll-btn.right-arrow { right: 0; border-radius: 0 6px 0 0; box-shadow: -3px 0 8px rgba(0,0,0,0.1); }
-
-    /* --- SCREENSHOTS & ADMIN MODE --- */
     .doc-screenshot {
       display: block;
       max-width: 100%;
@@ -549,7 +513,6 @@
       margin: 1.5rem 0;
       background-color: var(--sidebar-bg);
     }
-
     .doc-section.editing-active {
       outline: 2px dashed #ef4444;
       outline-offset: 10px;
@@ -569,8 +532,6 @@
       opacity: 0.6;
       box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
     }
-
-    /* --- MOBILE RESPONSIVE --- */
     @media (max-width: 768px) {
       .mobile-header { display: flex; }
       .sidebar { 
@@ -584,18 +545,14 @@
   </style>
 </head>
 <body>
-
 <div class="mobile-header">
   <div class="fw-bold" style="color: var(--text-main); font-size: 1.2rem;">📦 IMS Docs</div>
   <button onclick="toggleMobileMenu()" class="btn btn-sm btn-outline-secondary fw-bold" style="border-color: var(--border-color); color: var(--text-main);">☰ Menu</button>
 </div>
-
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
-
 <div id="clearHighlightsBtn" onclick="clearDocHighlights()">
   ✕ Clear Search Highlights
 </div>
-
 <div class="search-overlay" id="searchOverlay" onclick="closeSearchModal(event)">
   <div class="search-modal" onclick="event.stopPropagation()">
     <div class="search-modal-header">
@@ -610,23 +567,18 @@
     </div>
   </div>
 </div>
-
-<div class="docs-layout">
-  
+<div class="docs-layout">  
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="sidebar-logo">📦 IMS Docs</div>
-      
+      <div class="sidebar-logo">📦 IMS Docs</div>      
       <div class="sidebar-search-trigger" onclick="openSearchModal()">
         <span>🔍 Search...</span>
         <span class="shortcut-key">⌘K</span>
       </div>
-
       <button class="btn btn-sm btn-outline-primary w-100 fw-bold" onclick="window.print()" style="border-color: var(--accent); color: var(--accent); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='var(--accent)'; this.style.color='white'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--accent)'">
         📄 Save as PDF
       </button>
     </div>
-
     <div class="sidebar-nav-wrapper">
       <nav class="sidebar-nav" id="toc">
         <div class="sidebar-heading">Getting Started</div>
@@ -635,39 +587,33 @@
         <a href="#mobile-pwa" class="nav-link">Mobile App (PWA) Setup</a>
         <a href="#requirements" class="nav-link">System Requirements</a>
         <a href="#roles" class="nav-link">Roles &amp; Permissions</a>
-        <a href="#lbac" class="nav-link">Location Access (LBAC)</a>
-        
+        <a href="#lbac" class="nav-link">Location Access (LBAC)</a>        
         <div class="sidebar-heading">Daily Operations</div>
         <a href="#dashboard" class="nav-link">Dashboard &amp; Alerts</a>
         <a href="#finding-data" class="nav-link">Finding &amp; Viewing Items</a>
         <a href="#transactions" class="nav-link">Check In, Out &amp; Move</a>
         <a href="#audits" class="nav-link">Performing Audits</a>
-        <a href="#exporting" class="nav-link">Exporting Data (CSV)</a>
-        
+        <a href="#exporting" class="nav-link">Exporting Data (CSV)</a>        
         <div class="sidebar-heading">Management (Admins)</div>
         <a href="#manage-items" class="nav-link">Managing Items</a>
         <a href="#manage-locations" class="nav-link">Managing Locations</a>
         <a href="#manage-logs" class="nav-link">Transaction Logs</a>
-        <a href="#manage-users" class="nav-link">Managing Users</a>
-        
+        <a href="#manage-users" class="nav-link">Managing Users</a>        
         <div class="sidebar-heading">System Engine</div>
         <a href="#sync-engine" class="nav-link">Background Sync Engine</a>
-        <a href="#theming" class="nav-link active">Theme &amp; Branding</a>
-        
+        <a href="#theming" class="nav-link active">Theme &amp; Branding</a>        
         <div class="sidebar-heading">Deployment Setup</div>
         <a href="#deploy-drive" class="nav-link">1. Drive Setup</a>
         <a href="#deploy-oauth" class="nav-link">2. Google Login Setup</a>
         <a href="#deploy-sheet" class="nav-link">3. Database Setup</a>
         <a href="#deploy-script" class="nav-link">4. API Setup</a>
-        <a href="#deploy-frontend" class="nav-link">5. UI Hosting</a>
-        
+        <a href="#deploy-frontend" class="nav-link">5. UI Hosting</a>        
         <div class="sidebar-heading">Help</div>
         <a href="#mistakes" class="nav-link text-warning">Common Mistakes to Avoid</a>
         <a href="#faq" class="nav-link text-danger">Troubleshooting &amp; FAQ</a>
         <a href="#" class="nav-link" onclick="showLegalModal(event)">Terms &amp; Privacy Policy</a>
       </nav>
-    </div>
-    
+    </div>    
     <div class="theme-switch-wrapper">
       <label class="theme-switch" title="Toggle Dark/Light Mode">
         <input type="checkbox" id="themeToggleCheckbox" onchange="toggleDocsTheme()">
@@ -675,16 +621,13 @@
       </label>
     </div>
   </aside>
-
   <main class="main-content">
     <div id="docContent">
-
       <section id="intro" class="doc-section">
         <h2>Introduction</h2>
         <p>Welcome to the Inventory Management System (IMS). This platform is a modern, Single-Page Application (SPA) designed to track hardware, deployable assets, and physical spaces.</p>
         <p>While the backend database, automation, and API are powered entirely by Google Workspace (Google Sheets, Apps Script, and Google Drive), the beautiful frontend user interface is designed to be hosted externally on a free service like GitHub Pages or standard domain hosting. This architecture gives you an enterprise-grade web app with zero traditional server hosting costs.</p>
       </section>
-
       <section id="ui-nav" class="doc-section">
         <h2>UI &amp; Navigation Features</h2>
         <p>The IMS is built as a Single Page Application, meaning it operates more like a native app on your phone than a traditional website. It is packed with quality-of-life features:</p>
@@ -697,7 +640,6 @@
           <li><strong>Collapsible Sections:</strong> Throughout the app (Dashboards, Location Grids), you will see headers with a ▼ icon. Clicking these headers will collapse or expand that section to keep your screen uncluttered.</li>
         </ul>
       </section>
-
       <section id="mobile-pwa" class="doc-section">
         <h2>Mobile App (PWA) Setup</h2>
         <p>The IMS is built as a Progressive Web App (PWA). This means you do not download it from the Apple App Store or Google Play Store. Instead, you "install" it directly from your web browser to your phone's home screen for a true native experience (full screen, no URL bars, optimized for notches/safe areas).</p>
@@ -706,7 +648,6 @@
           <li><strong>Android:</strong> Open your live hosted URL in Chrome. Tap the 3-dot menu in the top right corner. Tap <strong>Add to Home screen</strong>.</li>
         </ul>
       </section>
-
       <section id="requirements" class="doc-section">
         <h2>System Requirements</h2>
         <p>Because IMS is a modern Progressive Web App (PWA), it does not require a high-end computer or server. It runs entirely inside the user's web browser.</p>
@@ -716,15 +657,12 @@
           <li><strong>Network:</strong> A stable internet connection is required to sync with the Google Workspace backend. Offline mode is not currently supported.</li>
         </ul>
       </section>
-
       <section id="roles" class="doc-section">
-        <h2>Roles &amp; Permissions</h2>
-        
+        <h2>Roles &amp; Permissions</h2>        
         <div class="callout border-danger mb-4">
           <strong class="text-danger">⚠️ The "First Login" Security Trap (Admin Bootstrapping)</strong><br>
           <span class="text-muted small">When you deploy a brand-new, completely blank database, <strong>the very first Google account to log into the app is permanently and automatically granted the Admin role.</strong> Do not share your live URL with employees or testers until you have successfully logged in yourself to claim the Admin seat!</span>
         </div>
-
         <p>IMS utilizes strict role-based access control to ensure users only see what they need to see.</p>
         <ul class="list-group list-group-flush mb-3">
           <li class="list-group-item"><strong>Admin:</strong> Full system access. Can edit users, change system themes, view all logs, and manage all inventory.</li>
@@ -734,7 +672,6 @@
           <li class="list-group-item"><strong>Viewer:</strong> <span class="badge-role">Restricted</span> Read-only access to view stock levels for their assigned locations. Cannot perform any transactions.</li>
         </ul>
       </section>
-
       <section id="lbac" class="doc-section">
         <h2>Location-Based Access Control (LBAC)</h2>
         <p>If a user is a Manager, Operator, or Viewer, they are subjected to LBAC filters. If an Admin does not explicitly assign them to a Location, that location literally does not exist to them in the app. It will not appear on their dashboard, in their grid, or in their transaction dropdowns.</p>
@@ -742,7 +679,6 @@
         <p>To make assigning locations easier, Admins can create "Access Groups" (e.g., <i>West Coast</i>, <i>Arizona</i>). When editing a location, you can tag it with a group. When assigning a user, you can assign them the entire group with one click, instantly granting them access to all locations bearing that tag.</p>
         <p><img src="docs/screenshot-lbac.png" class="doc-screenshot" alt="Documentation Image"></p>
       </section>
-
       <section id="dashboard" class="doc-section">
         <h2>Dashboard &amp; Alerts</h2>
         <p>The Dashboard (found in the Management tab) provides a real-time financial and operational snapshot of the inventory.</p>
@@ -750,8 +686,7 @@
         <ul>
           <li><strong>Global Snapshot:</strong> Visible to Admins and Sub-Admins. Shows total unit counts and financial valuations across the entire company.</li>
           <li><strong>Location Groups Snapshot:</strong> Allows you to select an Access Group from a dropdown (e.g., "Arizona") and instantly recalculate the financial valuation and unit count strictly for assets within that region.</li>
-        </ul>
-        
+        </ul>        
         <h3>Low Stock Alerts</h3>
         <p>If an item dips below its designated "Min Stock" threshold, two things happen:</p>
         <ol>
@@ -759,7 +694,6 @@
           <li>Clicking that banner transports you to the Dashboard, where a red "Low Stock Warning" table details exactly which items are low and what their thresholds are.</li>
         </ol>
       </section>
-
       <section id="finding-data" class="doc-section">
         <h2>Finding &amp; Viewing Items</h2>
         <p>The main screen of the application is the <strong>Location Grid</strong>. Clicking a location card opens it to reveal all the items currently stored inside it.</p>
@@ -772,26 +706,21 @@
           <li><strong>Quick Edit Shortcut:</strong> If you are an Admin/Manager looking at an Item or Location detail page, you will see a small "✎ Edit" button under the image. Clicking this instantly teleports you directly to the Management form for that specific entity, saving you time!</li>
         </ul>
         <div><img src="docs/screenshot-item.png" class="doc-screenshot" alt="Documentation Image"></div>
-
         <h3>Global Search Engine</h3>
-        <p>The Search Bar at the top of the app is incredibly powerful. As you type, the app searches through Barcodes, Make, Model, Descriptions, Notes, and Serial Numbers. Matches are highlighted in yellow. Click any result to jump directly to that item.</p>
-        
+        <p>The Search Bar at the top of the app is incredibly powerful. As you type, the app searches through Barcodes, Make, Model, Descriptions, Notes, and Serial Numbers. Matches are highlighted in yellow. Click any result to jump directly to that item.</p>        
         <div class="callout py-2 my-3 border-warning">
           <strong>Wait, where did my item go? (Zero-Stock Visibility)</strong><br>
           <span class="text-muted small">The main inventory grids strictly show items that <strong>currently reside</strong> in that specific location. If an item drops to <strong>0 stock</strong>, it will completely disappear from that location's visual grid to keep things uncluttered. To find it and add new stock, simply use the <strong>Global Search Bar</strong> at the top of the screen!</span>
         </div>
-
         <h3>Interactive Stock Badges (Teleporting)</h3>
         <p>When you view an Item's Detail page, you will see a cluster of badges showing exactly where this item is currently located across your company (e.g., <code>Warehouse A: 50</code>). <strong>These badges are clickable!</strong> If you click one, the app will instantly teleport you to that specific location's inventory grid.</p>
         <p><i>Note on LBAC:</i> You will only see stock badges for locations you have permission to view. If the item exists in California, but you only have Arizona permissions, the California badges are completely hidden from you.</p>
       </section>
-
       <section id="transactions" class="doc-section">
         <h2>Transactions (Check In, Out &amp; Move)</h2>
         <p>To execute a transaction, go to the Item Detail page. At the bottom, you will find the Action Form.</p>
         <p><img src="docs/screenshot-transactionbulk.png" class="doc-screenshot" alt="Documentation Image"></p>
-        <img src="docs/screenshot-transaction.png" class="doc-screenshot" alt="Action Form">
-        
+        <img src="docs/screenshot-transaction.png" class="doc-screenshot" alt="Action Form">        
         <h3>Bulk vs. Serialized Actions</h3>
         <div class="row mt-2">
           <div class="col-md-6">
@@ -803,13 +732,11 @@
             <p class="small mt-1">The quantity field is hidden. You must either click the checkboxes of the specific serials you are moving, or use the camera scanner to scan serial numbers into the text box.</p>
           </div>
         </div>
-
         <div class="callout border-primary">
           <strong>Hardware Scanner Support!</strong><br>
           If you have a physical USB or Bluetooth barcode scanner gun, it works natively with this app! Just click inside the Search Bar or Serial Input box and pull the trigger. The app's rapid-stroke engine will automatically capture the scan and drop to a new line without requiring you to hit 'Enter'.
         </div>
       </section>
-
       <section id="audits" class="doc-section">
         <h2>Performing Audits</h2>
         <p>Audits are true-ups of physical stock compared to what the system expects. Only Admins, Sub-Admins, Managers, and Operators can perform audits.</p>
@@ -822,7 +749,6 @@
           <li>Click <strong>Submit True-Up</strong>. The system will automatically generate Adjustment logs to fix the inventory balances.</li>
         </ol>
       </section>
-
       <section id="exporting" class="doc-section">
         <h2>Exporting Data (CSV)</h2>
         <p>The system allows you to easily extract data for external reporting or spreadsheets.</p>
@@ -831,7 +757,6 @@
           <li><strong>Transaction Logs CSV:</strong> <i>(Access: Admin, Sub-Admin, Manager)</i>. Go to Management &gt; Logs. In the top right, there is a small input box and a green Download button. Enter the exact number of rows you want to export (e.g., 500, or 5000) and click Download. This exports the raw, chronological history of every movement in the system.</li>
         </ul>
       </section>
-
       <section id="manage-items" class="doc-section">
         <h2>Management: Items (Catalog)</h2>
         <p><i>Access: Admin, Sub-Admin, Manager</i></p>
@@ -848,12 +773,10 @@
           <li><strong>Image URL / File Upload:</strong> You can paste an image link from the web, or upload a file directly from your computer. Uploaded files are automatically saved to your private Google Drive and securely linked. <br>
           <span class="text-warning small fw-bold">Important Limit:</span> <span class="text-muted small">Google Apps Script has strict payload limits. Do not upload raw, uncompressed photos (like 15MB 4K iPhone images). Keep uploaded image files under 3MB, or the database upload will timeout and fail. If you provide both an Image URL and a File Upload, the File Upload will override the URL.</span></li>
           <li><strong>Notes:</strong> Any special handling instructions. This is also globally searchable!</li>
-        </ul>
-        
+        </ul>        
         <h3>Enabling &amp; Disabling Items</h3>
         <p>In the Items table, you will see a toggle button in the Actions column. Disabling an item removes it from searches and dropdowns so it can no longer be interacted with. <strong>Safety Net:</strong> The system will block you from disabling an item if there is still active stock in the system. You must remove/audit the stock to zero before retiring the item.</p>
       </section>
-
       <section id="manage-locations" class="doc-section">
         <h2>Management: Locations</h2>
         <p><i>Access: Admin, Sub-Admin, Manager</i></p>
@@ -866,25 +789,20 @@
           <li><strong>Access Groups (LBAC):</strong> A checklist of groups (e.g., Arizona, West Coast). Check the boxes to assign this location to those groups. You can quickly create new groups by typing a tag and clicking "Add".</li>
           <li><strong>Description &amp; Notes:</strong> Add details about the location, access codes, or contact info.</li>
           <li><strong>Image URL / File Upload:</strong> Give the location a photo! Just like items, File Uploads override Image URLs.</li>
-        </ul>
-        
+        </ul>        
         <h3>Spots / Bins</h3>
         <p>You do not need to pre-create Spots/Bins. When a user is moving an item into a location on their device, they can simply type a new Spot name (e.g., "Shelf A3"), and the system will dynamically create it. To rename or delete an existing Spot, click the blue <strong>Spots</strong> button next to the location in the Location Management table.</p>
-
         <h3>Enabling &amp; Disabling Locations</h3>
         <p>Like Items, Locations can be disabled. <strong>Safety Net:</strong> You cannot disable a location if it currently holds inventory.</p>
-
         <h3>Access Group Summary Dashboard</h3>
         <p>At the bottom of the Locations tab, you will see a visual dashboard. This automatically updates to show you every single Access Group in your system, and lists out exactly which locations belong to which groups, making it easy for Admins to verify their security architecture.</p>
       </section>
-
       <section id="manage-logs" class="doc-section">
         <h2>Management: Transaction Logs</h2>
         <p><i>Access: Admin, Sub-Admin, Manager</i></p>
         <p>The Logs tab provides an immutable, chronological history of every action taken in the system. By default, it loads the 20 most recent transactions to ensure the app stays lightning-fast and responsive.</p>
         <p>If you need to look further back in time, simply scroll to the bottom and click the blue <strong>Load More Activities</strong> button to pull the next 20 records into the view.</p>
       </section>
-
       <section id="manage-users" class="doc-section">
         <h2>Management: Users</h2>
         <p><i>Access: Admin Only</i></p>
@@ -899,7 +817,6 @@
         <h3>Enabling &amp; Disabling Users</h3>
         <p>You can instantly revoke a user's access by clicking the Disable button in the table. <strong>Safety Net:</strong> The system will prevent you from accidentally disabling your own Admin account.</p>
       </section>
-
       <section id="sync-engine" class="doc-section">
         <h2>Background Sync Engine</h2>
         <p>To ensure all users across the company see accurate stock numbers without ever having to refresh their web browser, the app utilizes an intelligent, non-intrusive Background Sync Engine.</p>
@@ -909,7 +826,6 @@
           <li><strong>Zero Interruption:</strong> This sync happens in the background. It will not interrupt you if you are typing in a form or scanning a barcode.</li>
         </ul>
       </section>
-
       <section id="theming" class="doc-section">
         <h2>Administration: Theme &amp; Branding</h2>
         <p><i>Access: Admin Only</i></p>
@@ -931,7 +847,6 @@
           <li><strong>Light Mode / Dark Mode Palettes:</strong> Define Primary Brand Colors, Background Colors, Card Colors, and Text Colors for both display modes. When a user toggles the sun/moon icon, the app repaints itself instantly using these rules.</li>
         </ul>
       </section>
-
       <section id="deploy-drive" class="doc-section">
         <h2>Deployment Step 1: Google Drive Setup</h2>
         <p>The system needs a secure place to store the photos you upload of your items and locations.</p>
@@ -946,7 +861,6 @@
           <strong>Security Note:</strong> Do <strong>not</strong> share this folder publicly. Keep it restricted to yourself. The backend script runs under your credentials and will securely upload images here for you!
         </div>
       </section>
-
       <section id="deploy-oauth" class="doc-section">
         <h2>Deployment Step 2: Google Login Setup</h2>
         <p>To allow users to log into your app securely using their Google accounts, we need to create a "Client ID" in the Google Developer Console.</p>
@@ -967,7 +881,6 @@
           <li>Copy this Client ID and save it to your notepad!</li>
         </ol>
       </section>
-
       <section id="deploy-sheet" class="doc-section">
         <h2>Deployment Step 3: Database Setup</h2>
         <p>Now we will build the actual database using Google Sheets. <strong>Accuracy is critical here!</strong> Do not delete columns once established, as it can skew historical indexing.</p>
@@ -1009,7 +922,6 @@
           </li>
         </ol>
       </section>
-
       <section id="deploy-script" class="doc-section">
         <h2>Deployment Step 4: API Setup</h2>
         <p>Now we attach the brain to the database.</p>
@@ -1033,7 +945,6 @@
           </li>
         </ol>
       </section>
-
       <section id="deploy-frontend" class="doc-section">
         <h2>Deployment Step 5: UI Hosting</h2>
         <p>The user interface is a single file called <code>index.html</code>. Because the database and API are fully hosted by Google, this HTML file can be hosted anywhere on the internet for free.</p>
@@ -1042,7 +953,6 @@
           <strong>Crucial Final Link:</strong> Before hosting the file, open your <code>index.html</code> file in a text editor (like Notepad on Windows or TextEdit on Mac). Use your computer's Find tool (Ctrl+F or Cmd+F) to search for the text: <code>const GAS_URL =</code>.<br><br>
           Replace the web address inside the quotes with the <strong>Web App URL</strong> you copied in Step 4. Save the file. Your UI is now officially connected to your database!
         </div>
-
         <div class="position-relative tabs-scroll-wrapper">
           <button class="tab-scroll-btn left-arrow" id="scrollLeftBtn" onclick="scrollTabs(-150)">◀</button>
           <ul class="nav nav-tabs flex-nowrap hide-scroll" id="deployTabs" role="tablist">
@@ -1051,8 +961,7 @@
             <li class="nav-item" role="presentation"><button class="nav-link fw-bold text-nowrap" data-bs-toggle="tab" data-bs-target="#hosting" type="button" role="tab" aria-selected="false" tabindex="-1">Standard Hosting (GoDaddy, etc.)</button></li>
           </ul>
           <button class="tab-scroll-btn right-arrow" id="scrollRightBtn" onclick="scrollTabs(150)">▶</button>
-        </div>
-        
+        </div>        
         <div class="tab-content border border-top-0 p-4 bg-white" style="background: var(--sidebar-bg) !important;" id="deployTabsContent">
           <div class="tab-pane fade show active" id="gh-web" role="tabpanel">
             <h4>Deploying via GitHub Website (Easiest)</h4>
@@ -1069,7 +978,6 @@
               </li>
             </ol>
           </div>
-
           <div class="tab-pane fade" id="gh-cli" role="tabpanel">
             <h4>Deploying via Git Command Line</h4>
             <ol>
@@ -1086,7 +994,6 @@ git push -u origin main</code></pre>
               <li>Go to your repository settings on GitHub, navigate to <strong>Pages</strong>, and set the branch to <code>main</code> to deploy.</li>
             </ol>
           </div>
-
           <div class="tab-pane fade" id="hosting" role="tabpanel">
             <h4>Deploying to Standard Web Hosting (cPanel, GoDaddy, HostGator)</h4>
             <ol>
@@ -1096,36 +1003,29 @@ git push -u origin main</code></pre>
               <li>That's it! Navigate to your custom domain in a web browser, and the app will instantly load.</li>
             </ol>
           </div>
-        </div>
-        
+        </div>        
         <h3 class="mt-5">Finalizing the Setup</h3>
         <p>Go to the URL where your app is hosted. Because you already placed your Google Client ID into your Database Template tab in Step 3, the Google Login button will appear immediately!</p>
         <p><strong>The very first user to log into a completely blank database is automatically granted the Admin role.</strong> Once you are logged in, click the Management button in the top right to start exploring your new system!</p>
       </section>
-
       <section id="mistakes" class="doc-section">
         <h2 class="text-warning">Common Mistakes to Avoid</h2>
-        <p>This system is incredibly resilient, but because it relies on a Google Sheet as its brain, certain manual actions by Admins can break it. Avoid these common pitfalls:</p>
-        
+        <p>This system is incredibly resilient, but because it relies on a Google Sheet as its brain, certain manual actions by Admins can break it. Avoid these common pitfalls:</p>        
         <div class="callout border-warning">
           <strong class="text-warning">1. Do not rename tabs or delete columns in the Google Sheet.</strong><br>
           <span class="text-muted small">The backend API specifically looks for tabs named "Items", "Locations", "Users", etc., and searches for specific column headers. You can <i>resize</i> columns, and you can add new rows, but renaming a tab or deleting the "Barcode" header will instantly crash the app.</span>
         </div>
-
         <div class="callout border-warning">
           <strong class="text-warning">2. Do not change an item's Tracking Type after it has stock.</strong><br>
           <span class="text-muted small">If you create an item as "Bulk Quantity", log 50 of them into a location, and then later edit the item to be "Individual Serials", the app will be completely confused because those 50 items don't have serial numbers attached to them. If you must change tracking types, audit the item down to 0 stock first.</span>
         </div>
-
         <div class="callout border-warning">
           <strong class="text-warning">3. If you edit the Apps Script, you MUST create a New Deployment.</strong><br>
           <span class="text-muted small">If you ever open the <code>Code.gs</code> file to edit the backend code, simply clicking the "Save" icon is not enough. Google caches the API. You must click <strong>Deploy &gt; Manage Deployments &gt; Edit (Pencil Icon) &gt; New Version &gt; Deploy</strong> for your code changes to actually go live.</span>
         </div>
       </section>
-
       <section id="faq" class="doc-section">
-        <h2 class="text-danger">Troubleshooting &amp; FAQ</h2>
-        
+        <h2 class="text-danger">Troubleshooting &amp; FAQ</h2>        
         <h3 class="text-danger mt-4">Help! The app is stuck on "Loading Database..."</h3>
         <p>This almost always means the <code>GAS_URL</code> inside your <code>index.html</code> file is incorrect, or you failed to deploy the Google Sheet correctly.</p>
         <ul>
@@ -1133,7 +1033,6 @@ git push -u origin main</code></pre>
           <li>Is the access level set to "Anyone"?</li>
           <li>Does the URL you pasted into <code>index.html</code> end in <code>/exec</code>? (If it ends in <code>/dev</code>, it will fail for everyone except you).</li>
         </ul>
-
         <h3 class="text-danger mt-4">The Google Login button isn't appearing!</h3>
         <p>If the login screen appears but the actual "Sign in with Google" button is missing, your web browser is blocking the script.</p>
         <ul>
@@ -1141,7 +1040,6 @@ git push -u origin main</code></pre>
           <li>Browsers like Brave, Safari, or Firefox in "Strict Privacy" mode block 3rd-party cookies. Google Login requires these to function. Click the shield icon in your URL bar and disable tracking protection for your app's specific URL.</li>
           <li>Ensure you properly pasted the Google Client ID into the <code>Template</code> tab of your Google Sheet.</li>
         </ul>
-
         <h3 class="text-danger mt-4">My uploaded images are showing up as broken gray squares.</h3>
         <p>This is a strict IT policy issue within Corporate Google Workspace accounts.</p>
         <ul>
@@ -1149,21 +1047,18 @@ git push -u origin main</code></pre>
           <li>If your company's IT Administrator has configured Google Workspace to <i>"Prevent users from sharing files outside the organization"</i>, Google Drive will block the image from loading on your external website.</li>
           <li><strong>The Fix:</strong> Ask your IT Admin to allow external link sharing for the specific account hosting the Drive Folder, or use a standard free <code>@gmail.com</code> account to host the database instead of a corporate account.</li>
         </ul>
-
         <h3 class="text-danger mt-4">My camera scanner isn't turning on.</h3>
         <p>Modern browsers strictly block camera access on unsecured connections.</p>
         <ul>
           <li>Make sure the website you are hosting the app on uses <code>https://</code>, not <code>http://</code>. GitHub Pages handles this automatically.</li>
           <li>Check your browser settings (or your phone's Settings &gt; Safari/Chrome) to ensure you haven't accidentally denied camera access for this specific website.</li>
         </ul>
-
         <h3 class="text-danger mt-4">I hit an "Access Denied" screen.</h3>
         <p>The email you used to log into Google is not listed in the <code>Users</code> tab of the database.</p>
         <ul>
           <li>If you are the Admin, open your Google Sheet and ensure your email is typed perfectly in the Users tab with the Status set to "Active".</li>
           <li>If you are an employee, contact your system administrator to have your email added.</li>
         </ul>
-
         <h3 class="text-danger mt-4">I updated the UI, but I still see the old version.</h3>
         <p>Web browsers love to cache (save) HTML files to make them load faster. If you deployed a new version of your <code>index.html</code> file but aren't seeing the changes, force your browser to fetch the new file:</p>
         <ul>
@@ -1171,7 +1066,6 @@ git push -u origin main</code></pre>
           <li><strong>Mac:</strong> Press <code>Cmd + Shift + R</code>.</li>
           <li><strong>Mobile:</strong> Open your browser settings and clear the website data/cache.</li>
         </ul>
-
         <h3 class="text-danger mt-4">How do I back up my entire database?</h3>
         <p>Because your entire backend lives inside Google Workspace, creating a hard backup takes three seconds and requires no technical knowledge.</p>
         <ul>
@@ -1179,21 +1073,18 @@ git push -u origin main</code></pre>
           <li>Click <strong>File &gt; Download &gt; Microsoft Excel (.xlsx)</strong>.</li>
           <li>You now have a complete, offline, hard-copy backup of every item, location, user, and transaction log in your system! We recommend doing this once a month.</li>
         </ul>
-
         <h3 class="text-danger mt-4">How do I print Barcode/QR Code stickers?</h3>
         <p>The IMS is designed to <i>read and track</i> barcodes, but it does not directly communicate with desktop printers to print them.</p>
         <ul>
           <li>You can use any standard label maker (like a Dymo, Zebra, or Brother printer) and its included software to generate and print your physical stickers.</li>
           <li>Simply type the Barcode numbers you generated into the IMS "Barcode" field, and the scanner will instantly recognize them!</li>
         </ul>
-
         <h3 class="text-danger mt-4">I made a mistake. How do I delete a transaction log?</h3>
         <p>You can't, and that is by design! The system operates on an <strong>Immutable Ledger</strong>.</p>
         <ul>
           <li>To prevent employee theft or "ghost inventory" manipulation, transaction history cannot be deleted or altered once submitted.</li>
           <li>If an operator accidentally moves 50 cables to the wrong truck, they simply need to execute a new transaction moving those 50 cables back to the correct location. Both the mistake and the correction will be permanently logged for full accountability.</li>
         </ul>
-
         <h3 class="text-danger mt-4">How do I disconnect my Google Account from this app?</h3>
         <p>If an employee leaves the company, or you simply wish to revoke the app's access to your Google profile, you can do this directly through Google's security portal.</p>
         <ul>
@@ -1202,16 +1093,13 @@ git push -u origin main</code></pre>
           <li>Click it and select <strong>Remove Access</strong>. The app will immediately lose the ability to authenticate your email.</li>
         </ul>
       </section>
-
       <div class="mt-5 pt-4 border-top text-center text-muted" style="font-size: 0.85rem; line-height: 1.5; padding-bottom: 2rem;">
         <p class="mb-1">Developed by Jack Vu</p>
         <p class="mb-0 mt-2"><a href="#" class="text-decoration-none fw-bold" style="color: var(--accent);" onclick="showLegalModal(event)">Terms &amp; Privacy Policy</a></p>
       </div>
-
     </div>
   </main>
 </div>
-
 <div id="gdprBanner">
   <div class="gdpr-content">
     <div style="font-size: 0.85rem; color: var(--text-main);" class="text-md-start text-center">
@@ -1221,9 +1109,7 @@ git push -u origin main</code></pre>
     <button class="btn btn-sm text-white fw-bold text-nowrap px-4" style="background-color: var(--accent);" onclick="acceptGDPR()">I Understand &amp; Accept</button>
   </div>
 </div>
-
 <button id="backToTopBtn" onclick="scrollToTop()" title="Go to top" class="visible">↑</button>
-
 <div class="modal fade" id="legalModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
     <div class="modal-content" style="background-color: var(--modal-bg); border: 1px solid var(--border-color); border-radius: 12px;">
@@ -1234,10 +1120,8 @@ git push -u origin main</code></pre>
       <div class="modal-body text-muted" style="font-size: 0.85rem; line-height: 1.6; color: var(--text-muted) !important;">
         <h6 class="fw-bold" style="color: var(--accent);">1. Introduction &amp; Acceptance</h6>
         <p>This Privacy Policy and Terms of Service govern the use of the Inventory Management System ("The Application"). By accessing, authenticating, or utilizing this system, you ("The User") agree to be bound by these terms in full. If you do not agree to these terms, you must exit The Application immediately.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--accent);">2. Intellectual Property &amp; Ownership</h6>
         <p>The Application was independently architected, engineered, and developed by Jack Vu on personal time. It utilizes open-source UI frameworks (GitHub Pages) and Google Workspace APIs (Apps Script, Sheets, Drive). While the inventory data processed within The Application is the exclusive property of The Company, the underlying architecture, logic, source code, and design patterns of The Application remain the sole intellectual property of Jack Vu, unless otherwise stipulated in a formally executed written agreement.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--accent);">3. Data Collection, Privacy, CCPA &amp; GDPR Compliance</h6>
         <p>In compliance with the California Consumer Privacy Act (CCPA), the General Data Protection Regulation (GDPR), and applicable state laws, we disclose the following regarding data processing:</p>
         <ul>
@@ -1246,22 +1130,16 @@ git push -u origin main</code></pre>
           <li><strong>User Rights (GDPR/CCPA):</strong> You retain the right to request access to, rectification of, or erasure (Right to be Forgotten) of your personal data. Note that erasure of immutable audit logs may be legally restricted by The Company's legitimate compliance or security requirements.</li>
           <li><strong>Third-Party Sharing:</strong> Zero user or inventory data is sold, monetized, or shared with external third parties. All data is securely contained within The Company's Google Workspace infrastructure.</li>
         </ul>
-
         <h6 class="fw-bold mt-4" style="color: var(--accent);">4. Prohibited Data &amp; Sensitive Information</h6>
         <p>The Application is designed exclusively for standard physical inventory tracking and is <strong>NOT</strong> compliant with HIPAA, FERPA, or PCI-DSS standard out-of-the-box. Users are strictly prohibited from entering, uploading, or storing highly sensitive regulated data within any text field, note, or image upload. This includes, but is not limited to: Protected Health Information (PHI), Personally Identifiable Information (PII) of minors, Social Security Numbers, or primary payment card details.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--accent);">5. System Security &amp; Acceptable Use</h6>
         <p>Access to the backend infrastructure is strictly restricted. You agree to interface with The Application solely through the provided front-end User Interface. You agree not to reverse engineer, scrape, bypass security protocols, or intentionally disrupt the API. You are solely responsible for maintaining the security of your Google account credentials.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--accent);">6. Disclaimer of Warranties ("As-Is" Provision)</h6>
         <p>The Application is provided strictly "AS IS" and "AS AVAILABLE" without any warranties of any kind, whether express, implied, or statutory. Jack Vu expressly disclaims any implied warranties of merchantability, fitness for a particular purpose, non-infringement, or guarantee of continuous, error-free operation.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--accent);">7. Limitation of Liability &amp; Indemnification</h6>
         <p>Under no circumstances shall Jack Vu be held liable for any direct, indirect, incidental, consequential, or special damages arising out of or in connection with your use of The Application. This includes, but is not limited to, data loss, inventory discrepancies, business interruption, or financial loss. By using this system, The Company and its authorized users agree to indemnify and hold harmless Jack Vu from any claims, damages, or liabilities resulting from its use.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--accent);">8. Modifications &amp; Governing Law</h6>
         <p>These terms may be updated at any time. Continued use of The Application implies ongoing consent to any revisions. These terms shall be governed by and construed in accordance with the laws of the State of California and the State of Arizona, without regard to conflict of law principles.</p>
-
         <h6 class="fw-bold mt-4" style="color: var(--accent);">9. Contact &amp; Data Privacy Requests</h6>
         <p>If you wish to request a record of your data, report a vulnerability, or request the deletion of your user profile in accordance with state or international privacy rights, please contact: <strong>your system administrator</strong>.</p>
       </div>
@@ -1271,17 +1149,13 @@ git push -u origin main</code></pre>
     </div>
   </div>
 </div>
-
 <script>
-  // --- THEME ENGINE ---
   const savedTheme = localStorage.getItem('ims_docs_theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  
+  document.documentElement.setAttribute('data-theme', savedTheme);  
   document.addEventListener('DOMContentLoaded', () => {
     const cb = document.getElementById('themeToggleCheckbox');
     if (savedTheme === 'dark') cb.checked = true;
   });
-
   function toggleDocsTheme() {
     const htmlEl = document.documentElement;
     const cb = document.getElementById('themeToggleCheckbox');
@@ -1289,15 +1163,12 @@ git push -u origin main</code></pre>
     htmlEl.setAttribute('data-theme', newTheme);
     localStorage.setItem('ims_docs_theme', newTheme);
   }
-
-  // --- MOBILE SIDEBAR ENGINE ---
   function toggleMobileMenu() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
     sidebar.classList.toggle('open');
     overlay.classList.toggle('open');
   }
-
   document.querySelectorAll('.sidebar-nav a.nav-link').forEach(link => {
       link.addEventListener('click', () => {
           document.getElementById('sidebar').classList.remove('open');
@@ -1305,17 +1176,12 @@ git push -u origin main</code></pre>
           clearDocHighlights();
       });
   });
-
-  // --- HIGHLIGHTER ENGINE ---
   const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
   function highlightInDoc(keyword) {
     clearDocHighlights();
-    if(!keyword) return;
-    
+    if(!keyword) return;    
     const regex = new RegExp(`(${escapeRegExp(keyword)})`, 'gi');
-    const content = document.getElementById('docContent');
-    
+    const content = document.getElementById('docContent');    
     if (content) {
         const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
         const nodesToReplace = [];
@@ -1326,8 +1192,7 @@ git push -u origin main</code></pre>
                     nodesToReplace.push(node);
                 }
             }
-        }
-        
+        }        
         nodesToReplace.forEach(node => {
             const fragment = document.createDocumentFragment();
             let lastIdx = 0;
@@ -1343,7 +1208,6 @@ git push -u origin main</code></pre>
             node.parentNode.replaceChild(fragment, node);
         });
     }
-
     const sections = document.querySelectorAll('.doc-section');
     sections.forEach(sec => {
         if (sec.innerText.toLowerCase().includes(keyword.toLowerCase())) {
@@ -1354,10 +1218,8 @@ git push -u origin main</code></pre>
             }
         }
     });
-
     document.getElementById('clearHighlightsBtn').classList.add('visible');
   }
-
   function clearDocHighlights() {
     const marks = document.querySelectorAll('mark.doc-highlight');
     marks.forEach(mark => {
@@ -1366,37 +1228,29 @@ git push -u origin main</code></pre>
             parent.replaceChild(document.createTextNode(mark.textContent), mark);
             parent.normalize(); 
         }
-    });
-    
+    });    
     const highlightedLinks = document.querySelectorAll('.sidebar-nav a.sidebar-highlight');
     highlightedLinks.forEach(link => link.classList.remove('sidebar-highlight'));
-
     document.getElementById('clearHighlightsBtn').classList.remove('visible');
   }
-
-  // --- SEARCH ENGINE ---
   const modal = document.getElementById('searchOverlay');
   const searchInput = document.getElementById('modalSearchInput');
-
   function openSearchModal() {
     clearDocHighlights();
     modal.style.display = 'flex';
     setTimeout(() => searchInput.focus(), 50); 
   }
-
   function closeSearchModal(e, keyword = null) {
     if (e && e.target !== modal) return;
     modal.style.display = 'none';
     searchInput.value = '';
-    executeSearch(); 
-    
+    executeSearch();    
     if (keyword) {
       setTimeout(() => highlightInDoc(keyword), 100); 
       document.getElementById('sidebar').classList.remove('open');
       document.getElementById('sidebarOverlay').classList.remove('open');
     }
   }
-
   window.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
       e.preventDefault();
@@ -1410,28 +1264,23 @@ git push -u origin main</code></pre>
       }
     }
   });
-
   function executeSearch() {
     const query = searchInput.value.toLowerCase().trim();
-    const resContainer = document.getElementById('searchResultsContainer');
-    
+    const resContainer = document.getElementById('searchResultsContainer');    
     if (!query) {
       resContainer.innerHTML = '<div class="p-4 text-center text-muted" style="font-size:0.85rem;">Type to start searching...</div>';
       return;
     }
-
     let html = '';
     let matchCount = 0;
     const sections = document.querySelectorAll('.doc-section');
-
     sections.forEach(sec => {
       const text = sec.innerText.toLowerCase();
       if (text.includes(query)) {
         matchCount++;
         const titleEl = sec.querySelector('h2');
         const title = titleEl ? titleEl.innerText : 'Documentation Section';
-        const id = sec.getAttribute('id');
-        
+        const id = sec.getAttribute('id');        
         const rawText = sec.innerText.replace(/\n/g, ' ');
         const textLower = rawText.toLowerCase();
         const matchIdx = textLower.indexOf(query);
@@ -1439,11 +1288,9 @@ git push -u origin main</code></pre>
         let snippet = rawText.substring(startIdx, matchIdx + query.length + 80);
         if (startIdx > 0) snippet = '...' + snippet;
         snippet += '...';
-
         const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
         const highlightedSnippet = snippet.replace(regex, '<mark class="search-highlight">$1</mark>');
         const highlightedTitle = title.replace(regex, '<mark class="search-highlight">$1</mark>');
-
         const safeQuery = query.replace(/'/g, "\\'");
         html += `
           <a href="#${id}" class="search-result-item" onclick="closeSearchModal(null, '${safeQuery}')">
@@ -1453,23 +1300,18 @@ git push -u origin main</code></pre>
         `;
       }
     });
-
     if (matchCount === 0) {
       resContainer.innerHTML = '<div class="p-4 text-center text-muted" style="font-size:0.85rem;">No results found for your search.</div>';
     } else {
       resContainer.innerHTML = html;
     }
   }
-
-  // --- SCROLLABLE TABS ENGINE ---
   function updateTabArrows() {
     const tabs = document.getElementById('deployTabs');
     const leftBtn = document.getElementById('scrollLeftBtn');
     const rightBtn = document.getElementById('scrollRightBtn');
-    if (!tabs || !leftBtn || !rightBtn) return;
-    
-    const isScrollable = tabs.scrollWidth > tabs.clientWidth;
-    
+    if (!tabs || !leftBtn || !rightBtn) return;    
+    const isScrollable = tabs.scrollWidth > tabs.clientWidth;    
     if (isScrollable) {
       leftBtn.classList.toggle('visible', tabs.scrollLeft > 5);
       rightBtn.classList.toggle('visible', Math.ceil(tabs.scrollLeft + tabs.clientWidth) < tabs.scrollWidth - 5);
@@ -1478,12 +1320,10 @@ git push -u origin main</code></pre>
       rightBtn.classList.remove('visible');
     }
   }
-
   function scrollTabs(offset) {
     const tabs = document.getElementById('deployTabs');
     if (tabs) tabs.scrollLeft += offset;
   }
-
   document.addEventListener('DOMContentLoaded', () => {
     const tabs = document.getElementById('deployTabs');
     if (tabs) {
@@ -1492,8 +1332,6 @@ git push -u origin main</code></pre>
       setTimeout(updateTabArrows, 100);
     }
   });
-
-  // --- GDPR ENGINE ---
   function checkGDPR() {
     if (!localStorage.getItem('ims_docs_gdpr_consent')) {
       setTimeout(() => {
@@ -1502,32 +1340,24 @@ git push -u origin main</code></pre>
       }, 1000);
     }
   }
-
   function acceptGDPR() {
     localStorage.setItem('ims_docs_gdpr_consent', 'true');
     const banner = document.getElementById('gdprBanner');
     if(banner) banner.classList.remove('visible');
   }
-
   document.addEventListener('DOMContentLoaded', () => {
     checkGDPR();
   });
-
-  // --- UTILITY LOGIC ---
   function showLegalModal(e) {
       if (e) e.preventDefault();
       const legalModal = new bootstrap.Modal(document.getElementById('legalModal'));
       legalModal.show();
   }
-
   function scrollToTop() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-
-  // --- SCROLLSPY ENGINE ---
   const sections = document.querySelectorAll('.doc-section');
   const navLinks = document.querySelectorAll('.sidebar-nav a.nav-link');
-
   window.addEventListener('scroll', () => {
     const bttBtn = document.getElementById('backToTopBtn');
     if (window.scrollY > 400) {
@@ -1535,7 +1365,6 @@ git push -u origin main</code></pre>
     } else {
         bttBtn.classList.remove('visible');
     }
-
     let current = '';
     sections.forEach(section => {
       const sectionTop = section.offsetTop;
@@ -1550,32 +1379,24 @@ git push -u origin main</code></pre>
       }
     });
   });
-
-  // --- ADMIN EDITOR ENGINE ---
   let isEditingDocs = false;
-
   window.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'e') {
       e.preventDefault();
       toggleEditorMode();
     }
   });
-
   function toggleEditorMode() {
     isEditingDocs = !isEditingDocs;
     const sections = document.querySelectorAll('.doc-section');
-    const contentArea = document.getElementById('docContent');
-    
+    const contentArea = document.getElementById('docContent');    
     if (isEditingDocs) {
-      clearDocHighlights(); 
-      
+      clearDocHighlights();       
       sections.forEach(sec => {
         sec.setAttribute('contenteditable', 'true');
         sec.classList.add('editing-active');
       });
-
       contentArea.addEventListener('click', handleImageEdit);
-
       const toolbar = document.createElement('div');
       toolbar.id = 'adminDocsToolbar';
       toolbar.innerHTML = `
@@ -1590,7 +1411,6 @@ git push -u origin main</code></pre>
       `;
       document.body.appendChild(toolbar);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-
     } else {
       sections.forEach(sec => {
         sec.removeAttribute('contenteditable');
@@ -1601,7 +1421,6 @@ git push -u origin main</code></pre>
       if(toolbar) toolbar.remove();
     }
   }
-
   function handleImageEdit(e) {
     if (!isEditingDocs) return;
     if (e.target.tagName === 'IMG') {
@@ -1619,15 +1438,12 @@ git push -u origin main</code></pre>
       }
     }
   }
-
   function insertAdminImage() {
     const url = prompt("Enter the new image path or URL (e.g., docs/my-new-screenshot.png):");
-    if (!url || url.trim() === "") return;
-    
+    if (!url || url.trim() === "") return;    
     const imgHTML = `<img src="${url.trim()}" class="doc-screenshot" alt="Documentation Image">`;
     document.execCommand('insertHTML', false, imgHTML);
   }
-
   function saveDocsFile() {
     toggleEditorMode();
     setTimeout(() => {
@@ -1643,6 +1459,5 @@ git push -u origin main</code></pre>
     }, 100);
   }
 </script>
-
 </body>
 </html>
