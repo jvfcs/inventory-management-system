@@ -3783,15 +3783,15 @@ async function fetchData(callback) {
         <p>This Privacy Policy and Terms of Service govern the use of the Inventory Management System ("The Application"). By accessing, authenticating, or utilizing this system, you ("The User") agree to be bound by these terms in full. If you do not agree to these terms, you must exit The Application immediately.</p>
 
         <h6 class="fw-bold mt-4" style="color: var(--accent);">2. Intellectual Property & Ownership</h6>
-        <p>The Application was independently architected, engineered, and developed by Jack Vu on personal time. It utilizes open-source UI frameworks (GitHub Pages) and Google Workspace APIs (Apps Script, Sheets, Drive). While the inventory data processed within The Application is the exclusive property of The Company, the underlying architecture, logic, source code, and design patterns of The Application remain the sole intellectual property of Jack Vu, unless otherwise stipulated in a formally executed written agreement.</p>
+        <p>The Application was independently architected, engineered, and developed by <span class="legal-dev fw-bold">Jack Vu</span> on personal time. It utilizes open-source UI frameworks (GitHub Pages) and Google Workspace APIs (Apps Script, Sheets, Drive). While the inventory data processed within The Application is the exclusive property of <span class="legal-company fw-bold">The Company</span>, the underlying architecture, logic, source code, and design patterns of The Application remain the sole intellectual property of <span class="legal-dev fw-bold">Jack Vu</span>, unless otherwise stipulated in a formally executed written agreement.</p>
 
         <h6 class="fw-bold mt-4" style="color: var(--accent);">3. Data Collection, Privacy, CCPA & GDPR Compliance</h6>
         <p>In compliance with the California Consumer Privacy Act (CCPA), the General Data Protection Regulation (GDPR), and applicable state laws, we disclose the following regarding data processing:</p>
         <ul>
           <li><strong>Identity Data & Legal Basis:</strong> We collect your email address exclusively via secure Google Workspace OAuth. The legal basis for this processing is legitimate operational interest for system authentication, role-based access control, and security auditing.</li>
           <li><strong>Activity Data:</strong> Interactions (e.g., checking items in/out, moving assets) are permanently logged with your email and a timestamp to maintain a secure chain of custody.</li>
-          <li><strong>User Rights (GDPR/CCPA):</strong> You retain the right to request access to, rectification of, or erasure (Right to be Forgotten) of your personal data. Note that erasure of immutable audit logs may be legally restricted by The Company's legitimate compliance or security requirements.</li>
-          <li><strong>Third-Party Sharing:</strong> Zero user or inventory data is sold, monetized, or shared with external third parties. All data is securely contained within The Company's Google Workspace infrastructure.</li>
+          <li><strong>User Rights (GDPR/CCPA):</strong> You retain the right to request access to, rectification of, or erasure (Right to be Forgotten) of your personal data. Note that erasure of immutable audit logs may be legally restricted by <span class="legal-company fw-bold">The Company</span>'s legitimate compliance or security requirements.</li>
+          <li><strong>Third-Party Sharing:</strong> Zero user or inventory data is sold, monetized, or shared with external third parties. All data is securely contained within <span class="legal-company fw-bold">The Company</span>'s Google Workspace infrastructure.</li>
         </ul>
 
         <h6 class="fw-bold mt-4" style="color: var(--accent);">4. Prohibited Data & Sensitive Information</h6>
@@ -3801,16 +3801,16 @@ async function fetchData(callback) {
         <p>Access to the backend infrastructure is strictly restricted. You agree to interface with The Application solely through the provided front-end User Interface. You agree not to reverse engineer, scrape, bypass security protocols, or intentionally disrupt the API. You are solely responsible for maintaining the security of your Google account credentials.</p>
 
         <h6 class="fw-bold mt-4" style="color: var(--accent);">6. Disclaimer of Warranties ("As-Is" Provision)</h6>
-        <p>The Application is provided strictly "AS IS" and "AS AVAILABLE" without any warranties of any kind, whether express, implied, or statutory. Jack Vu expressly disclaims any implied warranties of merchantability, fitness for a particular purpose, non-infringement, or guarantee of continuous, error-free operation.</p>
+        <p>The Application is provided strictly "AS IS" and "AS AVAILABLE" without any warranties of any kind, whether express, implied, or statutory. <span class="legal-dev fw-bold">Jack Vu</span> expressly disclaims any implied warranties of merchantability, fitness for a particular purpose, non-infringement, or guarantee of continuous, error-free operation.</p>
 
         <h6 class="fw-bold mt-4" style="color: var(--accent);">7. Limitation of Liability & Indemnification</h6>
-        <p>Under no circumstances shall Jack Vu be held liable for any direct, indirect, incidental, consequential, or special damages arising out of or in connection with your use of The Application. This includes, but is not limited to, data loss, inventory discrepancies, business interruption, or financial loss. By using this system, The Company and its authorized users agree to indemnify and hold harmless Jack Vu from any claims, damages, or liabilities resulting from its use.</p>
+        <p>Under no circumstances shall <span class="legal-dev fw-bold">Jack Vu</span> be held liable for any direct, indirect, incidental, consequential, or special damages arising out of or in connection with your use of The Application. This includes, but is not limited to, data loss, inventory discrepancies, business interruption, or financial loss. By using this system, <span class="legal-company fw-bold">The Company</span> and its authorized users agree to indemnify and hold harmless <span class="legal-dev fw-bold">Jack Vu</span> from any claims, damages, or liabilities resulting from its use.</p>
 
         <h6 class="fw-bold mt-4" style="color: var(--accent);">8. Modifications & Governing Law</h6>
         <p>These terms may be updated at any time. Continued use of The Application implies ongoing consent to any revisions. These terms shall be governed by and construed in accordance with the laws of the State of California and the State of Arizona, without regard to conflict of law principles.</p>
 
         <h6 class="fw-bold mt-4" style="color: var(--accent);">9. Contact & Data Privacy Requests</h6>
-        <p>If you wish to request a record of your data, report a vulnerability, or request the deletion of your user profile in accordance with state or international privacy rights, please contact: <strong>your system administrator</strong>.</p>
+        <p>If you wish to request a record of your data, report a vulnerability, or request the deletion of your user profile in accordance with state or international privacy rights, please contact: <a href="#" class="legal-admin fw-bold" style="color: var(--brand-color);">your system administrator</a>.</p>
       `;
 
       document.getElementById('legalModalBody').innerHTML = legalHtml;
