@@ -598,8 +598,11 @@
               <option value="Deployable">Type: Deployable</option>
             </select>
             <input type="text" id="mDeployLoc" class="form-control mb-2 hidden" placeholder="Deployment Location (e.g. Site Name)">
+            
+            <label class="fw-bold small mb-0 text-primary mt-1">Access Groups (Optional)</label>
+            <input type="text" id="mLocGroups" class="form-control mb-2 border-primary" placeholder="e.g. Arizona, West Coast, VIP">
 
-            <textarea id="mLDesc" class="form-control mb-2" placeholder="Description" rows="2"></textarea>
+            <textarea id="mLDesc" class="form-control mb-2 mt-2" placeholder="Description" rows="2"></textarea>
             <input type="text" id="mLImg" class="form-control mb-2" placeholder="Image URL (Optional)">
             <label class="small fw-bold mb-0">Image Upload (Overrides URL)</label>
             <small class="text-muted d-block mb-1" style="font-size: 0.7rem;">PNG, JPG, or JPEG only</small>
@@ -950,24 +953,49 @@
       }
   }
 
-  // NEW: Renders the Location Checkboxes dynamically
+  // NEW: Renders the Location Checkboxes dynamically (Groups + Locations)
   function renderLocationChecklist(assignedStr = "") {
-      const assigned = assignedStr.split(',').map(s => s.trim());
+      const assigned = assignedStr.split(',').map(s => s.trim().toLowerCase()).filter(s => s);
       const listEl = document.getElementById('uLocationsList');
+
       if (!db.rawLocations || db.rawLocations.length === 0) {
           listEl.innerHTML = '<small class="text-muted">No locations exist yet.</small>';
           return;
       }
-      listEl.innerHTML = db.rawLocations.map(l => {
-          const isChecked = assigned.includes(l.locationName) ? 'checked' : '';
+
+      let groups = new Set();
+      db.rawLocations.forEach(l => {
+          if (l.lbacGroups) l.lbacGroups.split(',').forEach(g => { if(g.trim()) groups.add(g.trim()); });
+      });
+
+      let html = '<div class="text-muted small mb-2" style="font-size:0.75rem;">Check groups or specific locations to grant access.</div>';
+
+      if (groups.size > 0) {
+          html += '<div class="fw-bold small text-dark mb-1 border-bottom border-secondary pb-1 mt-2">Location Groups</div>';
+          Array.from(groups).sort().forEach(g => {
+              const isChecked = assigned.includes(g.toLowerCase()) ? 'checked' : '';
+              const safeVal = g.replace(/"/g, '&quot;');
+              html += `
+                <div class="form-check py-1">
+                  <input class="form-check-input u-loc-check" type="checkbox" value="${safeVal}" id="uloc_g_${safeVal}" ${isChecked}>
+                  <label class="form-check-label small fw-bold text-primary" for="uloc_g_${safeVal}">Group: ${g}</label>
+                </div>`;
+          });
+      }
+
+      html += '<div class="fw-bold small text-dark mb-1 border-bottom border-secondary pb-1 mt-3">Individual Locations</div>';
+      db.rawLocations.sort((a,b) => a.locationName.localeCompare(b.locationName)).forEach(l => {
+          const isChecked = assigned.includes(l.locationName.toLowerCase()) ? 'checked' : '';
           const safeName = l.locationName.replace(/"/g, '&quot;');
-          return `
-            <div class="form-check border-bottom py-1">
-              <input class="form-check-input u-loc-check" type="checkbox" value="${safeName}" id="uloc_${safeName}" ${isChecked}>
-              <label class="form-check-label small fw-bold" for="uloc_${safeName}">${l.locationName}</label>
-            </div>
-          `;
-      }).join('');
+          const badge = l.lbacGroups ? `<span class="badge bg-light text-secondary border ms-1" style="font-size:0.6rem">${l.lbacGroups}</span>` : '';
+          html += `
+            <div class="form-check py-1">
+              <input class="form-check-input u-loc-check" type="checkbox" value="${safeName}" id="uloc_l_${safeName}" ${isChecked}>
+              <label class="form-check-label small fw-bold" for="uloc_l_${safeName}">${l.locationName} ${badge}</label>
+            </div>`;
+      });
+      
+      listEl.innerHTML = html;
   }
 
   function fmtTime(ts) {
@@ -1226,9 +1254,18 @@
           currentUserLocations = (currentUser.locations || "").split(',').map(s => s.trim()).filter(s => s);
       }
 
+      // NEW: THE MAGIC LBAC FILTER (Now supports Groups!)
       if (!['Admin', 'Sub-Admin'].includes(currentUserRole)) {
           if (currentUserLocations.length > 0) {
-              db.locations = db.locations.filter(l => currentUserLocations.includes(l.locationName));
+              const assignedLower = currentUserLocations.map(s => s.toLowerCase());
+              db.locations = db.locations.filter(l => {
+                  if (assignedLower.includes(l.locationName.toLowerCase())) return true;
+                  if (l.lbacGroups) {
+                      const locGroups = l.lbacGroups.split(',').map(g => g.trim().toLowerCase());
+                      if (locGroups.some(g => assignedLower.includes(g))) return true;
+                  }
+                  return false;
+              });
           } else {
               db.locations = []; 
           }
@@ -1305,12 +1342,20 @@ async function fetchData(callback) {
         currentUserLocations = []; 
       }
 
-      // NEW: THE MAGIC LBAC FILTER
+      // NEW: THE MAGIC LBAC FILTER (Now supports Groups!)
       if (!['Admin', 'Sub-Admin'].includes(currentUserRole)) {
           if (currentUserLocations.length > 0) {
-              db.locations = db.locations.filter(l => currentUserLocations.includes(l.locationName));
+              const assignedLower = currentUserLocations.map(s => s.toLowerCase());
+              db.locations = db.locations.filter(l => {
+                  if (assignedLower.includes(l.locationName.toLowerCase())) return true;
+                  if (l.lbacGroups) {
+                      const locGroups = l.lbacGroups.split(',').map(g => g.trim().toLowerCase());
+                      if (locGroups.some(g => assignedLower.includes(g))) return true;
+                  }
+                  return false;
+              });
           } else {
-              db.locations = []; // User is restricted but assigned to no locations. Show nothing!
+              db.locations = []; 
           }
       }
 
@@ -2019,6 +2064,7 @@ async function fetchData(callback) {
     document.getElementById('mLtype').value = loc.type;
     document.getElementById('mDeployType').value = loc.deployType || "Physical Space";
     document.getElementById('mDeployLoc').value = loc.deployLoc || "";
+    document.getElementById('mLocGroups').value = loc.lbacGroups || ""; 
     document.getElementById('mLDesc').value = loc.description || "";
     document.getElementById('mLImg').value = loc.img || "";
     document.getElementById('mLNotes').value = loc.notes || "";
@@ -2050,6 +2096,7 @@ async function fetchData(callback) {
     document.getElementById('mLtype').value = "";
     document.getElementById('mDeployType').value = "Physical Space";
     document.getElementById('mDeployLoc').value = "";
+    document.getElementById('mLocGroups').value = ""; 
     document.getElementById('mLDesc').value = "";
     document.getElementById('mLImg').value = "";
     document.getElementById('mLImgFile').value = "";
@@ -3070,6 +3117,7 @@ async function fetchData(callback) {
           type: document.getElementById('mLtype').value,
           deployType: document.getElementById('mDeployType').value,
           deployLoc: document.getElementById('mDeployLoc').value,
+          lbacGroups: document.getElementById('mLocGroups').value, 
           description: document.getElementById('mLDesc').value,
           img: document.getElementById('mLImg').value,
           notes: document.getElementById('mLNotes').value
