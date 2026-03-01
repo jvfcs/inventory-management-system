@@ -684,10 +684,16 @@
             <select id="uRole" class="form-select mb-2" onchange="updateRoleDescription()">
               <option value="" disabled selected>Select Access Role</option>
               <option value="Admin">Admin</option>
-              <option value="Manager">Manager</option>
-              <option value="Operator">Operator</option>
-              <option value="Viewer">Viewer</option>
+              <option value="Sub-Admin">Sub-Admin (Global)</option>
+              <option value="Manager">Manager (Restricted)</option>
+              <option value="Operator">Operator (Restricted)</option>
+              <option value="Viewer">Viewer (Restricted)</option>
             </select>
+            
+            <div id="uLocationsContainer" class="hidden mb-3 border rounded p-2 bg-light">
+               <label class="fw-bold small mb-1 text-primary">Assign Locations (LBAC)</label>
+               <div id="uLocationsList" style="max-height: 150px; overflow-y: auto;"></div>
+            </div>
             
             <div id="roleDesc" class="small text-muted mb-3 p-2 bg-light rounded border border-light hidden"></div>
             
@@ -897,6 +903,7 @@
   
   let currentUserEmail = "You"; 
   let currentUserRole = "Viewer"; 
+  let currentUserLocations = []; // NEW: Stores user's allowed locations
   let isSyncing = false;
 
   // NEW: Template Variables
@@ -914,21 +921,52 @@
   }
 
   const roleDescriptions = {
-      'Admin': 'Full system access, including User Access management.',
-      'Manager': 'Can manage Items, Locations, and view Logs. Cannot manage Users.',
-      'Operator': 'Can Check-In, Check-Out, and Move inventory. No access to the Management dashboard.',
-      'Viewer': 'Read-only access to view inventory and locations.'
+      'Admin': 'Full system access, including User Access and Theme management.',
+      'Sub-Admin': 'Global access to manage all Items, Locations, and view Logs. Cannot manage Users or Theme.',
+      'Manager': 'Can manage Items, Locations, and Audits, but ONLY for their assigned locations.',
+      'Operator': 'Can Check-In, Check-Out, and Move inventory, but ONLY for their assigned locations.',
+      'Viewer': 'Read-only access to view inventory levels ONLY for their assigned locations.'
   };
 
   function updateRoleDescription() {
       const val = document.getElementById('uRole').value;
       const descEl = document.getElementById('roleDesc');
+      const locCont = document.getElementById('uLocationsContainer'); // NEW
+      
       if(val && roleDescriptions[val]) {
           descEl.innerText = roleDescriptions[val];
           descEl.classList.remove('hidden');
       } else {
           descEl.classList.add('hidden');
       }
+      
+      // NEW: Show location checklist only for Restricted Roles
+      if (val === 'Manager' || val === 'Operator' || val === 'Viewer') {
+          renderLocationChecklist();
+          locCont.classList.remove('hidden');
+      } else {
+          locCont.classList.add('hidden');
+      }
+  }
+
+  // NEW: Renders the Location Checkboxes dynamically
+  function renderLocationChecklist(assignedStr = "") {
+      const assigned = assignedStr.split(',').map(s => s.trim());
+      const listEl = document.getElementById('uLocationsList');
+      if (!db.rawLocations || db.rawLocations.length === 0) {
+          listEl.innerHTML = '<small class="text-muted">No locations exist yet.</small>';
+          return;
+      }
+      listEl.innerHTML = db.rawLocations.map(l => {
+          const isChecked = assigned.includes(l.locationName) ? 'checked' : '';
+          const safeName = l.locationName.replace(/"/g, '&quot;');
+          return `
+            <div class="form-check border-bottom py-1">
+              <input class="form-check-input u-loc-check" type="checkbox" value="${safeName}" id="uloc_${safeName}" ${isChecked}>
+              <label class="form-check-label small fw-bold" for="uloc_${safeName}">${l.locationName}</label>
+            </div>
+          `;
+      }).join('');
   }
 
   function fmtTime(ts) {
@@ -1131,7 +1169,8 @@
   function applyRolePermissions() {
       const isMgmtActive = !document.getElementById('viewManagement').classList.contains('hidden');
       
-      if (currentUserRole === 'Admin' || currentUserRole === 'Manager') {
+      // UPDATED: Added Sub-Admin to the management view logic
+      if (currentUserRole === 'Admin' || currentUserRole === 'Sub-Admin' || currentUserRole === 'Manager') {
           document.getElementById('btnNavManagement').classList.toggle('d-none', isMgmtActive);
           
           document.getElementById('btnEditLocInner').classList.remove('hidden');
@@ -1234,12 +1273,25 @@ async function fetchData(callback) {
       const data = await apiCall('getInitialData');
       
       db = data; 
+      db.rawLocations = [...data.locations]; // NEW: Saves raw list for the Admin checklist UI
+
       const currentUser = data.users.find(u => u.email.toLowerCase() === localStorage.getItem('ims_user_email').toLowerCase());
       if (currentUser) {
         currentUserEmail = currentUser.email;
         currentUserRole = currentUser.role;
+        currentUserLocations = (currentUser.locations || "").split(',').map(s => s.trim()).filter(s => s); // NEW
       } else {
         currentUserRole = 'Admin'; 
+        currentUserLocations = []; 
+      }
+
+      // NEW: THE MAGIC LBAC FILTER
+      if (!['Admin', 'Sub-Admin'].includes(currentUserRole)) {
+          if (currentUserLocations.length > 0) {
+              db.locations = db.locations.filter(l => currentUserLocations.includes(l.locationName));
+          } else {
+              db.locations = []; // User is restricted but assigned to no locations. Show nothing!
+          }
       }
 
       if (db.template) applyTemplateVars(db.template);
@@ -2000,6 +2052,9 @@ async function fetchData(callback) {
     document.getElementById('uEmail').value = u.email;
     document.getElementById('uEmail').disabled = true;
     document.getElementById('uRole').value = u.role;
+    
+    // NEW: Load existing locations into checklist
+    renderLocationChecklist(u.locations || "");
     updateRoleDescription();
     
     const btn = document.getElementById('btnSaveUser');
@@ -2015,6 +2070,9 @@ async function fetchData(callback) {
     document.getElementById('uEmail').value = "";
     document.getElementById('uEmail').disabled = false;
     document.getElementById('uRole').value = "";
+    
+    // NEW: Clear checklist
+    renderLocationChecklist("");
     updateRoleDescription();
     
     const btn = document.getElementById('btnSaveUser');
@@ -3032,10 +3090,18 @@ async function fetchData(callback) {
       btn.disabled = true;
       btn.innerText = "Processing Data...";
 
+      // NEW: Gather selected locations
+      const role = document.getElementById('uRole').value;
+      let locs = [];
+      if (role === 'Manager' || role === 'Operator' || role === 'Viewer') {
+          document.querySelectorAll('.u-loc-check:checked').forEach(cb => locs.push(cb.value));
+      }
+
       let payload = {
           name: document.getElementById('uName').value,
           email: document.getElementById('uEmail').value,
-          role: document.getElementById('uRole').value,
+          role: role,
+          locations: locs.join(','), // NEW: Attach LBAC string
           mode: mode
       };
       
