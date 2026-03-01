@@ -3222,34 +3222,40 @@ async function fetchData(callback) {
       const appName = t.appTitle || "Inventory Management System";
       const contact = t.adminContact || "your system administrator";
 
+      // Replaced 'text-dark' with 'text-primary' so it inherits your Theme Color
       const legalHtml = `
-        <h6 class="fw-bold text-dark">1. Introduction</h6>
-        <p>This Privacy Policy and Terms of Service govern the use of the ${appName} ("The Application"). By logging in and utilizing this system, you agree to the terms outlined below.</p>
+        <h6 class="fw-bold text-primary">1. Introduction & Acceptance</h6>
+        <p>This Privacy Policy and Terms of Service govern the use of the ${appName} ("The Application"). By accessing, authenticating, or utilizing this system, you ("The User") agree to be bound by these terms in full. If you do not agree to these terms, you must exit The Application immediately.</p>
 
-        <h6 class="fw-bold text-dark mt-4">2. Intellectual Property & Ownership</h6>
-        <p>The Application was independently developed by ${dev} on personal time and utilizes open-source UI frameworks (GitHub Pages) and Google Workspace APIs (Apps Script, Sheets, Drive). While the data processed within The Application is the property of ${company}, the underlying architecture, logic, and codebase of The Application remain the intellectual property of ${dev} unless otherwise stipulated in a formal written agreement.</p>
+        <h6 class="fw-bold text-primary mt-4">2. Intellectual Property & Ownership</h6>
+        <p>The Application was independently architected, engineered, and developed by ${dev} on personal time. It utilizes open-source UI frameworks (GitHub Pages) and Google Workspace APIs (Apps Script, Sheets, Drive). While the inventory data processed within The Application is the exclusive property of ${company}, the underlying architecture, logic, source code, and design patterns of The Application remain the sole intellectual property of ${dev}, unless otherwise stipulated in a formally executed written agreement.</p>
 
-        <h6 class="fw-bold text-dark mt-4">3. Data Collection & Privacy (CCPA Compliance)</h6>
-        <p>In compliance with the California Consumer Privacy Act (CCPA) and applicable Arizona state laws, we are transparent about the data we collect:</p>
+        <h6 class="fw-bold text-primary mt-4">3. Data Collection, Privacy & CCPA Compliance</h6>
+        <p>In compliance with the California Consumer Privacy Act (CCPA) and applicable Arizona state laws, we disclose the following regarding data collection:</p>
         <ul>
-          <li><strong>Identity Data:</strong> We collect your email address and basic profile information exclusively via Google Workspace OAuth for the purpose of authentication and role-based access control.</li>
-          <li><strong>Activity Data:</strong> All actions taken within the system (checking items in/out, moving assets, auditing) are permanently logged alongside your email address and a timestamp to maintain a secure chain of custody.</li>
-          <li><strong>Third-Party Sharing:</strong> Zero data is sold to, or shared with, external third parties. All data is securely stored within ${company}'s highly restricted Google Drive and Google Sheets environment.</li>
+          <li><strong>Identity Data:</strong> We collect your email address and basic profile information exclusively via secure Google Workspace OAuth for authentication and role-based access control.</li>
+          <li><strong>Activity Data:</strong> All interactions (e.g., checking items in/out, moving assets, adjusting stock) are permanently logged alongside your email address and a timestamp to maintain a secure chain of custody.</li>
+          <li><strong>Third-Party Sharing:</strong> Zero user or inventory data is sold, monetized, or shared with external third parties. All data is strictly contained within ${company}'s highly restricted Google Drive and Google Sheets infrastructure.</li>
         </ul>
 
-        <h6 class="fw-bold text-dark mt-4">4. System Security & Access</h6>
-        <p>Access to the backend infrastructure (Database and Codebase) is strictly restricted to the Application Administrator(${contact}). Standard users interface solely with the front-end UI. You are responsible for maintaining the security of your Google account credentials.</p>
+        <h6 class="fw-bold text-primary mt-4">4. System Security & Acceptable Use</h6>
+        <p>Access to the backend infrastructure is strictly restricted. You agree to interface with The Application solely through the provided front-end User Interface. You agree not to reverse engineer, scrape, bypass security protocols, or intentionally disrupt the API. You are solely responsible for maintaining the security of your Google account credentials.</p>
 
-        <h6 class="fw-bold text-dark mt-4">5. "As-Is" Provision</h6>
-        <p>The Application is provided "as is" and "as available" without any warranties of any kind, either express or implied, including but not limited to the implied warranties of merchantability or fitness for a particular purpose.</p>
+        <h6 class="fw-bold text-primary mt-4">5. Disclaimer of Warranties ("As-Is" Provision)</h6>
+        <p>The Application is provided strictly "AS IS" and "AS AVAILABLE" without any warranties of any kind, whether express, implied, or statutory. ${dev} expressly disclaims any implied warranties of merchantability, fitness for a particular purpose, non-infringement, or guarantee of continuous, error-free operation.</p>
 
-        <h6 class="fw-bold text-dark mt-4">6. Contact & Data Deletion Requests</h6>
-        <p>If you wish to request a record of your data, or request the deletion of your user profile from the system in accordance with California Privacy Rights, please contact: <strong>${contact}</strong>.</p>
+        <h6 class="fw-bold text-primary mt-4">6. Limitation of Liability & Indemnification</h6>
+        <p>Under no circumstances shall ${dev} be held liable for any direct, indirect, incidental, consequential, or special damages arising out of or in connection with your use of The Application. This includes, but is not limited to, data loss, inventory discrepancies, business interruption, or financial loss. By using this system, ${company} and its authorized users agree to indemnify and hold harmless ${dev} from any claims, damages, or liabilities resulting from its use.</p>
+
+        <h6 class="fw-bold text-primary mt-4">7. Modifications & Governing Law</h6>
+        <p>These terms may be updated at any time. Continued use of The Application implies ongoing consent to any revisions. These terms shall be governed by and construed in accordance with the laws of the State of California and the State of Arizona, without regard to conflict of law principles.</p>
+
+        <h6 class="fw-bold text-primary mt-4">8. Contact & Data Privacy Requests</h6>
+        <p>If you wish to request a record of your data, report a vulnerability, or request the deletion of your user profile in accordance with state privacy rights, please contact: <strong>${contact}</strong>.</p>
       `;
 
       document.getElementById('legalModalBody').innerHTML = legalHtml;
       
-      // Use Bootstrap's native modal trigger
       const legalModal = new bootstrap.Modal(document.getElementById('legalModal'));
       legalModal.show();
   }
