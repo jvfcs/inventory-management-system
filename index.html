@@ -1590,14 +1590,23 @@ async function fetchData(callback) {
         }
       }
     });
+
     document.getElementById('bodyItems').innerHTML = db.items.map(i => {
       const total = getStockBalance(i.barcode);
       const criticalClass = (total <= Number(i.minStock) && i.status === 'Active') ? 'stock-critical' : '';
-      const serialBadge = i.serialized === 'Yes' ? `<span class="badge bg-dark ms-2" style="font-size:0.6rem">SERIALIZED</span>` : '';
+      const serialBadge = i.serialized === 'Yes' ? '<span class="badge bg-dark ms-2" style="font-size:0.6rem">SERIALIZED</span>' : '';
+      
+      const descHtml = i.description ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Desc:</strong> ' + i.description + '</div>' : '';
+      const notesHtml = i.notes ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Notes:</strong> ' + i.notes + '</div>' : '';
+      
       return `
       <tr class="${i.status === 'Inactive' ? 'table-secondary text-muted' : ''} ${criticalClass}" onclick="editItem('${i.barcode}')" style="cursor: pointer;">
         <td><small>${i.barcode}</small></td>
-        <td><strong>${i.make}</strong> ${i.model} ${serialBadge}</td>
+        <td>
+          <div><strong>${i.make}</strong> ${i.model} ${serialBadge}</div>
+          ${descHtml}
+          ${notesHtml}
+        </td>
         <td><strong>${total}</strong></td>
         <td class="centered-col text-nowrap">
           <button class="btn btn-sm ${i.status === 'Active' ? 'btn-outline-danger' : 'btn-outline-success'}" onclick="event.stopPropagation(); toggleStatusI('${i.barcode}', '${i.status}')">
@@ -1606,21 +1615,31 @@ async function fetchData(callback) {
         </td>
       </tr>`;
     }).join('');    
+
     document.getElementById('bodyLocs').innerHTML = db.locations.map(l => {
       const sCount = spotCounts[l.locationName] ? spotCounts[l.locationName].size : 0;
-      const spotBtnText = sCount > 0 ? `Spots (${sCount})` : `Spots (0)`;      
+      const spotBtnText = sCount > 0 ? `Spots (${sCount})` : 'Spots (0)';      
+      
+      const descHtml = l.description ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Desc:</strong> ' + l.description + '</div>' : '';
+      const notesHtml = l.notes ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Notes:</strong> ' + l.notes + '</div>' : '';
+      
       return `
-      <tr class="${l.status === 'Inactive' ? 'table-secondary text-muted' : ''}" onclick="editLoc('${l.locationName}')" style="cursor: pointer;">
+      <tr class="${l.status === 'Inactive' ? 'table-secondary text-muted' : ''}" onclick="editLoc('${l.locationName.replace(/'/g, "\\'")}')" style="cursor: pointer;">
         <td><span class="badge bg-secondary">${l.type}</span></td>
-        <td>${l.locationName}</td>
+        <td>
+          <div class="fw-bold">${l.locationName}</div>
+          ${descHtml}
+          ${notesHtml}
+        </td>
         <td class="centered-col text-nowrap">
-          <button class="btn btn-sm btn-outline-info me-1" onclick="event.stopPropagation(); openSpotManager('${l.locationName}')">${spotBtnText}</button>
-          <button class="btn btn-sm ${l.status === 'Active' ? 'btn-outline-danger' : 'btn-outline-success'}" onclick="event.stopPropagation(); toggleStatusL('${l.locationName}', '${l.type}', '${l.status}')">
+          <button class="btn btn-sm btn-outline-info me-1" onclick="event.stopPropagation(); openSpotManager('${l.locationName.replace(/'/g, "\\'")}')">${spotBtnText}</button>
+          <button class="btn btn-sm ${l.status === 'Active' ? 'btn-outline-danger' : 'btn-outline-success'}" onclick="event.stopPropagation(); toggleStatusL('${l.locationName.replace(/'/g, "\\'")}', '${l.type.replace(/'/g, "\\'")}', '${l.status}')">
             ${l.status === 'Active' ? 'Disable' : 'Enable'}
           </button>
         </td>
       </tr>`;
     }).join('');
+
     let groupMap = {};
     if (db.rawLocations) {
         db.rawLocations.forEach(l => {
@@ -1635,6 +1654,7 @@ async function fetchData(callback) {
             }
         });
     }
+
     const summaryContainer = document.getElementById('locGroupsSummaryCards');
     if (summaryContainer) {
         const groupKeys = Object.keys(groupMap).sort();
@@ -1653,7 +1673,9 @@ async function fetchData(callback) {
             `).join('');
         }
     }
+
     if (document.getElementById('locFormTitle').innerText === "Add New Location") renderLocGroupsUI("");      
+
     if (db.users && db.users.length > 0) {
         document.getElementById('bodyUsers').innerHTML = db.users.map(u => `
           <tr class="${u.status === 'Inactive' ? 'table-secondary text-muted' : ''}" onclick="editUser('${u.email}')" style="cursor: pointer;">
