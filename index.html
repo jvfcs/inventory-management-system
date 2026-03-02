@@ -2899,6 +2899,12 @@ async function fetchData(callback) {
           alert("Error: Barcode is a required field.");
           return;
       }
+      
+      if (mode === 'add') {
+          const isDuplicate = db.items.some(i => i.barcode.toLowerCase() === barcodeVal.toLowerCase());
+          if (isDuplicate) return alert("An item with this barcode already exists in the catalog.");
+      }
+
       if (mode === 'edit' && window.editingBc && window.editingBc !== barcodeVal) {
           const stock = getStockBalance(window.editingBc);
           if (stock > 0) {
