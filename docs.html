@@ -80,7 +80,7 @@
       display: flex;
       flex-direction: column;
       transition: transform 0.3s ease, background-color 0.3s, border-color 0.3s;
-    }    
+    }   
     .sidebar-header {
       padding: 2rem 1.5rem 0 1.5rem;
       flex-shrink: 0;
@@ -130,7 +130,7 @@
     }
     .sidebar-nav-wrapper::-webkit-scrollbar {
       display: none;
-    }    
+    }   
     .sidebar-nav a {
       display: block;
       color: var(--text-muted);
@@ -424,7 +424,7 @@
       background-color: var(--sidebar-bg) !important; 
       color: var(--accent) !important; 
       border-color: var(--border-color) var(--border-color) var(--sidebar-bg) !important; 
-    }    
+    }   
     .list-group-item {
       background-color: var(--list-bg);
       border-color: var(--border-color);
@@ -665,9 +665,9 @@
         </div>
         <p>IMS utilizes strict role-based access control to ensure users only see what they need to see.</p>
         
-        <ul class="list-group list-group-flush mb-3">
-          <li class="list-group-item"><strong>Admin:</strong> Full system access. Can edit users, change system themes, view all logs, and manage all inventory. <em>Note: Only full Admins can modify Barcodes or assign new Admin/Sub-Admin accounts. To prevent lockouts, Admins cannot demote or disable other existing Admin accounts (they can only update their display names).</em></li>
-          <li class="list-group-item"><strong>Sub-Admin:</strong> Global access to manage all inventory, locations, view logs, and manage non-admin Users. Cannot manage System Theme, and cannot create, edit, or disable Admin or Sub-Admin accounts.</li>
+        <ul class="list-group list-group-flush mb-3">
+          <li class="list-group-item"><strong>Admin:</strong> Full system access. Can edit users, change system themes, view all logs, and manage all inventory. <em>Note: Only full Admins can modify Barcodes or assign new Admin/Sub-Admin accounts. To prevent lockouts, Admins cannot demote or disable other existing Admin accounts (they can only update their display names).</em></li>
+          <li class="list-group-item"><strong>Sub-Admin:</strong> Global access to manage all inventory, locations, view logs, and manage non-admin Users. Cannot manage System Theme, and cannot create, edit, or disable Admin or Sub-Admin accounts.</li>
           <li class="list-group-item"><strong>Manager:</strong> <span class="badge-role">Restricted</span> Can manage inventory and perform audits, but <strong>only</strong> for their assigned locations. Cannot manage Users or System Theme.</li>
           <li class="list-group-item"><strong>Operator:</strong> <span class="badge-role">Restricted</span> Can check-in, check-out, and move items, and perform audits. Cannot access the Management dashboard. Restricted to assigned locations.</li>
           <li class="list-group-item"><strong>Viewer:</strong> <span class="badge-role">Restricted</span> Read-only access to view stock levels for their assigned locations. Cannot perform any transactions.</li>
@@ -761,16 +761,17 @@
       <section id="manage-items" class="doc-section">
         <h2>Management: Items (Catalog)</h2>
         <p><i>Access: Admin, Sub-Admin, Manager</i></p>
-       <p>The Items tab is where you define the catalog of equipment your company owns. In the data tables, <strong>click the column headers (blue underlined text)</strong> to instantly sort the database.</p>
-        <ul>
-          <li><strong>Barcode (Required):</strong> The most important field. Must be completely unique (e.g., a UPC code or internal SKU).<br>
-            <div class="mt-2 p-2 rounded" style="background: rgba(99, 102, 241, 0.05); border-left: 3px solid var(--accent);">
-              <span class="small fw-bold" style="color: var(--accent);">Admin Override & Database Cascade:</span><br>
-              <span class="text-muted small">By default, once an item is created, the barcode is permanently locked to preserve database integrity. However, <strong>Admins</strong> have the exclusive ability to edit existing barcodes. If an Admin changes a barcode, the backend engine automatically cascades this change throughout the entire database, updating all historical transaction logs to match the new barcode so no historical data is orphaned.</span><br>
-              
-            </div>
-          </li>
-          <li><strong>Make &amp; Model:</strong> The manufacturer (e.g., Sony) and the product name (e.g., FX6 Camera).</li>
+        <p>The Items tab is where you define the catalog of equipment your company owns. In the data tables, <strong>click the column headers (blue underlined text)</strong> to instantly sort the database.</p>
+        <ul>
+          <li>
+            <strong>Barcode (Required):</strong> The most important field. Must be completely unique (e.g., a UPC code or internal SKU).
+            <div class="mt-2 p-2 rounded" style="background: rgba(99, 102, 241, 0.05); border-left: 3px solid var(--accent);">
+              <span class="small fw-bold" style="color: var(--accent);">Admin Override & Database Cascade:</span><br>
+              <span class="text-muted small">By default, once an item is created, the barcode is permanently locked to preserve database integrity. However, <strong>Admins</strong> have the exclusive ability to edit existing barcodes. If an Admin changes a barcode, the backend engine automatically cascades this change throughout the entire database, updating all historical transaction logs to match the new barcode so no historical data is orphaned.</span>
+              <br>
+            </div>
+          </li>
+          <li><strong>Make &amp; Model:</strong> The manufacturer (e.g., Sony) and the product name (e.g., FX6 Camera).</li>
           <li><strong>Category:</strong> A high-level grouping used for filtering (e.g., CCTV, Cable, Accessories).</li>
           <li><strong>Tracking Type:</strong> Choose between "Bulk Quantity" (just count numbers) or "Individual Serials" (track exact units). <i>Note: Do not change this after stock has been added, or your history will break!</i></li>
           <li><strong>Description:</strong> A brief overview of what the item is. This is globally searchable!</li>
@@ -811,15 +812,15 @@
         <p>If you need to look further back in time, simply scroll to the bottom and click the blue <strong>Load More Activities</strong> button to pull the next 20 records into the view.</p>
       </section>
       <section id="manage-users" class="doc-section">
-        <h2>Management: Users</h2>
-        <p><i>Access: Admin & Sub-Admin</i></p>
-        <p>The Users tab controls who can log in. If an email is not in this list, they will hit an "Access Denied" screen.</p>
-        <p><img src="docs/screenshot-users.png" class="doc-screenshot" alt="Documentation Image"></p>
-        <div class="callout border-info mb-4">
-          <strong class="text-info">Security Hierarchy Enforcement</strong><br>
-          <span class="text-muted small">While Sub-Admins have access to this tab to manage Managers, Operators, and Viewers, they are strictly prohibited by the API from creating new Admins/Sub-Admins, or modifying/disabling existing Admins/Sub-Admins. Only a full Admin can manage protected top-level roles. Furthermore, Admins cannot accidentally or maliciously demote or disable other Admins.</span>
-        </div>
-        <ul>
+        <h2>Management: Users</h2>
+        <p><i>Access: Admin & Sub-Admin</i></p>
+        <p>The Users tab controls who can log in. If an email is not in this list, they will hit an "Access Denied" screen.</p>
+        <p><img src="docs/screenshot-users.png" class="doc-screenshot" alt="Documentation Image"></p>
+        <div class="callout border-info mb-4">
+          <strong class="text-info">Security Hierarchy Enforcement</strong><br>
+          <span class="text-muted small">While Sub-Admins have access to this tab to manage Managers, Operators, and Viewers, they are strictly prohibited by the API from creating new Admins/Sub-Admins, or modifying/disabling existing Admins/Sub-Admins. Only a full Admin can manage protected top-level roles. Furthermore, Admins cannot accidentally or maliciously demote or disable other Admins.</span>
+        </div>
+        <ul>
           <li><strong>Full Name (Optional):</strong> By default, the system tries to guess a user's display name from their email address (e.g., <code>john.doe@company.com</code> becomes "John Doe"). If their email is weird (e.g., <code>admin123@company.com</code>), you can type their actual name here to override the system guess!</li>
           <li><strong>Email Address:</strong> Their exact Google login email.</li>
           <li><strong>Role:</strong> See the "Roles &amp; Permissions" section for details on access levels.</li>
@@ -1027,13 +1028,13 @@ git push -u origin main</code></pre>
           <span class="text-muted small">The backend API specifically looks for tabs named "Items", "Locations", "Users", etc., and searches for specific column headers. You can <i>resize</i> columns, and you can add new rows, but renaming a tab or deleting the "Barcode" header will instantly crash the app.</span>
         </div>
         <div class="callout border-warning">
-          <strong class="text-warning">2. Do not change an item's Tracking Type after it has stock.</strong><br>
-          <span class="text-muted small">If you create an item as "Bulk Quantity", log 50 of them into a location, and then later edit the item to be "Individual Serials", the app will be completely confused because those 50 items don't have serial numbers attached to them. If you must change tracking types, audit the item down to 0 stock first.</span>
-        </div>
-        <div class="callout border-warning">
-          <strong class="text-warning">3. Never change Barcodes directly in the Google Sheet.</strong><br>
-          <span class="text-muted small">Always use the IMS web interface (as an Admin) to edit a barcode. The web interface triggers a script that safely updates all associated transaction logs. If you manually type over a barcode directly in the Google Sheet's "Items" tab, you will permanently sever its connection to its history in the "Logs" tab.</span>
-        </div>
+          <strong class="text-warning">2. Do not change an item's Tracking Type after it has stock.</strong><br>
+          <span class="text-muted small">If you create an item as "Bulk Quantity", log 50 of them into a location, and then later edit the item to be "Individual Serials", the app will be completely confused because those 50 items don't have serial numbers attached to them. If you must change tracking types, audit the item down to 0 stock first.</span>
+        </div>
+        <div class="callout border-warning">
+          <strong class="text-warning">3. Never change Barcodes directly in the Google Sheet.</strong><br>
+          <span class="text-muted small">Always use the IMS web interface (as an Admin) to edit a barcode. The web interface triggers a script that safely updates all associated transaction logs. If you manually type over a barcode directly in the Google Sheet's "Items" tab, you will permanently sever its connection to its history in the "Logs" tab.</span>
+        </div>
         <div class="callout border-warning">
           <strong class="text-warning">4. If you edit the Apps Script, you MUST create a New Deployment.</strong><br>
           <span class="text-muted small">If you ever open the <code>Code.gs</code> file to edit the backend code, simply clicking the "Save" icon is not enough. Google caches the API. You must click <strong>Deploy &gt; Manage Deployments &gt; Edit (Pencil Icon) &gt; New Version &gt; Deploy</strong> for your code changes to actually go live.</span>
@@ -1406,7 +1407,7 @@ git push -u origin main</code></pre>
     const sections = document.querySelectorAll('.doc-section');
     const contentArea = document.getElementById('docContent');    
     if (isEditingDocs) {
-      clearDocHighlights();       
+      clearDocHighlights();        
       sections.forEach(sec => {
         sec.setAttribute('contenteditable', 'true');
         sec.classList.add('editing-active');
