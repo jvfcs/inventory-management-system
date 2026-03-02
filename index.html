@@ -723,7 +723,7 @@
             <div class="mt-4 p-3 bg-light rounded border small text-muted">
               <h6 class="fw-bold mb-2">Role Permissions</h6>
               <strong>Admin:</strong> Full system access, including User Access and Theme management.<br>
-              <strong>Sub-Admin:</strong> Global access to manage all Items, Locations, and view Logs. Cannot manage Users or Theme.<br>
+              <strong>Sub-Admin:</strong> Global access to manage all Items, Locations, view Logs, and manage non-admin Users. Cannot manage Theme.<br>
               <strong>Manager:</strong> Can manage Items, Locations, and Audits, but ONLY for their assigned locations. Cannot manage Users or Theme.<br>
               <strong>Operator:</strong> Can Check-In, Check-Out, and Move inventory, but ONLY for their assigned locations. No access to management tab.<br>
               <strong>Viewer:</strong> Read-only access to view inventory levels ONLY for their assigned locations. No access to management tab.
@@ -916,11 +916,11 @@
       : 'https://dummyimage.com/400x400/f8f9fa/adb5bd.png&text=No+Image';
   }
   const roleDescriptions = {
-      'Admin': 'Full system access, including User Access and Theme management.',
-      'Sub-Admin': 'Global access to manage all Items, Locations, and view Logs. Cannot manage Users or Theme.',
-      'Manager': 'Can manage Items, Locations, and Audits, but ONLY for their assigned locations.',
-      'Operator': 'Can Check-In, Check-Out, and Move inventory, but ONLY for their assigned locations.',
-      'Viewer': 'Read-only access to view inventory levels ONLY for their assigned locations.'
+      'Admin': 'Full system access, including User Access and Theme management.',
+      'Sub-Admin': 'Global access to manage all Items, Locations, view Logs, and manage non-admin Users. Cannot manage Theme.',
+      'Manager': 'Can manage Items, Locations, and Audits, but ONLY for their assigned locations. Cannot manage Users or Theme.',
+      'Operator': 'Can Check-In, Check-Out, and Move inventory, but ONLY for their assigned locations. No access to management tab.',
+      'Viewer': 'Read-only access to view inventory levels ONLY for their assigned locations. No access to management tab.'
   };
   function updateRoleDescription() {
       const val = document.getElementById('uRole').value;
@@ -1149,12 +1149,15 @@
           document.getElementById('btnAuditLocInner').classList.add('hidden');
       }
       if (currentUserRole === 'Admin') {
-          document.getElementById('tabUserAccess').classList.remove('d-none');
-          document.getElementById('tabTheme').classList.remove('d-none');
-      } else {
-          document.getElementById('tabUserAccess').classList.add('d-none');
-          document.getElementById('tabTheme').classList.add('d-none');
-      }      
+          document.getElementById('tabUserAccess').classList.remove('d-none');
+          document.getElementById('tabTheme').classList.remove('d-none');
+      } else if (currentUserRole === 'Sub-Admin') {
+          document.getElementById('tabUserAccess').classList.remove('d-none');
+          document.getElementById('tabTheme').classList.add('d-none');
+      } else {
+          document.getElementById('tabUserAccess').classList.add('d-none');
+          document.getElementById('tabTheme').classList.add('d-none');
+      }      
       if (currentUserRole === 'Viewer') {
           document.getElementById('inlineActionForm').classList.add('hidden');
       } else {
@@ -2024,30 +2027,36 @@ async function fetchData(callback) {
     document.getElementById('btnCancelEditLoc').classList.add('hidden');
   }  
   function editUser(email) {
-    const u = db.users.find(x => x.email === email);
-    if(!u) return;
-    document.getElementById('userFormTitle').innerText = "Edit User";
-    document.getElementById('uName').value = u.name || "";
-    document.getElementById('uEmail').value = u.email;
-    document.getElementById('uEmail').disabled = true;
-    document.getElementById('uRole').value = u.role;
-    renderLocationChecklist(u.locations || "");
-    updateRoleDescription();    
-    const btn = document.getElementById('btnSaveUser');
+    const u = db.users.find(x => x.email === email);
+    if(!u) return;
+    document.getElementById('userFormTitle').innerText = "Edit User";
+    document.getElementById('uName').value = u.name || "";
+    document.getElementById('uEmail').value = u.email;
+    document.getElementById('uEmail').disabled = true;
+    document.getElementById('uRole').value = u.role;
+    if ((currentUserRole === 'Sub-Admin' && (u.role === 'Admin' || u.role === 'Sub-Admin')) || (currentUserRole === 'Admin' && u.role === 'Admin')) {
+        document.getElementById('uRole').disabled = true;
+    } else {
+        document.getElementById('uRole').disabled = false;
+    }
+    renderLocationChecklist(u.locations || "");
+    updateRoleDescription();      
+    const btn = document.getElementById('btnSaveUser');
     btn.innerText = "Update User";
     btn.setAttribute('onclick', "saveOrUpdateUser('edit')");
     document.getElementById('btnCancelEditUser').classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }  
   function cancelEditUser() {
-    document.getElementById('userFormTitle').innerText = "Add New User";
-    document.getElementById('uName').value = "";
-    document.getElementById('uEmail').value = "";
-    document.getElementById('uEmail').disabled = false;
-    document.getElementById('uRole').value = "";
-    renderLocationChecklist("");
-    updateRoleDescription();    
-    const btn = document.getElementById('btnSaveUser');
+    document.getElementById('userFormTitle').innerText = "Add New User";
+    document.getElementById('uName').value = "";
+    document.getElementById('uEmail').value = "";
+    document.getElementById('uEmail').disabled = false;
+    document.getElementById('uRole').value = "";
+    document.getElementById('uRole').disabled = false;
+    renderLocationChecklist("");
+    updateRoleDescription();      
+    const btn = document.getElementById('btnSaveUser');
     btn.innerText = "Add User";
     btn.setAttribute('onclick', "saveOrUpdateUser('add')");
     document.getElementById('btnCancelEditUser').classList.add('hidden');
@@ -2858,9 +2867,14 @@ async function fetchData(callback) {
       } catch (err) { alert("Error: " + err.message); }
   }
   async function toggleStatusU(email, current) {
-      const next = current === 'Active' ? 'Inactive' : 'Active';
-      if (email.toLowerCase() === currentUserEmail.toLowerCase()) return alert("Safety Net: You cannot disable your own account.");
-      try {
+      const next = current === 'Active' ? 'Inactive' : 'Active';
+      if (email.toLowerCase() === currentUserEmail.toLowerCase()) return alert("Safety Net: You cannot disable your own account.");
+      const targetUser = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (targetUser) {
+          if (currentUserRole === 'Sub-Admin' && (targetUser.role === 'Admin' || targetUser.role === 'Sub-Admin')) return alert("Permission Denied: You cannot change the status of Admins or other Sub-Admins.");
+          if (currentUserRole === 'Admin' && targetUser.role === 'Admin') return alert("Permission Denied: Admins cannot change the status of other Admins.");
+      }
+      try {
           await apiCall('toggleUserStatus', { data: { email: email, newStatus: next } });
           fetchData();
       } catch (err) { alert("Error: " + err.message); }
@@ -2982,11 +2996,16 @@ async function fetchData(callback) {
           mode: mode
       };      
       if (!payload.email || !payload.role) {
-         alert("Please provide both an email and a role.");
-         btn.disabled = false; btn.innerText = originalText;
-         return;
-      }
-      try {
+         alert("Please provide both an email and a role.");
+         btn.disabled = false; btn.innerText = originalText;
+         return;
+      }
+      if (mode === 'add' && currentUserRole === 'Sub-Admin' && (payload.role === 'Admin' || payload.role === 'Sub-Admin')) {
+         alert("Permission Denied: Sub-Admins cannot create new Admin or Sub-Admin users.");
+         btn.disabled = false; btn.innerText = originalText;
+         return;
+      }
+      try {
           await apiCall('saveOrUpdateUser', { data: payload });
           await fetchData();
           cancelEditUser();
