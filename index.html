@@ -2958,6 +2958,12 @@ async function fetchData(callback) {
   async function saveOrUpdateLoc(mode) {
       const newLocName = document.getElementById('mLname').value.trim();
       if (!newLocName) return alert("Location Name is required.");
+      
+      if (mode === 'add') {
+          const isDuplicate = db.locations.some(l => l.locationName.toLowerCase() === newLocName.toLowerCase());
+          if (isDuplicate) return alert("A location with this exact name already exists. Please choose a different name.");
+      }
+
       if (mode === 'edit' && window.editingLocName && window.editingLocName !== newLocName) {
           let totalStock = 0;
           db.logs.forEach(l => {
