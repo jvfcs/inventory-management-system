@@ -1986,12 +1986,17 @@ async function fetchData(callback) {
     document.getElementById('mDeployLoc').classList.toggle('hidden', type !== 'Deployable');
   }
   function editLoc(name) {
-    const loc = db.locations.find(l => l.locationName === name);
-    if(!loc) return;    
-    document.getElementById('locFormTitle').innerText = "Edit Location: " + name;
-    document.getElementById('mLname').value = loc.locationName;
-    document.getElementById('mLname').disabled = true; 
-    document.getElementById('mLtype').value = loc.type;
+    const loc = db.locations.find(l => l.locationName === name);
+    if(!loc) return;    
+    document.getElementById('locFormTitle').innerText = "Edit Location: " + name;
+    document.getElementById('mLname').value = loc.locationName;
+    window.editingLocName = loc.locationName;
+    if (currentUserRole === 'Admin') {
+        document.getElementById('mLname').disabled = false;
+    } else {
+        document.getElementById('mLname').disabled = true;
+    }
+    document.getElementById('mLtype').value = loc.type;
     document.getElementById('mDeployType').value = loc.deployType || "Physical Space";
     document.getElementById('mDeployLoc').value = loc.deployLoc || "";
     renderLocGroupsUI(loc.lbacGroups || ""); 
@@ -2015,10 +2020,11 @@ async function fetchData(callback) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   function cancelEditLoc() {
-    document.getElementById('locFormTitle').innerText = "Add New Location";
-    document.getElementById('mLname').value = "";
-    document.getElementById('mLname').disabled = false;
-    document.getElementById('mLtype').value = "";
+    window.editingLocName = null;
+    document.getElementById('locFormTitle').innerText = "Add New Location";
+    document.getElementById('mLname').value = "";
+    document.getElementById('mLname').disabled = false;
+    document.getElementById('mLtype').value = "";
     document.getElementById('mDeployType').value = "Physical Space";
     document.getElementById('mDeployLoc').value = "";
     renderLocGroupsUI(""); 
@@ -2888,12 +2894,20 @@ async function fetchData(callback) {
       } catch (err) { alert("Error: " + err.message); }
   }
   async function saveOrUpdateItem(mode) {
-      const barcodeVal = document.getElementById('mBc').value.trim();
-      if (!barcodeVal) {
-          alert("Error: Barcode is a required field.");
-          return;
-      }
-      const btn = document.getElementById('btnSaveItem');
+      const barcodeVal = document.getElementById('mBc').value.trim();
+      if (!barcodeVal) {
+          alert("Error: Barcode is a required field.");
+          return;
+      }
+      if (mode === 'edit' && window.editingBc && window.editingBc !== barcodeVal) {
+          const stock = getStockBalance(window.editingBc);
+          if (stock > 0) {
+              if (!confirm(`WARNING: You are changing the barcode of an item with active stock (${stock} units).\n\nThis will permanently rewrite all historical transaction logs to use the new barcode.\n\nAre you 100% positive you want to proceed?`)) {
+                  return;
+              }
+          }
+      }
+      const btn = document.getElementById('btnSaveItem');
       const originalText = btn.innerText;
       btn.disabled = true;
       btn.innerText = "Processing Data...";
@@ -2942,16 +2956,31 @@ async function fetchData(callback) {
       }
   }
   async function saveOrUpdateLoc(mode) {
-      const btn = document.getElementById('btnSaveLoc');
-      const originalText = btn.innerText;
-      btn.disabled = true;
-      btn.innerText = "Processing Data...";
-      const fileInput = document.getElementById('mLImgFile');
-      const file = fileInput.files[0];
-      let checkedGroups = [];
-      document.querySelectorAll('.l-group-check:checked').forEach(cb => checkedGroups.push(cb.value));
-      let payload = {
-          name: document.getElementById('mLname').value,
+      const newLocName = document.getElementById('mLname').value.trim();
+      if (!newLocName) return alert("Location Name is required.");
+      if (mode === 'edit' && window.editingLocName && window.editingLocName !== newLocName) {
+          let totalStock = 0;
+          db.logs.forEach(l => {
+              if (l.toLoc === window.editingLocName) totalStock += l.quantity;
+              if (l.fromLoc === window.editingLocName) totalStock -= Math.abs(l.quantity);
+          });
+          if (totalStock > 0) {
+              if (!confirm(`WARNING: You are renaming a location that currently holds inventory (${totalStock} units).\n\nThis will permanently rewrite all historical transaction logs to use the new location name.\n\nAre you 100% positive you want to proceed?`)) {
+                  return;
+              }
+          }
+      }
+      const btn = document.getElementById('btnSaveLoc');
+      const originalText = btn.innerText;
+      btn.disabled = true;
+      btn.innerText = "Processing Data...";
+      const fileInput = document.getElementById('mLImgFile');
+      const file = fileInput.files[0];
+      let checkedGroups = [];
+      document.querySelectorAll('.l-group-check:checked').forEach(cb => checkedGroups.push(cb.value));
+      let payload = {
+          oldName: (mode === 'edit') ? window.editingLocName : null,
+          name: newLocName,
           type: document.getElementById('mLtype').value,
           deployType: document.getElementById('mDeployType').value,
           deployLoc: document.getElementById('mDeployLoc').value,
