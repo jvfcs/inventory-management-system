@@ -632,12 +632,12 @@
         <h2>UI &amp; Navigation Features</h2>
         <p>The IMS is built as a Single Page Application, meaning it operates more like a native app on your phone than a traditional website. It is packed with quality-of-life features:</p>
         <ul>
-          <li><strong>Loading Screen:</strong> When you boot the app, a loading screen appears. During this brief window, the app is downloading your custom Theme, pulling your permissions, and fetching the entire inventory database to your device for lightning-fast usage.</li>
-          <li><strong>The "Home" Button:</strong> Clicking the App Logo or App Title in the top left corner will immediately clear your current view and return you to the main Locations Grid.</li>
-          <li><strong>Sign Out:</strong> Click the red Sign Out button in the top right to instantly erase your session credentials and return to the Google Login screen.</li>
-          <li><strong>Dark / Light Mode Toggle:</strong> Near the top right and next to the Sign Out button is a ☀️/🌙 toggle switch. Clicking this instantly repaints the entire app into a dark mode to reduce eye strain in dark environments. The app remembers your preference.</li>
-          <li><strong>Natural Back Buttons:</strong> Even though it's a single page, the app hooks into your browser's History Engine. You can use your browser's standard Back/Forward arrows, or swipe back on your mobile device, and the app will navigate perfectly.</li>
-          <li><strong>Collapsible Sections:</strong> Throughout the app (Dashboards, Location Grids), you will see headers with a ▼ icon. Clicking these headers will collapse or expand that section to keep your screen uncluttered.</li>
+          <li><strong>Sticky Header & Search:</strong> The top navigation and Global Search Bar are permanently "sticky". No matter how far down you scroll in a long list of items, the search bar and navigation buttons remain instantly accessible at the top of your screen.</li>
+          <li><strong>Smart Navigation & Auto-Scroll:</strong> Whenever you click a search result, open a location, or switch between management tabs, the app automatically wipes the previous forms clean and snaps your screen back to the top so you are perfectly oriented.</li>
+          <li><strong>Loading Screen:</strong> When you boot the app, it downloads your custom Theme, pulls your permissions, and fetches the entire inventory database to your device for lightning-fast usage.</li>
+          <li><strong>The "Home" Button:</strong> Clicking the App Logo or App Title in the top left corner will instantly return you to the main Locations Grid.</li>
+          <li><strong>Dark / Light Mode Toggle:</strong> Near the top right is a ☀️/🌙 switch. Clicking this repaints the app into a dark mode to reduce eye strain. The floating "Back to Top" arrow also dynamically adjusts its color to match your theme.</li>
+          <li><strong>Collapsible Sections:</strong> Throughout the app, you will see headers with a ▼ icon. Clicking these headers will collapse or expand that section to keep your screen uncluttered.</li>
         </ul>
       </section>
       <section id="mobile-pwa" class="doc-section">
@@ -679,6 +679,13 @@
         <h3>Access Groups</h3>
         <p>To make assigning locations easier, Admins can create "Access Groups" (e.g., <i>West Coast</i>, <i>Arizona</i>). When editing a location, you can tag it with a group. When assigning a user, you can assign them the entire group with one click, instantly granting them access to all locations bearing that tag.</p>
         <p><img src="docs/screenshot-lbac.png" class="doc-screenshot" alt="Documentation Image"></p>
+        
+        <h3>Visibility Without Vulnerability (Management Tab)</h3>
+        <p>In the <strong>Locations Management Tab</strong>, the system displays <em>all</em> locations to Managers, even ones they don't own. This is a deliberate design choice to prevent users from unknowingly creating duplicate locations with slightly different names.</p>
+        <ul>
+          <li><strong>Read-Only Rows:</strong> If a user does not have LBAC permission for a location, that row will be visually dimmed. The inventory count will be hidden behind a 🔒 lock icon, and the Action buttons will be replaced with a "Read Only" badge.</li>
+          <li><strong>Locked Access Groups:</strong> When a restricted Manager creates or edits a location, they will see a list of all Access Groups in the company. Groups they do not own will be greyed out and marked with a 🔒 lock icon. They cannot add or remove these locked tags, but the tags are safely preserved in the database.</li>
+        </ul>
       </section>
       <section id="dashboard" class="doc-section">
         <h2>Dashboard &amp; Alerts</h2>
@@ -761,7 +768,10 @@
       <section id="manage-items" class="doc-section">
         <h2>Management: Items (Catalog)</h2>
         <p><i>Access: Admin, Sub-Admin, Manager</i></p>
-        <p>The Items tab is where you define the catalog of equipment your company owns. In the data tables, <strong>click the column headers (blue underlined text)</strong> to instantly sort the database.</p>
+        <p>The Items tab is where you define the catalog of equipment your company owns. In the data tables, <strong>click the column headers (blue underlined text)</strong> to instantly sort the database (including mathematically sorting the <strong>Total</strong> column to see your highest/lowest stocked items).</p>
+        <div class="callout py-2 mb-3 border-secondary bg-light text-dark">
+          <span class="small fw-bold">At-A-Glance Context:</span> <span class="text-muted small">Item Descriptions and Notes are printed in small text directly underneath the Item Name in the table, saving you from having to click "Edit" just to read the fine print.</span>
+        </div>
         <ul>
           <li>
             <strong>Barcode (Required):</strong> The most important field. Must be completely unique (e.g., a UPC code or internal SKU). The system will block the creation of duplicates.
@@ -788,7 +798,10 @@
       <section id="manage-locations" class="doc-section">
         <h2>Management: Locations</h2>
         <p><i>Access: Admin, Sub-Admin, Manager</i></p>
-        <p>The Locations tab is where you create the places your items reside. Like the items table, column headers are clickable for rapid sorting.</p>
+        <p>The Locations tab is where you create the places your items reside. Like the items table, column headers are clickable for rapid sorting, including the dynamically calculated <strong>Count</strong> column.</p>
+        <div class="callout py-2 mb-3 border-secondary bg-light text-dark">
+          <span class="small fw-bold">At-A-Glance Context:</span> <span class="text-muted small">Location Descriptions and Notes are printed directly underneath the Location Name in the table. On mobile devices, the action buttons automatically stack vertically to keep the table clean and readable.</span>
+        </div>
         <ul>
           <li>
             <strong>Location Name:</strong> The name of the space (e.g., Warehouse A, Production Truck 1). Must be completely unique.
