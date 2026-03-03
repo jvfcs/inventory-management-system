@@ -667,7 +667,8 @@
                        <tr>
                          <th class="sortable" onclick="sortMgmt('loc', 0)">Type</th>
                          <th class="sortable" onclick="sortMgmt('loc', 1)">Name</th>
-                         <th class="sortable centered-col" onclick="sortMgmt('loc', 2)">Status</th>
+                         <th class="sortable centered-col" onclick="sortMgmt('loc', 2)">Count</th>
+                         <th class="sortable centered-col" onclick="sortMgmt('loc', 3)">Status</th>
                        </tr>
                      </thead>
                      <tbody id="bodyLocs"></tbody>
@@ -1339,17 +1340,31 @@ async function fetchData(callback) {
       });
     }
     if (currentSort.loc.col !== -1) {
-      const key = ["type", "locationName", "status"][currentSort.loc.col];
-      db.locations.sort((a,b) => {
+      const key = ["type", "locationName", "count", "status"][currentSort.loc.col];
+      const sortFn = (a, b) => {
+        if (key === 'count') {
+          let countA = 0, countB = 0;
+          db.logs.forEach(l => {
+            if (l.toLoc === a.locationName) countA += l.quantity;
+            if (l.fromLoc === a.locationName) countA -= Math.abs(l.quantity);
+            if (l.toLoc === b.locationName) countB += l.quantity;
+            if (l.fromLoc === b.locationName) countB -= Math.abs(l.quantity);
+          });
+          return currentSort.loc.asc ? countA - countB : countB - countA;
+        }
         let cmp = String(a[key] || "").toLowerCase().localeCompare(String(b[key] || "").toLowerCase());
         return currentSort.loc.asc ? cmp : -cmp;
-      });
+      };
+      db.locations.sort(sortFn);
+      if (db.rawLocations) db.rawLocations.sort(sortFn);
     } else {
-      db.locations.sort((a, b) => {
+      const defSort = (a, b) => {
         let cmp = a.locationName.localeCompare(b.locationName);
         if (cmp !== 0) return cmp;
         return a.type.localeCompare(b.type);
-      });
+      };
+      db.locations.sort(defSort);
+      if (db.rawLocations) db.rawLocations.sort(defSort);
     }
     if (db.users) {
       if (currentSort.user.col !== -1) {
@@ -1645,27 +1660,44 @@ async function fetchData(callback) {
       </tr>`;
     }).join('');    
 
-    document.getElementById('bodyLocs').innerHTML = db.locations.map(l => {
+    document.getElementById('bodyLocs').innerHTML = db.rawLocations.map(l => {
       const sCount = spotCounts[l.locationName] ? spotCounts[l.locationName].size : 0;
       const spotBtnText = sCount > 0 ? `Spots (${sCount})` : 'Spots (0)';      
       
       const descHtml = l.description ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Desc:</strong> ' + l.description + '</div>' : '';
       const notesHtml = l.notes ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Notes:</strong> ' + l.notes + '</div>' : '';
       
+      const hasAccess = ['Admin', 'Sub-Admin'].includes(currentUserRole) || db.locations.some(allowed => allowed.locationName === l.locationName);
+      
+      let invCount = 0;
+      if (hasAccess) {
+         db.logs.forEach(log => {
+           if (log.toLoc === l.locationName) invCount += log.quantity;
+           if (log.fromLoc === l.locationName) invCount -= Math.abs(log.quantity);
+         });
+      }
+      const displayCount = hasAccess ? invCount.toLocaleString('en-US') : '<span title="Restricted Access">🔒</span>';
+      const rowAction = hasAccess ? `editLoc('${l.locationName.replace(/'/g, "\\'")}')` : `alert('Access Denied: You do not have permission to edit this location.')`;
+      
+      const buttonsHtml = hasAccess ? `
+          <button class="btn btn-sm btn-outline-info w-100 text-nowrap" onclick="event.stopPropagation(); openSpotManager('${l.locationName.replace(/'/g, "\\'")}')">${spotBtnText}</button>
+          <button class="btn btn-sm ${l.status === 'Active' ? 'btn-outline-danger' : 'btn-outline-success'} w-100 text-nowrap" onclick="event.stopPropagation(); toggleStatusL('${l.locationName.replace(/'/g, "\\'")}', '${l.type.replace(/'/g, "\\'")}', '${l.status}')">
+            ${l.status === 'Active' ? 'Disable' : 'Enable'}
+          </button>
+      ` : `<span class="badge bg-secondary w-100 py-2">Read Only</span>`;
+
       return `
-      <tr class="${l.status === 'Inactive' ? 'table-secondary text-muted' : ''}" onclick="editLoc('${l.locationName.replace(/'/g, "\\'")}')" style="cursor: pointer;">
+      <tr class="${l.status === 'Inactive' ? 'table-secondary text-muted' : ''}" onclick="${rowAction}" style="cursor: ${hasAccess ? 'pointer' : 'not-allowed'}; opacity: ${hasAccess ? '1' : '0.65'};">
         <td><span class="badge bg-secondary">${l.type}</span></td>
         <td>
           <div class="fw-bold">${l.locationName}</div>
           ${descHtml}
           ${notesHtml}
         </td>
+        <td class="centered-col fw-bold">${displayCount}</td>
         <td class="centered-col align-middle">
           <div class="d-flex flex-column flex-md-row gap-1 justify-content-center">
-            <button class="btn btn-sm btn-outline-info w-100 text-nowrap" onclick="event.stopPropagation(); openSpotManager('${l.locationName.replace(/'/g, "\\'")}')">${spotBtnText}</button>
-            <button class="btn btn-sm ${l.status === 'Active' ? 'btn-outline-danger' : 'btn-outline-success'} w-100 text-nowrap" onclick="event.stopPropagation(); toggleStatusL('${l.locationName.replace(/'/g, "\\'")}', '${l.type.replace(/'/g, "\\'")}', '${l.status}')">
-              ${l.status === 'Active' ? 'Disable' : 'Enable'}
-            </button>
+            ${buttonsHtml}
           </div>
         </td>
       </tr>`;
