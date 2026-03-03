@@ -590,7 +590,7 @@
                    <tr>
                      <th class="sortable" onclick="sortMgmt('item', 0)">Barcode</th>
                      <th class="sortable" onclick="sortMgmt('item', 1)">Item</th>
-                     <th>Total</th>
+                     <th class="sortable" onclick="sortMgmt('item', 8)">Total</th>
                      <th class="sortable centered-col" onclick="sortMgmt('item', 7)">Actions</th>
                    </tr>
                  </thead>
@@ -1292,8 +1292,13 @@ async function fetchData(callback) {
   }  
   function applySorts() {
     if (currentSort.item.col !== -1) {
-      const key = ["barcode", "make", "model", "category", "minStock", "specs", "img", "status"][currentSort.item.col];
+      const key = ["barcode", "make", "model", "category", "minStock", "specs", "img", "status", "total"][currentSort.item.col];
       db.items.sort((a,b) => {
+        if (key === 'total') {
+            let valA = getStockBalance(a.barcode);
+            let valB = getStockBalance(b.barcode);
+            return currentSort.item.asc ? valA - valB : valB - valA;
+        }
         let valA = key === 'make' ? String(a.make + " " + a.model).toLowerCase() : String(a[key] || "").toLowerCase();
         let valB = key === 'make' ? String(b.make + " " + b.model).toLowerCase() : String(b[key] || "").toLowerCase();        
         if(!isNaN(valA) && !isNaN(valB) && valA !== "" && valB !== "") {
