@@ -3284,13 +3284,23 @@ async function fetchData(callback) {
           container.innerHTML = '<small class="text-muted">No groups exist yet. Create one below.</small>';
           return;
       }
+
+      const hasFullAccess = ['Admin', 'Sub-Admin'].includes(currentUserRole);
+      const userLocsLower = currentUserLocations.map(s => s.toLowerCase());
+
       container.innerHTML = Array.from(allGroups).sort().map(g => {
           const isChecked = assigned.includes(g.toLowerCase()) ? 'checked' : '';
           const safeVal = g.replace(/"/g, '&quot;');
+          
+          const canEdit = hasFullAccess || userLocsLower.includes(g.toLowerCase());
+          const disabledAttr = canEdit ? '' : 'disabled';
+          const labelClass = canEdit ? 'text-dark' : 'text-muted opacity-50';
+          const lockIcon = canEdit ? '' : ' <span title="Restricted Access">🔒</span>';
+
           return `
             <div class="form-check py-1 border-bottom">
-              <input class="form-check-input l-group-check" type="checkbox" value="${safeVal}" id="lgrp_${safeVal}" ${isChecked}>
-              <label class="form-check-label small fw-bold text-dark" for="lgrp_${safeVal}">${g}</label>
+              <input class="form-check-input l-group-check" type="checkbox" value="${safeVal}" id="lgrp_${safeVal}" ${isChecked} ${disabledAttr}>
+              <label class="form-check-label small fw-bold ${labelClass}" for="lgrp_${safeVal}" style="cursor: ${canEdit ? 'pointer' : 'not-allowed'};">${g}${lockIcon}</label>
             </div>
           `;
       }).join('');
