@@ -326,8 +326,16 @@
                 <p id="locDetNotes" class="small mb-0 text-muted fst-italic"></p>
               </div>
            </div>
-           <div class="d-flex justify-content-between align-items-center mt-2 mb-4" id="locControlsContainer">
-             <select id="itemSortSelect" class="form-select form-select-sm w-auto" onchange="renderItems(currentLocName)">
+           <ul class="nav nav-tabs mb-3" id="locInventoryTabs">
+             <li class="nav-item">
+               <a class="nav-link active fw-bold" id="tabStock" onclick="switchLocTab('stock')">Stock Inventory</a>
+             </li>
+             <li class="nav-item">
+               <a class="nav-link fw-bold" id="tabDeployed" onclick="switchLocTab('deployed')">Deployed Assets</a>
+             </li>
+           </ul>
+           <div class="d-flex justify-content-between align-items-center mt-2 mb-4" id="locControlsContainer">
+             <select id="itemSortSelect" class="form-select form-select-sm w-auto" onchange="renderItems(currentLocName)">
                <option value="cat_az">Category A-Z</option>
                <option value="cat_za">Category Z-A</option>
                <option value="make_az">Make A-Z</option>
@@ -418,11 +426,20 @@
               </div>
             </div>
           </div>
-          <div class="row g-2 mt-1">
-            <div class="col-4"><button class="btn btn-success py-2 w-100 fw-bold" id="btnIn" onclick="submitInline('In')">ADD</button></div>
-            <div class="col-4"><button class="btn btn-danger py-2 w-100 fw-bold" id="btnOut" onclick="submitInline('Out')">REMOVE</button></div>
-            <div class="col-4"><button class="btn btn-primary py-2 w-100 fw-bold" id="btnMove" onclick="handleMoveClick()">MOVE</button></div>
-          </div>
+          <div id="actionNotesContainer" class="col-md-12 hidden mb-3">
+            <label class="small fw-bold text-danger">Reason / Notes (Required for Consume/Remove)</label>
+            <input type="text" id="actNotes" class="form-control border-danger shadow-sm" placeholder="Why is this being removed or consumed?">
+          </div>
+          <div class="row g-2 mt-1" id="stockActionButtons">
+            <div class="col-6 col-md-3"><button class="btn btn-success py-2 w-100 fw-bold" id="btnIn" onclick="submitInline('In')">ADD</button></div>
+            <div class="col-6 col-md-3"><button class="btn btn-danger py-2 w-100 fw-bold" id="btnOut" onclick="submitInline('Out')">REMOVE</button></div>
+            <div class="col-6 col-md-3"><button class="btn btn-primary py-2 w-100 fw-bold" id="btnMove" onclick="handleMoveClick()">MOVE</button></div>
+            <div class="col-6 col-md-3"><button class="btn btn-info py-2 w-100 fw-bold text-dark" id="btnDeploy" onclick="handleDeployClick()">DEPLOY</button></div>
+          </div>
+          <div class="row g-2 mt-1 hidden" id="deployedActionButtons">
+            <div class="col-6"><button class="btn btn-warning py-2 w-100 fw-bold text-dark" id="btnReturn" onclick="handleReturnClick()">RETURN TO STOCK</button></div>
+            <div class="col-6"><button class="btn btn-danger py-2 w-100 fw-bold" id="btnConsume" onclick="handleConsumeClick()">CONSUME / REMOVE</button></div>
+          </div>
         </div>
       </div>
     </div>
@@ -487,19 +504,19 @@
               </div>
             </div>
             <div class="row g-3 mb-4">
-              <div class="col-md-6">
-                <div class="stat-card stat-bg-4 shadow-sm h-100">
-                  <p>Physical Spaces Value</p>
-                  <h3 id="statPhysValue">$0.00</h3>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="stat-card stat-bg-5 shadow-sm h-100">
-                  <p>Deployable Assets Value</p>
-                  <h3 id="statDepValue">$0.00</h3>
-                </div>
-              </div>
-            </div>
+              <div class="col-md-6">
+                <div class="stat-card stat-bg-4 shadow-sm h-100">
+                  <p>Global Stock Value</p>
+                  <h3 id="statPhysValue">$0.00</h3>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="stat-card stat-bg-5 shadow-sm h-100">
+                  <p>Global Deployed Value</p>
+                  <h3 id="statDepValue">$0.00</h3>
+                </div>
+              </div>
+            </div>
         </div>
         <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom border-primary pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashGroups" aria-expanded="true">
             <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0">Location Groups Snapshot</h6>
@@ -531,19 +548,19 @@
                 </div>
               </div>
               <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                  <div class="stat-card stat-bg-4 shadow-sm h-100">
-                    <p>Physical Spaces Value</p>
-                    <h3 id="grpStatPhysValue">$0.00</h3>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="stat-card stat-bg-5 shadow-sm h-100">
-                    <p>Deployable Assets Value</p>
-                    <h3 id="grpStatDepValue">$0.00</h3>
-                  </div>
-                </div>
-              </div>
+                <div class="col-md-6">
+                  <div class="stat-card stat-bg-4 shadow-sm h-100">
+                    <p>Group Stock Value</p>
+                    <h3 id="grpStatPhysValue">$0.00</h3>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="stat-card stat-bg-5 shadow-sm h-100">
+                    <p>Group Deployed Value</p>
+                    <h3 id="grpStatDepValue">$0.00</h3>
+                  </div>
+                </div>
+              </div>
               <h6 class="fw-bold mb-3 border-bottom border-secondary pb-2">Group Locations</h6>
             </div>
             <div class="row g-3" id="dashLocationCardsGroup">
@@ -1420,20 +1437,43 @@ async function fetchData(callback) {
       }
     }
   }
-  function getStockBalance(barcode, location = null, subLocation = null) {
-    let balance = 0;
-    db.logs.forEach(l => {
-      if (l.barcode === barcode) {
-        if (!location) {
-          balance += l.quantity;
-        } else {
-          if (l.toLoc === location && (!subLocation || l.subLoc === subLocation)) balance += l.quantity;
-          if (l.fromLoc === location && (!subLocation || l.subLoc === subLocation)) balance -= Math.abs(l.quantity);
-        }
-      }
-    });
-    return balance;
-  }
+  let currentContextState = 'stock'; // Tracks if the user is viewing Stock or Deployed assets
+
+  function switchLocTab(tab) {
+    currentContextState = tab;
+    document.getElementById('tabStock').classList.toggle('active', tab === 'stock');
+    document.getElementById('tabDeployed').classList.toggle('active', tab === 'deployed');
+    renderItems(currentLocName);
+  }
+
+  function getStockBalance(barcode, location = null, subLocation = null, state = 'stock') {
+    let balance = 0;
+    db.logs.forEach(l => {
+      if (l.barcode === barcode) {
+        let isToValid = false;
+        let isFromValid = false;
+        if (state === 'stock') {
+            if (["In", "Move-In", "Return-In", "Audit-In"].includes(l.type)) isToValid = true;
+            if (["Out", "Move-Out", "Deploy-Out", "Audit-Out"].includes(l.type)) isFromValid = true;
+        } else if (state === 'deployed') {
+            if (["Deploy-In"].includes(l.type)) isToValid = true;
+            if (["Return-Out", "Consume-Out"].includes(l.type)) isFromValid = true;
+        } else if (state === 'all') {
+            isToValid = true;
+            isFromValid = true;
+        }
+
+        if (!location) {
+          if (isToValid) balance += Math.abs(l.quantity);
+          if (isFromValid) balance -= Math.abs(l.quantity);
+        } else {
+          if (isToValid && l.toLoc === location && (!subLocation || l.subLoc === subLocation)) balance += Math.abs(l.quantity);
+          if (isFromValid && l.fromLoc === location && (!subLocation || l.subLoc === subLocation)) balance -= Math.abs(l.quantity);
+        }
+      }
+    });
+    return balance;
+  }
   function renderDashboard() {
     let globalUnits = 0;
     let globalValue = 0;
@@ -1444,26 +1484,25 @@ async function fetchData(callback) {
     db.locations.filter(l => l.status === 'Active').forEach(l => {
       locationStats[l.locationName] = { type: l.type, units: 0, value: 0, deployType: l.deployType || 'Physical Space', groups: l.lbacGroups || '' };
     });
-    const activeItems = db.items.filter(i => i.status === 'Active');    
-    activeItems.forEach(itm => {
-      const price = parseFloat(itm.price) || 0;
-      let itemGlobalStock = 0;
-      for (const locName in locationStats) {
-        const stockAtLoc = getStockBalance(itm.barcode, locName); 
-        if (stockAtLoc > 0) {
-          locationStats[locName].units += stockAtLoc;
-          let val = stockAtLoc * price;
-          locationStats[locName].value += val;
-          itemGlobalStock += stockAtLoc;          
-          if (locationStats[locName].deployType === 'Deployable') {
-              depValue += val;
-          } else {
-              physValue += val;
-          }
-        }
-      }
-      globalUnits += itemGlobalStock;
-      globalValue += (itemGlobalStock * price);
+    const activeItems = db.items.filter(i => i.status === 'Active');    
+    activeItems.forEach(itm => {
+      const price = parseFloat(itm.price) || 0;
+      let itemGlobalStock = 0;
+      for (const locName in locationStats) {
+        const stockAtLoc = getStockBalance(itm.barcode, locName, null, 'stock'); 
+        const deployedAtLoc = getStockBalance(itm.barcode, locName, null, 'deployed');
+        const totalAtLoc = stockAtLoc + deployedAtLoc;
+        
+        if (totalAtLoc > 0) {
+          locationStats[locName].units += totalAtLoc;
+          locationStats[locName].value += (totalAtLoc * price);
+          itemGlobalStock += totalAtLoc;          
+          physValue += (stockAtLoc * price);
+          depValue += (deployedAtLoc * price);
+        }
+      }
+      globalUnits += itemGlobalStock;
+      globalValue += (itemGlobalStock * price);
       if (itemGlobalStock <= parseFloat(itm.minStock)) {
         lowStockAlerts.push({
           bc: itm.barcode,
@@ -1587,13 +1626,14 @@ async function fetchData(callback) {
           let itemDepInGrp = 0;
 
           grpLocs.forEach(loc => {
-              let stk = getStockBalance(itm.barcode, loc.name);
-              if (stk > 0) {
-                  itemTotalInGrp += stk;
-                  if (loc.type === 'Deployable') itemDepInGrp += stk;
-                  else itemPhysInGrp += stk;
-              }
-          });
+              let stk = getStockBalance(itm.barcode, loc.name, null, 'stock');
+              let dep = getStockBalance(itm.barcode, loc.name, null, 'deployed');
+              if ((stk + dep) > 0) {
+                  itemTotalInGrp += (stk + dep);
+                  itemPhysInGrp += stk;
+                  itemDepInGrp += dep;
+              }
+          });
           if (itemTotalInGrp > 0) {
               grpUniqueItems++;
               grpTotalUnits += itemTotalInGrp;
@@ -1830,29 +1870,42 @@ async function fetchData(callback) {
       document.getElementById('spotManagerContainer').classList.add('hidden');
       document.getElementById('locTableContainer').classList.remove('hidden');
   }
-  function startAudit(locName) {
-      if(locName === 'Everywhere') return alert('Cannot audit the Global view. Please select a specific physical location.');      
-      document.getElementById('itemsContainer').classList.add('hidden');
-      document.getElementById('locControlsContainer').classList.add('hidden');
-      document.getElementById('auditContainer').classList.remove('hidden');      
-      let auditList = [];      
-      db.items.filter(i => i.status === 'Active').forEach(itm => {
-          const spots = new Set();
-          db.logs.filter(l => l.barcode === itm.barcode).forEach(l => {
-              if (l.toLoc === locName && l.subLoc) spots.add(l.subLoc);
-              if (l.fromLoc === locName && l.subLoc) spots.add(l.subLoc);
-          });          
-          let defaultQ = getStockBalance(itm.barcode, locName, "");
-          if (defaultQ > 0) auditList.push({ item: itm, spot: "Default", expected: defaultQ, missingSerials: [], foundSerials: [] });          
-          spots.forEach(s => {
-              let q = getStockBalance(itm.barcode, locName, s);
-              if (q > 0) auditList.push({ item: itm, spot: s, expected: q, missingSerials: [], foundSerials: [] });
-          });
-      });      
-      let h = `
-      <div class="alert alert-warning small border-warning">
-          <strong>Audit Mode Active:</strong> Verify physical counts. If tracking serials, click 'Audit Serials'.
-      </div>
+  let currentAuditState = 'stock'; // Tracks which state is currently being audited
+
+  function startAudit(locName, forceState = null) {
+      if(locName === 'Everywhere') return alert('Cannot audit the Global view. Please select a specific physical location.');      
+      if (forceState) currentAuditState = forceState;
+      else currentAuditState = currentContextState; // Default to whichever tab they were on
+
+      document.getElementById('itemsContainer').classList.add('hidden');
+      document.getElementById('locControlsContainer').classList.add('hidden');
+      document.getElementById('auditContainer').classList.remove('hidden');      
+      let auditList = [];      
+      db.items.filter(i => i.status === 'Active').forEach(itm => {
+          const spots = new Set();
+          db.logs.filter(l => l.barcode === itm.barcode).forEach(l => {
+              if (l.toLoc === locName && l.subLoc) spots.add(l.subLoc);
+              if (l.fromLoc === locName && l.subLoc) spots.add(l.subLoc);
+          });          
+          let defaultQ = getStockBalance(itm.barcode, locName, "", currentAuditState);
+          if (defaultQ > 0) auditList.push({ item: itm, spot: "Default", expected: defaultQ, missingSerials: [], foundSerials: [] });          
+          spots.forEach(s => {
+              let q = getStockBalance(itm.barcode, locName, s, currentAuditState);
+              if (q > 0) auditList.push({ item: itm, spot: s, expected: q, missingSerials: [], foundSerials: [] });
+          });
+      });      
+      let h = `
+      <ul class="nav nav-pills nav-fill mb-3">
+        <li class="nav-item">
+          <button class="nav-link fw-bold w-100 border ${currentAuditState === 'stock' ? 'active bg-primary text-white' : 'text-primary'}" onclick="startAudit('${locName}', 'stock')">Verify Stock</button>
+        </li>
+        <li class="nav-item ms-2">
+          <button class="nav-link fw-bold w-100 border ${currentAuditState === 'deployed' ? 'active bg-info text-dark border-info' : 'text-info border-info'}" onclick="startAudit('${locName}', 'deployed')">Verify Deployed</button>
+        </li>
+      </ul>
+      <div class="alert alert-warning small border-warning">
+          <strong>Audit Mode (${currentAuditState.toUpperCase()}):</strong> Verify physical counts for ${currentAuditState} items only. 
+      </div>
       <div class="scroll-area bg-white border mb-3" style="max-height: 55vh;">
         <table class="table table-sm table-hover m-0 align-middle">
           <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
@@ -2030,28 +2083,33 @@ async function fetchData(callback) {
       adjustments.forEach(adj => {
            const subL = adj.spot === "Default" ? "" : adj.spot;           
            if (adj.serialized === 'Yes') {
-               adj.missingSerials.forEach(s => {
-                   db.logs.unshift({ timestamp: timestamp, userEmail: currentUserEmail, barcode: adj.barcode, fromLoc: adj.loc, toLoc: "Lost/Audit", quantity: 1, type: "Audit-Out", serial: s, subLoc: subL });
-               });
-               adj.foundSerials.forEach(s => {
-                   db.logs.unshift({ timestamp: timestamp, userEmail: currentUserEmail, barcode: adj.barcode, fromLoc: "Found/Audit", toLoc: adj.loc, quantity: 1, type: "Audit-In", serial: s, subLoc: subL });
-               });
-           } else {
-               const logType = adj.diff > 0 ? "Audit-In" : "Audit-Out";
-               const fLoc = adj.diff > 0 ? "Found/Audit" : adj.loc;
-               const tLoc = adj.diff > 0 ? adj.loc : "Lost/Audit";
-               const qty = Math.abs(adj.diff);
-               db.logs.unshift({ timestamp: timestamp, userEmail: currentUserEmail, barcode: adj.barcode, fromLoc: fLoc, toLoc: tLoc, quantity: qty, type: logType, serial: "", subLoc: subL });
-           }
-      });      
-      cancelAudit();
-      renderItems(locName); 
-      showSuccess(`Audit submitted successfully. Adjustments logged.`);      
-      google.script.run.withSuccessHandler(() => {
-          setTimeout(silentSync, 2000);
-      }).withFailureHandler((err) => {
-          showError("Audit sync failed. Please refresh page.");
-      }).submitAuditBackend(adjustments);
+               adj.missingSerials.forEach(s => {
+                   const typeOut = currentAuditState === 'deployed' ? "Consume-Out" : "Audit-Out";
+                   db.logs.unshift({ timestamp: timestamp, userEmail: currentUserEmail, barcode: adj.barcode, fromLoc: adj.loc, toLoc: "Lost/Audit", quantity: 1, type: typeOut, serial: s, subLoc: subL });
+               });
+               adj.foundSerials.forEach(s => {
+                   const typeIn = currentAuditState === 'deployed' ? "Deploy-In" : "Audit-In";
+                   db.logs.unshift({ timestamp: timestamp, userEmail: currentUserEmail, barcode: adj.barcode, fromLoc: "Found/Audit", toLoc: adj.loc, quantity: 1, type: typeIn, serial: s, subLoc: subL });
+               });
+           } else {
+               const logType = adj.diff > 0 ? (currentAuditState === 'deployed' ? "Deploy-In" : "Audit-In") : (currentAuditState === 'deployed' ? "Consume-Out" : "Audit-Out");
+               const fLoc = adj.diff > 0 ? "Found/Audit" : adj.loc;
+               const tLoc = adj.diff > 0 ? adj.loc : "Lost/Audit";
+               const qty = Math.abs(adj.diff);
+               db.logs.unshift({ timestamp: timestamp, userEmail: currentUserEmail, barcode: adj.barcode, fromLoc: fLoc, toLoc: tLoc, quantity: qty, type: logType, serial: "", subLoc: subL });
+           }
+      });      
+      cancelAudit();
+      renderItems(locName); 
+      showSuccess(`${currentAuditState.toUpperCase()} audit submitted successfully.`);      
+
+      const payloadData = adjustments.map(a => ({ ...a, auditState: currentAuditState }));
+
+      google.script.run.withSuccessHandler(() => {
+          setTimeout(silentSync, 2000);
+      }).withFailureHandler((err) => {
+          showError("Audit sync failed. Please refresh page.");
+      }).submitAuditBackend(payloadData);
   }
   function editItem(bc) {
     const itm = db.items.find(i => i.barcode === bc);
@@ -2429,31 +2487,31 @@ async function fetchData(callback) {
     renderItems(n); 
   }
   function renderItems(locName) {
-    currentLocName = locName;
-    const isG = (locName === "Everywhere");
-    const itemSort = document.getElementById('itemSortSelect').value;    
-    const stockMap = [];
-    db.items.filter(i => i.status === 'Active').forEach(itm => {
-      if (isG) {
-        let totalQ = 0;
-        let locDetails = [];
-        db.locations.forEach(loc => {
-          let q = getStockBalance(itm.barcode, loc.locationName); 
-          if (q > 0) {
-            totalQ += q;
-            locDetails.push(`${getLocLabel(loc.locationName)}: ${q.toLocaleString('en-US')}`);
-          }
-        });
-        if (totalQ > 0) {
-          stockMap.push({ barcode: itm.barcode, locName: "Everywhere", qty: totalQ, item: itm, locDetails: locDetails });
-        }
-      } else {
-        let q = getStockBalance(itm.barcode, locName); 
-        if (q > 0) {
-          stockMap.push({ barcode: itm.barcode, locName: locName, qty: q, item: itm });
-        }
-      }
-    });
+    currentLocName = locName;
+    const isG = (locName === "Everywhere");
+    const itemSort = document.getElementById('itemSortSelect').value;    
+    const stockMap = [];
+    db.items.filter(i => i.status === 'Active').forEach(itm => {
+      if (isG) {
+        let totalQ = 0;
+        let locDetails = [];
+        db.locations.forEach(loc => {
+          let q = getStockBalance(itm.barcode, loc.locationName, null, currentContextState); 
+          if (q > 0) {
+            totalQ += q;
+            locDetails.push(`${getLocLabel(loc.locationName)}: ${q.toLocaleString('en-US')}`);
+          }
+        });
+        if (totalQ > 0) {
+          stockMap.push({ barcode: itm.barcode, locName: "Everywhere", qty: totalQ, item: itm, locDetails: locDetails });
+        }
+      } else {
+        let q = getStockBalance(itm.barcode, locName, null, currentContextState); 
+        if (q > 0) {
+          stockMap.push({ barcode: itm.barcode, locName: locName, qty: q, item: itm });
+        }
+      }
+    });
     stockMap.sort((a, b) => {
       switch(itemSort) {
         case 'cat_az': return a.item.category.localeCompare(b.item.category);
@@ -2536,16 +2594,30 @@ async function fetchData(callback) {
         newSpotContainer.classList.add('hidden');
     }
   }
-  function getAvailableSerials(barcode, location, subLoc = "") {
-    const serials = {};
-    db.logs.filter(l => l.barcode === barcode && l.serial).forEach(l => {
-      const s = l.serial.toUpperCase();
-      if (!serials[s]) serials[s] = 0;
-      if (l.toLoc === location && (l.subLoc || "") === subLoc) serials[s] += l.quantity; 
-      if (l.fromLoc === location && (l.subLoc || "") === subLoc) serials[s] -= Math.abs(l.quantity);
-    });
-    return Object.keys(serials).filter(s => serials[s] > 0).sort();
-  }
+  function getAvailableSerials(barcode, location, subLoc = "", state = currentContextState) {
+    const serials = {};
+    db.logs.filter(l => l.barcode === barcode && l.serial).forEach(l => {
+      const s = l.serial.toUpperCase();
+      if (!serials[s]) serials[s] = 0;
+
+      let isToValid = false;
+      let isFromValid = false;
+      if (state === 'stock') {
+          if (["In", "Move-In", "Return-In", "Audit-In"].includes(l.type)) isToValid = true;
+          if (["Out", "Move-Out", "Deploy-Out", "Audit-Out"].includes(l.type)) isFromValid = true;
+      } else if (state === 'deployed') {
+          if (["Deploy-In"].includes(l.type)) isToValid = true;
+          if (["Return-Out", "Consume-Out"].includes(l.type)) isFromValid = true;
+      } else if (state === 'all') {
+          isToValid = true;
+          isFromValid = true;
+      }
+
+      if (isToValid && l.toLoc === location && (l.subLoc || "") === subLoc) serials[s] += Math.abs(l.quantity);
+      if (isFromValid && l.fromLoc === location && (l.subLoc || "") === subLoc) serials[s] -= Math.abs(l.quantity);
+    });
+    return Object.keys(serials).filter(s => serials[s] > 0).sort();
+  }
   function updateAvailableSerials() {
     const itm = db.items.find(i => i.barcode === activeBc);
     if (!itm || itm.serialized !== 'Yes') return;    
@@ -2711,18 +2783,56 @@ async function fetchData(callback) {
       document.getElementById('qtyContainer').classList.remove('hidden');
       document.getElementById('serialContainer').classList.add('hidden');
     }
-    document.getElementById('detDesc').innerText = itm.description || "No description provided.";    
-    const notesEl = document.getElementById('detNotes');
-    if (itm.notes) {
-       notesEl.innerText = "Notes: " + itm.notes;
-       notesEl.classList.remove('hidden');
-    } else {
-       notesEl.classList.add('hidden');
-    }
-    let hist = last ? `<b>Last Transaction:</b><br>${Math.abs(last.quantity)} ${last.quantity > 0 ? "added to" : "removed from"} ${last.quantity > 0 ? getLocLabel(last.toLoc) : getLocLabel(last.fromLoc)} on ${fmtTime(last.timestamp)}<br>By: ${getUserDisplayName(last.userEmail)}` : "No history.";
-    document.getElementById('detUpdate').innerHTML = hist;
-  }
-  function handleMoveClick() {
+    document.getElementById('detDesc').innerText = itm.description || "No description provided.";    
+    const notesEl = document.getElementById('detNotes');
+    if (itm.notes) {
+       notesEl.innerText = "Notes: " + itm.notes;
+       notesEl.classList.remove('hidden');
+    } else {
+       notesEl.classList.add('hidden');
+    }
+    let hist = last ? `<b>Last Transaction:</b><br>${Math.abs(last.quantity)} ${last.quantity > 0 ? "added to" : "removed from"} ${last.quantity > 0 ? getLocLabel(last.toLoc) : getLocLabel(last.fromLoc)} on ${fmtTime(last.timestamp)}<br>By: ${getUserDisplayName(last.userEmail)}` : "No history.";
+    document.getElementById('detUpdate').innerHTML = hist;
+
+    document.getElementById('stockActionButtons').classList.toggle('hidden', currentContextState !== 'stock');
+    document.getElementById('deployedActionButtons').classList.toggle('hidden', currentContextState === 'stock');
+    document.getElementById('actionNotesContainer').classList.add('hidden');
+    document.getElementById('actNotes').value = "";
+  }
+
+  function handleDeployClick() {
+    const toCont = document.getElementById('toLocContainer');
+    if (toCont.classList.contains('hidden')) {
+      toCont.classList.remove('hidden');
+      document.getElementById('toSubLocContainer').classList.remove('hidden');
+      document.getElementById('btnDeploy').innerText = "CONFIRM DEPLOY";
+    } else {
+      submitInline('Deploy');
+    }
+  }
+
+  function handleReturnClick() {
+    const toCont = document.getElementById('toLocContainer');
+    if (toCont.classList.contains('hidden')) {
+      toCont.classList.remove('hidden');
+      document.getElementById('toSubLocContainer').classList.remove('hidden');
+      document.getElementById('btnReturn').innerText = "CONFIRM RETURN";
+    } else {
+      submitInline('Return');
+    }
+  }
+
+  function handleConsumeClick() {
+    const notesCont = document.getElementById('actionNotesContainer');
+    if (notesCont.classList.contains('hidden')) {
+      notesCont.classList.remove('hidden');
+      document.getElementById('btnConsume').innerText = "CONFIRM CONSUME/REMOVE";
+    } else {
+      submitInline('Consume');
+    }
+  }
+
+  function handleMoveClick() {
     const toCont = document.getElementById('toLocContainer');
     if (toCont.classList.contains('hidden')) {
       toCont.classList.remove('hidden');
@@ -2733,21 +2843,25 @@ async function fetchData(callback) {
     }
   }
   async function submitInline(action) {
-    document.getElementById('errorMsg').classList.add('hidden');
-    document.getElementById('successMsg').classList.add('hidden');    
-    const itm = db.items.find(i => i.barcode === activeBc);    
-    const fromLoc = document.getElementById('actLoc').value;
-    let fromSubLoc = document.getElementById('actSubLoc').value;
-    if (fromSubLoc === "NEW_SPOT") fromSubLoc = document.getElementById('actNewSpot').value.trim();
-    if (fromSubLoc === "Default") fromSubLoc = "";
-    const toLoc = document.getElementById('actToLoc').value;
-    let toSubLoc = document.getElementById('actToSubLoc').value;
-    if (toSubLoc === "NEW_SPOT") toSubLoc = document.getElementById('actNewToSpot').value.trim();
-    if (toSubLoc === "Default") toSubLoc = "";    
-    let qty = 0;
-    let serialsArray = [];
-    if (document.getElementById('actSubLoc').value === "NEW_SPOT" && !fromSubLoc) { showError("Please enter a name for the new From Spot/Bin."); return; }
-    if (action === 'Move' && document.getElementById('actToSubLoc').value === "NEW_SPOT" && !toSubLoc) { showError("Please enter a name for the new Destination Spot/Bin."); return; }
+    document.getElementById('errorMsg').classList.add('hidden');
+    document.getElementById('successMsg').classList.add('hidden');    
+    const itm = db.items.find(i => i.barcode === activeBc);    
+    const fromLoc = document.getElementById('actLoc').value;
+    let fromSubLoc = document.getElementById('actSubLoc').value;
+    if (fromSubLoc === "NEW_SPOT") fromSubLoc = document.getElementById('actNewSpot').value.trim();
+    if (fromSubLoc === "Default") fromSubLoc = "";
+    const toLoc = document.getElementById('actToLoc').value;
+    let toSubLoc = document.getElementById('actToSubLoc').value;
+    if (toSubLoc === "NEW_SPOT") toSubLoc = document.getElementById('actNewToSpot').value.trim();
+    if (toSubLoc === "Default") toSubLoc = "";    
+    const notesVal = document.getElementById('actNotes').value.trim();
+
+    if (action === 'Consume' && !notesVal) { showError("Reason / Notes field is required when consuming or permanently removing a deployed item."); return; }
+
+    let qty = 0;
+    let serialsArray = [];
+    if (document.getElementById('actSubLoc').value === "NEW_SPOT" && !fromSubLoc) { showError("Please enter a name for the new From Spot/Bin."); return; }
+    if ((action === 'Move' || action === 'Deploy' || action === 'Return') && document.getElementById('actToSubLoc').value === "NEW_SPOT" && !toSubLoc) { showError("Please enter a name for the new Destination Spot/Bin."); return; }
     if (itm.serialized === 'Yes') {
       const rawIn = document.getElementById('actSerialsIn').value;
       const scannedSerials = rawIn.split(/[\n,]+/).map(s => s.trim().toUpperCase()).filter(s => s !== "");      
@@ -2790,15 +2904,16 @@ async function fetchData(callback) {
       if (!toLoc) { showError("Please select a destination location to move items to."); return; }
       if (fromLoc === toLoc && fromSubLoc === toSubLoc) { showError("Cannot move to the exact same location and spot."); return; }
     }    
-    if (action === 'Out' || action === 'Move') {
-      const available = getStockBalance(activeBc, fromLoc, fromSubLoc);
-      if (qty > available) {
-        const spotText = fromSubLoc ? ` (${fromSubLoc})` : "";
-        showError(`Quantity error: You are trying to process ${qty}, but only ${available} ${available === 1 ? 'is' : 'are'} available at ${getLocLabel(fromLoc)}${spotText}.`);
-        return;
-      }
-    }
-    document.getElementById('btnIn').disabled = true;
+    if (action === 'Out' || action === 'Move' || action === 'Deploy' || action === 'Return' || action === 'Consume') {
+      const checkState = (action === 'Return' || action === 'Consume') ? 'deployed' : 'stock';
+      const available = getStockBalance(activeBc, fromLoc, fromSubLoc, checkState);
+      if (qty > available) {
+        const spotText = fromSubLoc ? ` (${fromSubLoc})` : "";
+        showError(`Quantity error: You are trying to process ${qty}, but only ${available} ${available === 1 ? 'is' : 'are'} available in ${checkState} at ${getLocLabel(fromLoc)}${spotText}.`);
+        return;
+      }
+    }
+    document.getElementById('btnIn').disabled = true;
     document.getElementById('btnOut').disabled = true;
     document.getElementById('btnMove').disabled = true;    
     const timestamp = new Date().toISOString();
@@ -2824,16 +2939,17 @@ async function fetchData(callback) {
     }
     viewItem(activeBc); 
     showSuccess(`Successfully processed ${qty} unit(s).`);
-    let payload = { 
-      barcode: activeBc, 
-      transactionType: action, 
-      qty: qty, 
-      fromLocation: fromLoc, 
-      fromSubLoc: fromSubLoc,
-      toLocation: (action === 'In') ? fromLoc : toLoc,
-      toSubLoc: (action === 'In') ? fromSubLoc : toSubLoc,
-      serials: serialsArray 
-    };
+    let payload = { 
+      barcode: activeBc, 
+      transactionType: action, 
+      qty: qty, 
+      fromLocation: fromLoc, 
+      fromSubLoc: fromSubLoc,
+      toLocation: (action === 'In') ? fromLoc : toLoc,
+      toSubLoc: (action === 'In') ? fromSubLoc : toSubLoc,
+      serials: serialsArray,
+      actionNotes: notesVal
+    };
     try {
       await apiCall('processTransaction', { data: payload });
       setTimeout(silentSync, 2000);
