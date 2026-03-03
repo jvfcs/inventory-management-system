@@ -598,6 +598,7 @@
         <a href="#manage-items" class="nav-link">Managing Items</a>
         <a href="#manage-locations" class="nav-link">Managing Locations</a>
         <a href="#manage-logs" class="nav-link">Transaction Logs</a>
+        <a href="#system-audit" class="nav-link">System Audit</a>
         <a href="#manage-users" class="nav-link">Managing Users</a>        
         <div class="sidebar-heading">System Engine</div>
         <a href="#sync-engine" class="nav-link">Background Sync Engine</a>
@@ -608,6 +609,9 @@
         <a href="#deploy-sheet" class="nav-link">3. Database Setup</a>
         <a href="#deploy-script" class="nav-link">4. API Setup</a>
         <a href="#deploy-frontend" class="nav-link">5. UI Hosting</a>        
+        
+        <div class="sidebar-heading">Security &amp; IT</div>
+        <a href="#it-compliance" class="nav-link">IT Compliance &amp; Recovery</a>        
         <div class="sidebar-heading">Help</div>
         <a href="#mistakes" class="nav-link text-warning">Common Mistakes to Avoid</a>
         <a href="#faq" class="nav-link text-danger">Troubleshooting &amp; FAQ</a>
@@ -830,6 +834,17 @@
         <p>The Logs tab provides an immutable, chronological history of every action taken in the system. By default, it loads the 20 most recent transactions to ensure the app stays lightning-fast and responsive.</p>
         <p>If you need to look further back in time, simply scroll to the bottom and click the blue <strong>Load More Activities</strong> button to pull the next 20 records into the view.</p>
       </section>
+
+      <section id="system-audit" class="doc-section">
+        <h2>Management: System Audit</h2>
+        <p><i>Access: Admin, Sub-Admin</i></p>
+        <p>In addition to standard inventory movement logs, the IMS features a permanent, immutable <strong>System Audit Trail</strong>. This tracks all administrative and configuration changes made across the platform.</p>
+        <ul>
+          <li><strong>Detailed Diffing:</strong> Whenever an Item, Location, or User is updated, the backend engine automatically compares the old data against the new data and records the exact changes (e.g., <code>Min Stock: 5 -&gt; 10</code>, <code>Role: Operator -&gt; Manager</code>).</li>
+          <li><strong>Click for Details:</strong> In the System Audit tab, you can click on any row to open a detailed popup modal showing exactly who performed the action, when, and the specific text diff of what was changed.</li>
+          <li><strong>CSV Export:</strong> Like transaction logs, System Audits can be downloaded directly to a CSV file for compliance, security reviews, and accountability tracking.</li>
+        </ul>
+      </section>
       <section id="manage-users" class="doc-section">
         <h2>Management: Users</h2>
         <p><i>Access: Admin & Sub-Admin</i></p>
@@ -845,8 +860,13 @@
           <li><strong>Role:</strong> See the "Roles &amp; Permissions" section for details on access levels.</li>
           <li><strong>Assign Locations (LBAC):</strong> If the user is a Restricted role, a checklist will appear. Check the Groups or specific Locations they are allowed to access.</li>
         </ul>
-        <h3>Enabling &amp; Disabling Users</h3>
-        <p>You can instantly revoke a user's access by clicking the Disable button in the table. <strong>Safety Net:</strong> The system will prevent you from accidentally disabling your own Admin account.</p>
+        <h3>Employee Offboarding (Disabling vs. Deleting)</h3>
+        <p>When an employee leaves the company, you must <strong>Disable</strong> them using the button in the UI table. Do <strong>not</strong> open the Google Sheet and delete their row entirely.</p>
+        <ul>
+          <li><strong>Disabling (Correct):</strong> Instantly rejects their login tokens and revokes Web App access, but keeps their name and email in the database so historical transaction logs and audits still show their proper display name.</li>
+          <li><strong>Deleting Row (Incorrect):</strong> If you delete their row from the Google Sheet, all historical logs tied to their email will lose their relational mapping and revert to showing "Unknown" or just the raw email address.</li>
+        </ul>
+        <p><strong>Safety Net:</strong> The system will prevent you from accidentally disabling your own Admin account.</p>
       </section>
       <section id="sync-engine" class="doc-section">
         <h2>Background Sync Engine</h2>
@@ -1039,15 +1059,27 @@ git push -u origin main</code></pre>
         <p>Go to the URL where your app is hosted. Because you already placed your Google Client ID into your Database Template tab in Step 3, the Google Login button will appear immediately!</p>
         <p><strong>The very first user to log into a completely blank database is automatically granted the Admin role.</strong> Once you are logged in, click the Management button in the top right to start exploring your new system!</p>
       </section>
-      <section id="system-audit" class="doc-section mb-5">
-        <h2>Management: System Audit</h2>
-        <p><i>Access: Admin, Sub-Admin</i></p>
-        <p>In addition to standard inventory movement logs, the IMS features a permanent, immutable <strong>System Audit Trail</strong>. This tracks all administrative and configuration changes made across the platform.</p>
+      <section id="it-compliance" class="doc-section mb-5">
+        <h2>IT Compliance &amp; Data Integrity</h2>
+        <p><i>Access: Infrastructure / IT Administrators</i></p>
+        <p>For organizations undergoing internal audits or strict compliance reviews, the IMS architecture is designed to enforce an <strong>Immutable Ledger</strong>. However, this is only legally valid if the underlying Google Workspace infrastructure is secured correctly.</p>
+        
+        <h3>1. Securing the Underlying Database (Crucial)</h3>
+        <p>The Google Sheet acts as the raw database. <strong>Do not give IMS App Admins "Editor" access to the Google Sheet.</strong></p>
         <ul>
-          <li><strong>Detailed Diffing:</strong> Whenever an Item, Location, or User is updated, the backend engine automatically compares the old data against the new data and records the exact changes (e.g., <code>Min Stock: 5 -> 10</code>, <code>Role: Operator -> Manager</code>).</li>
-          <li><strong>Click for Details:</strong> In the System Audit tab, you can click on any row to open a detailed popup modal showing exactly who performed the action, when, and the specific text diff of what was changed.</li>
-          <li><strong>CSV Export:</strong> Like transaction logs, System Audits can be downloaded directly to a CSV file for compliance, security reviews, and accountability tracking.</li>
+          <li>The Google Apps Script is deployed to "Execute as: Me" (The IT Root Owner). This means the Web App inherently has permission to write to the database, even if the user logging into the frontend does not.</li>
+          <li>To preserve strict immutability, the Google Sheet should only be shared with standard Admins as <strong>Viewers</strong>, or not shared with them at all. If a standard Admin has "Editor" access to the Google Sheet, they can bypass the Web App, open the sheet, and manually delete rows from the <code>SystemAudit</code> or <code>Log</code> tabs, defeating the entire security model.</li>
         </ul>
+        
+        
+        <h3>2. Disaster Recovery &amp; Rollbacks</h3>
+        <p>Because the database is a Google Sheet, you have access to enterprise-grade disaster recovery built-in. If a rogue IT Admin accidentally deletes a column or mass-deletes rows, the system will break. You can instantly restore the system without data loss:</p>
+        <ul>
+          <li>Open the Google Sheet.</li>
+          <li>Click <strong>File &gt; Version history &gt; See version history</strong>.</li>
+          <li>Select a timestamp from before the corruption occurred and click <strong>Restore this version</strong>. The Web App will immediately return to normal operation.</li>
+        </ul>
+        
       </section>
 
       <section id="mistakes" class="doc-section">
