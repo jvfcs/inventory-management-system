@@ -432,19 +432,19 @@
             </div>
           </div>
           <div id="actionNotesContainer" class="col-md-12 hidden mb-3">
-            <label class="small fw-bold text-danger">Reason / Notes (Required for Consume/Remove)</label>
-            <input type="text" id="actNotes" class="form-control border-danger shadow-sm" placeholder="Why is this being removed or consumed?">
-          </div>
-          <div class="d-flex gap-2 mt-2" id="stockActionButtons">
-            <button class="btn btn-sm btn-success fw-bold flex-fill py-2" id="btnIn" onclick="submitInline('In')">ADD</button>
-            <button class="btn btn-sm btn-danger fw-bold flex-fill py-2" id="btnOut" onclick="submitInline('Out')">REMOVE</button>
-            <button class="btn btn-sm btn-primary fw-bold flex-fill py-2" id="btnMove" onclick="handleMoveClick()">MOVE</button>
-            <button class="btn btn-sm btn-info fw-bold text-dark flex-fill py-2" id="btnDeploy" onclick="handleDeployClick()">DEPLOY</button>
-          </div>
-          <div class="d-flex gap-2 mt-2 hidden" id="deployedActionButtons">
-            <button class="btn btn-sm btn-warning fw-bold text-dark flex-fill py-2" id="btnReturn" onclick="handleReturnClick()">RETURN TO STOCK</button>
-            <button class="btn btn-sm btn-danger fw-bold flex-fill py-2" id="btnConsume" onclick="handleConsumeClick()">CONSUME</button>
-          </div>
+            <label class="small fw-bold text-danger">Reason / Notes (Required for Consume/Remove)</label>
+            <input type="text" id="actNotes" class="form-control border-danger shadow-sm" placeholder="Why is this being removed or consumed?">
+          </div>
+          <div class="row g-1 mt-2" id="stockActionButtons">
+            <div class="col-3"><button class="btn btn-success w-100 fw-bold px-0" style="font-size:0.75rem; padding-top:8px; padding-bottom:8px;" id="btnIn" onclick="submitInline('In')">ADD</button></div>
+            <div class="col-3"><button class="btn btn-danger w-100 fw-bold px-0" style="font-size:0.75rem; padding-top:8px; padding-bottom:8px;" id="btnOut" onclick="submitInline('Out')">REMOVE</button></div>
+            <div class="col-3"><button class="btn btn-primary w-100 fw-bold px-0" style="font-size:0.75rem; padding-top:8px; padding-bottom:8px;" id="btnMove" onclick="handleMoveClick()">MOVE</button></div>
+            <div class="col-3"><button class="btn btn-info w-100 fw-bold text-dark px-0" style="font-size:0.75rem; padding-top:8px; padding-bottom:8px;" id="btnDeploy" onclick="handleDeployClick()">DEPLOY</button></div>
+          </div>
+          <div class="row g-1 mt-2 hidden" id="deployedActionButtons">
+            <div class="col-6"><button class="btn btn-warning w-100 fw-bold text-dark" style="font-size:0.8rem; padding-top:8px; padding-bottom:8px;" id="btnReturn" onclick="handleReturnClick()">RETURN TO STOCK</button></div>
+            <div class="col-6"><button class="btn btn-danger w-100 fw-bold" style="font-size:0.8rem; padding-top:8px; padding-bottom:8px;" id="btnConsume" onclick="handleConsumeClick()">CONSUME / REMOVE</button></div>
+          </div>
         </div>
       </div>
     </div>
@@ -484,86 +484,86 @@
           </div>
         </div>
         <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashStock" aria-expanded="true">
-            <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0">Global Stock Snapshot</h6>
-            <span class="text-primary fw-bold toggle-icon">▼</span>
-        </div>
-        <div id="collapseDashStock" class="collapse show">
-            <div class="row g-3 mb-3">
-              <div class="col-md-4">
-                <div class="stat-card stat-bg-1 shadow-sm h-100">
-                  <p>Unique Stock Items</p>
-                  <h3 id="statUniqueStock">0</h3>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="stat-card stat-bg-2 shadow-sm h-100">
-                  <p>Total Stock Units</p>
-                  <h3 id="statTotalStockUnits">0</h3>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="stat-card stat-bg-3 shadow-sm h-100">
-                  <p>Total Stock Value</p>
-                  <h3 id="statTotalStockValue">$0.00</h3>
-                </div>
-              </div>
-            </div>
-            <div class="row g-3 mb-4">
-              <div class="col-md-6">
-                <div class="stat-card stat-bg-4 shadow-sm h-100">
-                  <p>Physical Spaces Stock</p>
-                  <h3 id="statPhysStockVal">$0.00</h3>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="stat-card stat-bg-5 shadow-sm h-100">
-                  <p>Mobile Kits Stock</p>
-                  <h3 id="statKitStockVal">$0.00</h3>
-                </div>
-              </div>
-            </div>
-        </div>
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0">Global Stock Snapshot</h6>
+            <span class="text-primary fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseDashStock" class="collapse show">
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-1 shadow-sm h-100">
+                  <p>Unique Stock Items</p>
+                  <h3 id="statUniqueStock">0</h3>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-2 shadow-sm h-100">
+                  <p>Total Stock Units</p>
+                  <h3 id="statTotalStockUnits">0</h3>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-3 shadow-sm h-100">
+                  <p>Total Stock Value</p>
+                  <h3 id="statTotalStockValue">$0.00</h3>
+                </div>
+              </div>
+            </div>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <div class="stat-card stat-bg-4 shadow-sm h-100">
+                  <p>Physical Spaces Stock</p>
+                  <h3 id="statPhysStockVal">$0.00</h3>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="stat-card stat-bg-5 shadow-sm h-100">
+                  <p>Mobile Kits Stock</p>
+                  <h3 id="statKitStockVal">$0.00</h3>
+                </div>
+              </div>
+            </div>
+        </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashDeployed" aria-expanded="true">
-            <h6 class="fw-bold text-uppercase letter-spacing-1 text-info small m-0">Global Deployed Snapshot</h6>
-            <span class="text-info fw-bold toggle-icon">▼</span>
-        </div>
-        <div id="collapseDashDeployed" class="collapse show">
-            <div class="row g-3 mb-3">
-              <div class="col-md-4">
-                <div class="stat-card stat-bg-1 shadow-sm h-100" style="opacity: 0.9;">
-                  <p>Unique Deployed Items</p>
-                  <h3 id="statUniqueDep">0</h3>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="stat-card stat-bg-2 shadow-sm h-100" style="opacity: 0.9;">
-                  <p>Total Deployed Units</p>
-                  <h3 id="statTotalDepUnits">0</h3>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="stat-card stat-bg-3 shadow-sm h-100" style="opacity: 0.9;">
-                  <p>Total Deployed Value</p>
-                  <h3 id="statTotalDepValue">$0.00</h3>
-                </div>
-              </div>
-            </div>
-            <div class="row g-3 mb-4">
-              <div class="col-md-6">
-                <div class="stat-card stat-bg-4 shadow-sm h-100" style="opacity: 0.9;">
-                  <p>Physical Spaces Deployed</p>
-                  <h3 id="statPhysDepVal">$0.00</h3>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="stat-card stat-bg-5 shadow-sm h-100" style="opacity: 0.9;">
-                  <p>Mobile Kits Deployed</p>
-                  <h3 id="statKitDepVal">$0.00</h3>
-                </div>
-              </div>
-            </div>
-        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3 mt-4 border-bottom border-info pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashDeployed" aria-expanded="true">
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-info small m-0">Global Deployed Snapshot</h6>
+            <span class="text-info fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseDashDeployed" class="collapse show">
+            <div class="row g-3 mb-3">
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-1 shadow-sm h-100" style="opacity: 0.9;">
+                  <p>Unique Deployed Items</p>
+                  <h3 id="statUniqueDep">0</h3>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-2 shadow-sm h-100" style="opacity: 0.9;">
+                  <p>Total Deployed Units</p>
+                  <h3 id="statTotalDepUnits">0</h3>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-3 shadow-sm h-100" style="opacity: 0.9;">
+                  <p>Total Deployed Value</p>
+                  <h3 id="statTotalDepValue">$0.00</h3>
+                </div>
+              </div>
+            </div>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <div class="stat-card stat-bg-4 shadow-sm h-100" style="opacity: 0.9;">
+                  <p>Physical Spaces Deployed</p>
+                  <h3 id="statPhysDepVal">$0.00</h3>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="stat-card stat-bg-5 shadow-sm h-100" style="opacity: 0.9;">
+                  <p>Mobile Kits Deployed</p>
+                  <h3 id="statKitDepVal">$0.00</h3>
+                </div>
+              </div>
+            </div>
+        </div>
         <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom border-primary pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashGroups" aria-expanded="true">
             <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0">Location Groups Snapshot</h6>
             <span class="text-primary fw-bold toggle-icon">▼</span>
@@ -1493,33 +1493,34 @@ async function fetchData(callback) {
   }
 
   function getStockBalance(barcode, location = null, subLocation = null, state = 'stock') {
-    let balance = 0;
-    db.logs.forEach(l => {
-      if (l.barcode === barcode) {
-        let isToValid = false;
-        let isFromValid = false;
-        if (state === 'stock') {
-            if (["In", "Move-In", "Return-In", "Audit-In"].includes(l.type)) isToValid = true;
-            if (["Out", "Move-Out", "Deploy-Out", "Audit-Out"].includes(l.type)) isFromValid = true;
-        } else if (state === 'deployed') {
-            if (["Deploy-In"].includes(l.type)) isToValid = true;
-            if (["Return-Out", "Consume-Out"].includes(l.type)) isFromValid = true;
-        } else if (state === 'all') {
-            isToValid = true;
-            isFromValid = true;
-        }
+    let balance = 0;
+    db.logs.forEach(l => {
+      if (l.barcode === barcode) {
+        let isToValid = false;
+        let isFromValid = false;
+        if (state === 'stock') {
+            if (["In", "Move-In", "Return-In", "Audit-In"].includes(l.type)) isToValid = true;
+            if (["Out", "Move-Out", "Deploy-Out", "Audit-Out"].includes(l.type)) isFromValid = true;
+        } else if (state === 'deployed') {
+            if (["Deploy-In"].includes(l.type)) isToValid = true;
+            if (["Return-Out", "Consume-Out"].includes(l.type)) isFromValid = true;
+        } else if (state === 'all') {
+            isToValid = true;
+            isFromValid = true;
+        }
 
-        if (!location) {
-          if (isToValid) balance += Math.abs(l.quantity);
-          if (isFromValid) balance -= Math.abs(l.quantity);
-        } else {
-          if (isToValid && l.toLoc === location && (!subLocation || l.subLoc === subLocation)) balance += Math.abs(l.quantity);
-          if (isFromValid && l.fromLoc === location && (!subLocation || l.subLoc === subLocation)) balance -= Math.abs(l.quantity);
-        }
-      }
-    });
-    return balance;
-  }
+        if (!location) {
+          if (isToValid) balance += Math.abs(l.quantity);
+          if (isFromValid) balance -= Math.abs(l.quantity);
+        } else {
+          let spotMatch = (subLocation === null || (l.subLoc || "") === (subLocation || ""));
+          if (isToValid && l.toLoc === location && spotMatch) balance += Math.abs(l.quantity);
+          if (isFromValid && l.fromLoc === location && spotMatch) balance -= Math.abs(l.quantity);
+        }
+      }
+    });
+    return balance;
+  }
   function renderDashboard() {
     let globalUnits = 0;
     let globalValue = 0;
@@ -2467,8 +2468,10 @@ async function fetchData(callback) {
     let data = db.locations.filter(loc => loc.status === 'Active').map(loc => {
       let qty = 0, last = null;
       db.logs.forEach(l => {
-        if (l.toLoc === loc.locationName) { qty += l.quantity; last = l; }
-        if (l.fromLoc === loc.locationName) { qty -= Math.abs(l.quantity); last = l; }
+        const isStockIn = ["In", "Move-In", "Return-In", "Audit-In"].includes(l.type);
+        const isStockOut = ["Out", "Move-Out", "Deploy-Out", "Audit-Out"].includes(l.type);
+        if (l.toLoc === loc.locationName && isStockIn) { qty += Math.abs(l.quantity); last = l; }
+        if (l.fromLoc === loc.locationName && isStockOut) { qty -= Math.abs(l.quantity); last = l; }
       });
       return { ...loc, qty, last };
     });    
@@ -2476,8 +2479,8 @@ async function fetchData(callback) {
     db.logs.forEach(l => {
         const itm = db.items.find(itm => itm.barcode === l.barcode);
         if (itm && itm.status === 'Active') {
-          if (l.type === "In" || l.type === "Move-In") evQty += Math.abs(l.quantity);
-          if (l.type === "Out" || l.type === "Move-Out") evQty -= Math.abs(l.quantity);
+          if (["In", "Move-In", "Return-In", "Audit-In"].includes(l.type)) evQty += Math.abs(l.quantity);
+          if (["Out", "Move-Out", "Deploy-Out", "Audit-Out"].includes(l.type)) evQty -= Math.abs(l.quantity);
           evLast = l;
         }
     });
