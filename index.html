@@ -292,10 +292,10 @@
             <div id="locationGridPhysical" class="dynamic-grid mb-4"></div>
         </div>        
         <div id="deployableSection" class="hidden">
-          <div class="d-flex justify-content-between align-items-center mt-4 mb-3 border-bottom border-info pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDeployable" aria-expanded="true">
-              <h6 class="fw-bold text-info m-0">Deployable Locations</h6>
-              <span class="text-info fw-bold toggle-icon">▼</span>
-          </div>
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-3 border-bottom border-info pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDeployable" aria-expanded="true">
+              <h6 class="fw-bold text-info m-0">Mobile Kits</h6>
+              <span class="text-info fw-bold toggle-icon">▼</span>
+          </div>
           <div id="collapseDeployable" class="collapse show">
               <div id="locationGridDeployable" class="dynamic-grid"></div>
           </div>
@@ -430,15 +430,15 @@
             <label class="small fw-bold text-danger">Reason / Notes (Required for Consume/Remove)</label>
             <input type="text" id="actNotes" class="form-control border-danger shadow-sm" placeholder="Why is this being removed or consumed?">
           </div>
-          <div class="row g-2 mt-1" id="stockActionButtons">
-            <div class="col-6 col-md-3"><button class="btn btn-success py-2 w-100 fw-bold" id="btnIn" onclick="submitInline('In')">ADD</button></div>
-            <div class="col-6 col-md-3"><button class="btn btn-danger py-2 w-100 fw-bold" id="btnOut" onclick="submitInline('Out')">REMOVE</button></div>
-            <div class="col-6 col-md-3"><button class="btn btn-primary py-2 w-100 fw-bold" id="btnMove" onclick="handleMoveClick()">MOVE</button></div>
-            <div class="col-6 col-md-3"><button class="btn btn-info py-2 w-100 fw-bold text-dark" id="btnDeploy" onclick="handleDeployClick()">DEPLOY</button></div>
+          <div class="d-flex gap-2 mt-2" id="stockActionButtons">
+            <button class="btn btn-sm btn-success fw-bold flex-fill py-2" id="btnIn" onclick="submitInline('In')">ADD</button>
+            <button class="btn btn-sm btn-danger fw-bold flex-fill py-2" id="btnOut" onclick="submitInline('Out')">REMOVE</button>
+            <button class="btn btn-sm btn-primary fw-bold flex-fill py-2" id="btnMove" onclick="handleMoveClick()">MOVE</button>
+            <button class="btn btn-sm btn-info fw-bold text-dark flex-fill py-2" id="btnDeploy" onclick="handleDeployClick()">DEPLOY</button>
           </div>
-          <div class="row g-2 mt-1 hidden" id="deployedActionButtons">
-            <div class="col-6"><button class="btn btn-warning py-2 w-100 fw-bold text-dark" id="btnReturn" onclick="handleReturnClick()">RETURN TO STOCK</button></div>
-            <div class="col-6"><button class="btn btn-danger py-2 w-100 fw-bold" id="btnConsume" onclick="handleConsumeClick()">CONSUME / REMOVE</button></div>
+          <div class="d-flex gap-2 mt-2 hidden" id="deployedActionButtons">
+            <button class="btn btn-sm btn-warning fw-bold text-dark flex-fill py-2" id="btnReturn" onclick="handleReturnClick()">RETURN TO STOCK</button>
+            <button class="btn btn-sm btn-danger fw-bold flex-fill py-2" id="btnConsume" onclick="handleConsumeClick()">CONSUME</button>
           </div>
         </div>
       </div>
@@ -478,46 +478,59 @@
             </div>
           </div>
         </div>
-        <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashGlobal" aria-expanded="true">
-            <h6 class="fw-bold text-uppercase letter-spacing-1 text-muted small m-0">Global Snapshot</h6>
-            <span class="text-muted fw-bold toggle-icon">▼</span>
-        </div>
-        <div id="collapseDashGlobal" class="collapse show">
-            <div class="row g-3 mb-3">
-              <div class="col-md-4">
-                <div class="stat-card stat-bg-1 shadow-sm h-100">
-                  <p>Unique Active Items</p>
-                  <h3 id="statUnique">0</h3>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="stat-card stat-bg-2 shadow-sm h-100">
-                  <p>Total Units on Hand</p>
-                  <h3 id="statTotalUnits">0</h3>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="stat-card stat-bg-3 shadow-sm h-100">
-                  <p>Total Inventory Value</p>
-                  <h3 id="statTotalValue">$0.00</h3>
-                </div>
-              </div>
-            </div>
-            <div class="row g-3 mb-4">
-              <div class="col-md-6">
-                <div class="stat-card stat-bg-4 shadow-sm h-100">
-                  <p>Global Stock Value</p>
-                  <h3 id="statPhysValue">$0.00</h3>
+        <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashStock" aria-expanded="true">
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0">Global Stock Snapshot</h6>
+            <span class="text-primary fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseDashStock" class="collapse show">
+            <div class="row g-3 mb-4">
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-1 shadow-sm h-100">
+                  <p>Unique Stock Items</p>
+                  <h3 id="statUniqueStock">0</h3>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="stat-card stat-bg-5 shadow-sm h-100">
-                  <p>Global Deployed Value</p>
-                  <h3 id="statDepValue">$0.00</h3>
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-2 shadow-sm h-100">
+                  <p>Total Stock Units</p>
+                  <h3 id="statTotalStockUnits">0</h3>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-4 shadow-sm h-100">
+                  <p>Total Stock Value</p>
+                  <h3 id="statTotalStockValue">$0.00</h3>
                 </div>
               </div>
             </div>
-        </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashDeployed" aria-expanded="true">
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-info small m-0">Global Deployed Snapshot</h6>
+            <span class="text-info fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseDashDeployed" class="collapse show">
+            <div class="row g-3 mb-4">
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-3 shadow-sm h-100">
+                  <p>Unique Deployed Items</p>
+                  <h3 id="statUniqueDep">0</h3>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-3 shadow-sm h-100">
+                  <p>Total Deployed Units</p>
+                  <h3 id="statTotalDepUnits">0</h3>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="stat-card stat-bg-5 shadow-sm h-100">
+                  <p>Total Deployed Value</p>
+                  <h3 id="statTotalDepValue">$0.00</h3>
+                </div>
+              </div>
+            </div>
+        </div>
         <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom border-primary pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashGroups" aria-expanded="true">
             <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0">Location Groups Snapshot</h6>
             <span class="text-primary fw-bold toggle-icon">▼</span>
@@ -575,10 +588,10 @@
             <div class="row g-3 mb-4" id="dashLocationCardsPhysical"></div>
         </div>
         <div id="dashDeployableSection" class="hidden">
-          <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom border-info pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashDep" aria-expanded="true">
-              <h6 class="fw-bold text-uppercase letter-spacing-1 text-info small m-0">Deployable Locations</h6>
-              <span class="text-info fw-bold toggle-icon">▼</span>
-          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom border-info pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashDep" aria-expanded="true">
+              <h6 class="fw-bold text-uppercase letter-spacing-1 text-info small m-0">Mobile Kits</h6>
+              <span class="text-info fw-bold toggle-icon">▼</span>
+          </div>
           <div id="collapseDashDep" class="collapse show">
               <div class="row g-3" id="dashLocationCardsDeployable"></div>
           </div>
@@ -655,9 +668,9 @@
               <option value="Other">Other</option>
             </select>            
             <select id="mDeployType" class="form-select mb-2 text-primary fw-bold" onchange="toggleDeployLoc()">
-              <option value="Physical Space">Type: Physical Space</option>
-              <option value="Deployable">Type: Deployable</option>
-            </select>
+              <option value="Physical Space">Type: Physical Space</option>
+              <option value="Mobile Kit">Type: Mobile Kit</option>
+            </select>
             <input type="text" id="mDeployLoc" class="form-control mb-2 hidden" placeholder="Deployment Location (e.g. Site Name)">            
             <label class="fw-bold small mb-1 text-primary mt-1">Access Groups (LBAC)</label>
             <div id="locGroupChecklist" class="border border-primary rounded p-2 mb-2 bg-white shadow-sm" style="max-height: 120px; overflow-y: auto;">
@@ -1484,10 +1497,19 @@ async function fetchData(callback) {
     db.locations.filter(l => l.status === 'Active').forEach(l => {
       locationStats[l.locationName] = { type: l.type, units: 0, value: 0, deployType: l.deployType || 'Physical Space', groups: l.lbacGroups || '' };
     });
-    const activeItems = db.items.filter(i => i.status === 'Active');    
+    let globalStockUnits = 0;
+    let globalStockValue = 0;
+    let uniqueStockItems = 0;
+    let globalDepUnits = 0;
+    let globalDepValue = 0;
+    let uniqueDepItems = 0;
+
+    const activeItems = db.items.filter(i => i.status === 'Active');    
     activeItems.forEach(itm => {
       const price = parseFloat(itm.price) || 0;
       let itemGlobalStock = 0;
+      let itemGlobalDep = 0;
+
       for (const locName in locationStats) {
         const stockAtLoc = getStockBalance(itm.barcode, locName, null, 'stock'); 
         const deployedAtLoc = getStockBalance(itm.barcode, locName, null, 'deployed');
@@ -1496,28 +1518,37 @@ async function fetchData(callback) {
         if (totalAtLoc > 0) {
           locationStats[locName].units += totalAtLoc;
           locationStats[locName].value += (totalAtLoc * price);
-          itemGlobalStock += totalAtLoc;          
-          physValue += (stockAtLoc * price);
-          depValue += (deployedAtLoc * price);
         }
+        if (stockAtLoc > 0) itemGlobalStock += stockAtLoc;
+        if (deployedAtLoc > 0) itemGlobalDep += deployedAtLoc;
       }
-      globalUnits += itemGlobalStock;
-      globalValue += (itemGlobalStock * price);
-      if (itemGlobalStock <= parseFloat(itm.minStock)) {
-        lowStockAlerts.push({
-          bc: itm.barcode,
-          category: itm.category,
-          name: `${itm.make} ${itm.model}`,
-          onHand: itemGlobalStock,
-          min: itm.minStock
-        });
-      }
-    });
-    document.getElementById('statUnique').innerText = activeItems.length;
-    document.getElementById('statTotalUnits').innerText = globalUnits.toLocaleString('en-US');
-    document.getElementById('statTotalValue').innerText = appCurrency + globalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});    
-    document.getElementById('statPhysValue').innerText = appCurrency + physValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('statDepValue').innerText = appCurrency + depValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+      if (itemGlobalStock > 0) uniqueStockItems++;
+      if (itemGlobalDep > 0) uniqueDepItems++;
+
+      globalStockUnits += itemGlobalStock;
+      globalStockValue += (itemGlobalStock * price);
+      globalDepUnits += itemGlobalDep;
+      globalDepValue += (itemGlobalDep * price);
+
+      if (itemGlobalStock <= parseFloat(itm.minStock)) {
+        lowStockAlerts.push({
+          bc: itm.barcode,
+          category: itm.category,
+          name: `${itm.make} ${itm.model}`,
+          onHand: itemGlobalStock,
+          min: itm.minStock
+        });
+      }
+    });
+    
+    document.getElementById('statUniqueStock').innerText = uniqueStockItems;
+    document.getElementById('statTotalStockUnits').innerText = globalStockUnits.toLocaleString('en-US');
+    document.getElementById('statTotalStockValue').innerText = appCurrency + globalStockValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});    
+    
+    document.getElementById('statUniqueDep').innerText = uniqueDepItems;
+    document.getElementById('statTotalDepUnits').innerText = globalDepUnits.toLocaleString('en-US');
+    document.getElementById('statTotalDepValue').innerText = appCurrency + globalDepValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     const globalAlertBanner = document.getElementById('globalStockAlert');
     const alertArea = document.getElementById('dashAlertsArea');
     const alertBody = document.getElementById('dashAlertsBody');    
@@ -1553,8 +1584,8 @@ async function fetchData(callback) {
         </div>
       </div>
     `;
-    const physKeys = Object.keys(locationStats).filter(k => locationStats[k].deployType !== 'Deployable').sort();
-    const depKeys = Object.keys(locationStats).filter(k => locationStats[k].deployType === 'Deployable').sort();
+    const physKeys = Object.keys(locationStats).filter(k => locationStats[k].deployType !== 'Deployable' && locationStats[k].deployType !== 'Mobile Kit').sort();
+    const depKeys = Object.keys(locationStats).filter(k => locationStats[k].deployType === 'Deployable' || locationStats[k].deployType === 'Mobile Kit').sort();
     document.getElementById('dashLocationCardsPhysical').innerHTML = physKeys.map(k => buildDashCard(k, locationStats[k])).join('');    
     const depSec = document.getElementById('dashDeployableSection');
     if (depKeys.length > 0) {
@@ -2176,9 +2207,9 @@ async function fetchData(callback) {
     document.getElementById('btnCancelEdit').classList.add('hidden');
   }
   function toggleDeployLoc() {
-    const type = document.getElementById('mDeployType').value;
-    document.getElementById('mDeployLoc').classList.toggle('hidden', type !== 'Deployable');
-  }
+    const type = document.getElementById('mDeployType').value;
+    document.getElementById('mDeployLoc').classList.toggle('hidden', type !== 'Mobile Kit' && type !== 'Deployable');
+  }
   function editLoc(name) {
     const loc = db.locations.find(l => l.locationName === name);
     if(!loc) return;    
@@ -2410,9 +2441,9 @@ async function fetchData(callback) {
     if (sort === "qtyAsc") data.sort((a,b) => a.qty - b.qty);    
     const buildCard = (l) => {
       let meta = l.last ? `${(l.last.toLoc === l.locationName || l.locationName === "Everywhere") ? "Added" : "Removed"} ${fmtTime(l.last.timestamp)}<br>by ${getUserDisplayName(l.last.userEmail)}` : "No activity";
-      let imgHtml = (l.imgFile || l.img) ? `<img src="${l.imgFile || l.img}">` : `<div class="d-flex align-items-center justify-content-center bg-light text-secondary rounded mb-2" style="height:120px; font-size:3rem;">${l.deployType==='Deployable'?'🧰':'🏢'}</div>`;
-      if (l.locationName === "Everywhere") imgHtml = `<div class="d-flex align-items-center justify-content-center bg-light text-primary rounded mb-2" style="height:120px; font-size:3rem;">🌎</div>`;
-      let deployTag = l.deployType === 'Deployable' ? `<div class="cat-badge bg-info text-dark mt-1 mb-2">Deployed: ${l.deployLoc || 'Not Deployed'}</div>` : '';
+      let imgHtml = (l.imgFile || l.img) ? `<img src="${l.imgFile || l.img}">` : `<div class="d-flex align-items-center justify-content-center bg-light text-secondary rounded mb-2" style="height:120px; font-size:3rem;">${(l.deployType==='Deployable' || l.deployType==='Mobile Kit')?'🧰':'🏢'}</div>`;
+      if (l.locationName === "Everywhere") imgHtml = `<div class="d-flex align-items-center justify-content-center bg-light text-primary rounded mb-2" style="height:120px; font-size:3rem;">🌎</div>`;
+      let deployTag = (l.deployType === 'Deployable' || l.deployType === 'Mobile Kit') ? `<div class="cat-badge bg-info text-dark mt-1 mb-2">Mobile Kit: ${l.deployLoc || 'Not Deployed'}</div>` : '';
       return `<div class="loc-card" onclick="viewLoc('${l.locationName}', '${l.type}')">
                   ${imgHtml}
                   <h6 class="mb-1">${l.locationName}</h6>
@@ -2455,20 +2486,20 @@ async function fetchData(callback) {
     if (locInfo && !isGlobal) {
        document.getElementById('locInfoHeader').classList.remove('hidden');       
        const imgEl = document.getElementById('locDetImg');
-       const emojiEl = document.getElementById('locDetEmoji');       
-       if (locInfo.imgFile || locInfo.img) {
-         imgEl.src = locInfo.imgFile || locInfo.img;
-         imgEl.classList.remove('hidden');
-         emojiEl.classList.add('hidden');
-       } else {
-         imgEl.classList.add('hidden');
-         emojiEl.innerText = locInfo.deployType === 'Deployable' ? '🧰' : '🏢';
-         emojiEl.classList.remove('hidden');
-       }       
-       document.getElementById('locDetType').innerText = locInfo.type;       
-       const deployBadge = document.getElementById('locDetDeploy');
-       if (locInfo.deployType === 'Deployable') {
-         deployBadge.innerText = `Deployed to: ${locInfo.deployLoc || 'Unknown'}`;
+       const emojiEl = document.getElementById('locDetEmoji');       
+       if (locInfo.imgFile || locInfo.img) {
+         imgEl.src = locInfo.imgFile || locInfo.img;
+         imgEl.classList.remove('hidden');
+         emojiEl.classList.add('hidden');
+       } else {
+         imgEl.classList.add('hidden');
+         emojiEl.innerText = (locInfo.deployType === 'Deployable' || locInfo.deployType === 'Mobile Kit') ? '🧰' : '🏢';
+         emojiEl.classList.remove('hidden');
+       }       
+       document.getElementById('locDetType').innerText = locInfo.type;       
+       const deployBadge = document.getElementById('locDetDeploy');
+       if (locInfo.deployType === 'Deployable' || locInfo.deployType === 'Mobile Kit') {
+         deployBadge.innerText = `Mobile Kit: ${locInfo.deployLoc || 'Unknown'}`;
          deployBadge.classList.remove('hidden');
        } else {
          deployBadge.classList.add('hidden');
