@@ -696,9 +696,10 @@
         <p>The Dashboard (found in the Management tab) provides a real-time financial and operational snapshot of the inventory.</p>
         <img src="docs/screenshot-dashboard.png" class="doc-screenshot" alt="IMS Dashboard Snapshot">
         <ul>
-          <li><strong>Global Snapshot:</strong> Visible to Admins and Sub-Admins. Shows total unit counts and financial valuations across the entire company.</li>
-          <li><strong>Location Groups Snapshot:</strong> Allows you to select an Access Group from a dropdown (e.g., "Arizona") and instantly recalculate the financial valuation and unit count strictly for assets within that region.</li>
-        </ul>        
+          <li><strong>Global Snapshot:</strong> Visible to Admins and Sub-Admins. Valuations are strictly separated into <strong>Global Stock</strong> (items sitting on shelves) and <strong>Global Deployed</strong> (items currently active in the field). It further breaks down values by Physical Spaces vs Mobile Kits.</li>
+          <li><strong>Location Groups Snapshot:</strong> Allows you to select an Access Group from a dropdown (e.g., "Arizona") and instantly recalculate the financial valuations and unit counts strictly for assets within that region, maintaining the Stock vs Deployed split.</li>
+        </ul>
+        
         <h3>Low Stock Alerts</h3>
         <p>If an item dips below its designated "Min Stock" threshold, two things happen:</p>
         <ol>
@@ -708,7 +709,11 @@
       </section>
       <section id="finding-data" class="doc-section">
         <h2>Finding &amp; Viewing Items</h2>
-        <p>The main screen of the application is the <strong>Location Grid</strong>. Clicking a location card opens it to reveal all the items currently stored inside it.</p>
+        <p>The main screen of the application is the <strong>Location Grid</strong>. Clicking a location card opens it to reveal the inventory currently associated with it.</p>
+        <div class="callout border-primary">
+          <strong>Dual-State Locations:</strong> Inside every location, inventory is strictly separated into two tabs: <strong>Stock Inventory</strong> (items sitting on a shelf ready to be used) and <strong>Deployed Assets</strong> (items currently in use or active at that location).
+        </div>
+        
         <img src="docs/screenshot-locgrid.png" class="doc-screenshot" alt="Item Details View">
         <ul>
           <li><strong>Global "Everywhere" Location:</strong> At the end of the Physical Spaces grid is a special blue 🌎 card called "Everywhere". This is a system-generated master view. Clicking it will show you every single item across your entire company in one massive list.</li>
@@ -725,14 +730,29 @@
           <span class="text-muted small">The main inventory grids strictly show items that <strong>currently reside</strong> in that specific location. If an item drops to <strong>0 stock</strong>, it will completely disappear from that location's visual grid to keep things uncluttered. To find it and add new stock, simply use the <strong>Global Search Bar</strong> at the top of the screen!</span>
         </div>
         <h3>Interactive Stock Badges (Teleporting)</h3>
-        <p>When you view an Item's Detail page, you will see a cluster of badges showing exactly where this item is currently located across your company (e.g., <code>Warehouse A: 50</code>). <strong>These badges are clickable!</strong> If you click one, the app will instantly teleport you to that specific location's inventory grid.</p>
+        <p>When you view an Item's Detail page, you will see clusters of badges showing exactly where this item is currently located across your company. To prevent operational confusion, these are physically separated into <strong>Stock Locations</strong> (solid blue badges) and <strong>Deployed Locations</strong> (hollow outlined badges).</p>
+        <p><strong>These badges are clickable!</strong> If you click one, the app will instantly teleport you to that specific location's inventory grid.</p>
         <p><i>Note on LBAC:</i> You will only see stock badges for locations you have permission to view. If the item exists in California, but you only have Arizona permissions, the California badges are completely hidden from you.</p>
       </section>
       <section id="transactions" class="doc-section">
-        <h2>Transactions (Check In, Out &amp; Move)</h2>
-        <p>To execute a transaction, go to the Item Detail page. At the bottom, you will find the Action Form.</p>
-        <p><img src="docs/screenshot-transactionbulk.png" class="doc-screenshot" alt="Documentation Image"></p>
-        <img src="docs/screenshot-transaction.png" class="doc-screenshot" alt="Action Form">        
+        <h2>Asset Lifecycle (Move, Deploy, Return, Consume)</h2>
+        <p>To execute a transaction, go to the Item Detail page. At the bottom, you will find the Action Form, which is split into two tabs depending on the item's current state.</p>
+        
+        <ul class="mb-4">
+          <li><strong>Stock Actions:</strong> 
+            <ul>
+              <li><strong>Add / Remove:</strong> Adjust raw stock levels (e.g., receiving a new shipment, or throwing out old gear).</li>
+              <li><strong>Move:</strong> Transfers stock from one location's shelf to another location's shelf.</li>
+              <li><strong>Deploy:</strong> Deducts the item from Stock and moves it into the "Deployed Assets" ledger of the destination location.</li>
+            </ul>
+          </li>
+          <li class="mt-2"><strong>Deployed Actions:</strong>
+            <ul>
+              <li><strong>Return to Stock:</strong> Pulls the asset out of deployment and returns it to resting Stock at a specified location.</li>
+              <li><strong>Consume / Remove:</strong> Permanently removes a deployed item from the system (e.g., the item broke on set, or was lost). <span class="text-danger fw-bold">Compliance Rule:</span> Executing a Consume action strictly requires you to fill out the "Reason / Notes" text box for IT auditing purposes.</li>
+            </ul>
+          </li>
+        </ul>
         <h3>Bulk vs. Serialized Actions</h3>
         <div class="row mt-2">
           <div class="col-md-6">
@@ -752,10 +772,12 @@
       <section id="audits" class="doc-section">
         <h2>Performing Audits</h2>
         <p>Audits are true-ups of physical stock compared to what the system expects. Only Admins, Sub-Admins, Managers, and Operators can perform audits.</p>
+        
         <img src="docs/screenshot-audit.png" class="doc-screenshot" alt="Audit Mode">
         <ol>
-          <li>Navigate to a Location and click the yellow <strong>Audit</strong> button in the top right.</li>
-          <li>The system will generate a list of everything it expects to find in that location, broken down by specific Spots/Bins.</li>
+          <li>Navigate to a Location. <strong>Important:</strong> Select either the "Stock Inventory" tab or the "Deployed Assets" tab first, depending on what you intend to count.</li>
+          <li>Click the yellow <strong>Audit</strong> button in the top right. The audit will lock into whatever mode you selected (Stock or Deployed) to prevent mixed counting.</li>
+          <li>The system will generate a list of everything it expects to find in that state, broken down by specific Spots/Bins.</li>
           <li><strong>For Bulk Items:</strong> Simply type the actual number of items you count on the shelf. The row will turn yellow if there is a discrepancy.</li>
           <li><strong>For Serialized Items:</strong> Click the "Audit" button. A modal will appear. Scan all physical serial numbers you find on the shelf. The system will cross-reference your scans, flag missing expected serials, and register unexpected found serials.</li>
           <li>Click <strong>Submit True-Up</strong>. The system will automatically generate Adjustment logs to fix the inventory balances.</li>
@@ -815,8 +837,8 @@
             </div>
           </li>
           <li><strong>Category:</strong> The general grouping (e.g., Office, Storage Room, Events).</li>
-          <li><strong>Type:</strong> Choose between <strong>Physical Space</strong> (a permanent building) or <strong>Deployable</strong> (an asset that moves, like a Truck or Storage Case).</li>
-          <li><strong>Deployment Location:</strong> If you select "Deployable" above, a new box appears asking *where* this truck/case is currently deployed to.</li>
+          <li><strong>Type:</strong> Choose between <strong>Physical Space</strong> (a permanent building) or <strong>Mobile Kit</strong> (an asset that moves and holds stock, like a Production Truck or Pelican Case).</li>
+          <li><strong>Deployment Location:</strong> If you select "Mobile Kit" above, a new box appears asking where this kit is currently deployed to.</li>
           <li><strong>Access Groups (LBAC):</strong> A checklist of groups (e.g., Arizona, West Coast). Check the boxes to assign this location to those groups. You can quickly create new groups by typing a tag and clicking "Add".</li>
           <li><strong>Description &amp; Notes:</strong> Add details about the location, access codes, or contact info.</li>
           <li><strong>Image URL / File Upload:</strong> Give the location a photo! Just like items, File Uploads override Image URLs.</li>
@@ -947,7 +969,7 @@
                 <br><span class="small text-muted">Type Headers (A1 to J1): Location Name, Type, Status, Description, Notes, Image URL, Image File, Space Type, Deployment Location, LBAC Groups</span>
               </li>
               <li>Tab 3: <strong>Log</strong>
-                <br><span class="small text-muted">Type Headers (A1 to I1): Date, Email, Barcode, From, To, Quantity, Action, Serial Number, Spot</span>
+                <br><span class="small text-muted">Type Headers (A1 to J1): Date, Email, Barcode, From, To, Quantity, Action, Serial Number, Spot, Notes</span>
               </li>
               <li>Tab 4: <strong>Users</strong>
                 <br><span class="small text-muted">Type Headers (A1 to G1): Email, Last Login, Status, Role, Name, Theme, Locations</span>
