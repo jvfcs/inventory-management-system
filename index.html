@@ -195,6 +195,7 @@
     .table-warning { transition: background-color 0.3s ease; }
     [data-bs-theme="dark"] .table-warning { background-color: rgba(255, 193, 7, 0.2) !important; color: var(--dark-text) !important; }
     [data-bs-theme="dark"] .table-warning > td { background-color: rgba(255, 193, 7, 0.2) !important; color: var(--dark-text) !important; }
+    [data-bs-theme="dark"] .table-hover tbody tr.table-warning:hover > td { background-color: rgba(255, 193, 7, 0.3) !important; }
     [data-bs-theme="dark"] .alert-warning { background-color: rgba(255, 193, 7, 0.15) !important; color: #ffda6a !important; border-color: rgba(255, 193, 7, 0.3) !important; }
     [data-bs-theme="dark"] .alert-warning .text-dark { color: #ffda6a !important; }
   </style>
@@ -665,12 +666,12 @@
         <div id="collapseDashPhys" class="collapse show">
             <div class="row g-3 mb-4" id="dashLocationCardsPhysical"></div>
         </div>
-        <div id="dashDeployableSection" class="hidden">
-          <div class="d-flex justify-content-between align-items-center mb-3 mt-2 border-bottom border-info pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashDep" aria-expanded="true">
-              <h6 class="fw-bold text-uppercase letter-spacing-1 text-info small m-0">Mobile Kits</h6>
-              <span class="text-info fw-bold toggle-icon">▼</span>
-          </div>
-          <div id="collapseDashDep" class="collapse show">
+        <div id="dashDeployableSection" class="hidden w-100">
+          <div class="d-flex w-100 justify-content-between align-items-center mb-3 mt-2 border-bottom border-info pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashDep" aria-expanded="true">
+              <h6 class="fw-bold text-uppercase letter-spacing-1 text-info small m-0">Mobile Kits</h6>
+              <span class="text-info fw-bold toggle-icon">▼</span>
+          </div>
+          <div id="collapseDashDep" class="collapse show w-100">
               <div class="row g-3" id="dashLocationCardsDeployable"></div>
           </div>
         </div>
