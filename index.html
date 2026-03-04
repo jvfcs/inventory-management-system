@@ -1288,8 +1288,12 @@
       const currentUser = db.users.find(u => u.email.toLowerCase() === currentUserEmail.toLowerCase());
       if (currentUser) {
           currentUserRole = currentUser.role;
-          const matchedRole = db.roles ? db.roles.find(r => r.Role.toLowerCase() === currentUser.role.toLowerCase()) : null;
-          currentUserPerms = matchedRole || { 'Global Access': false };
+          if (currentUserRole.toLowerCase() === 'admin') {
+              currentUserPerms = { 'Global Access': true, 'View Dashboard': true, 'Manage Items': true, 'Manage Locations': true, 'Perform Transactions': true, 'Perform Audits': true, 'Export Data': true, 'View Logs': true, 'View SysLogs': true, 'Manage Users': true, 'Manage Theme': true };
+          } else {
+              const matchedRole = db.roles ? db.roles.find(r => r.Role.toLowerCase() === currentUser.role.toLowerCase()) : null;
+              currentUserPerms = matchedRole || { 'Global Access': false };
+          }
           currentUserLocations = (currentUser.locations || "").split(',').map(s => s.trim()).filter(s => s);
       }
       if (!currentUserPerms['Global Access']) {
@@ -1353,16 +1357,20 @@
     } catch(e) { console.error("Could not save theme to backend", e); }
   }
 async function fetchData(callback) {
-    try {
-      const data = await apiCall('getInitialData');      
-      db = data; 
-      db.rawLocations = [...data.locations];
-      const currentUser = data.users.find(u => u.email.toLowerCase() === localStorage.getItem('ims_user_email').toLowerCase());
+    try {
+      const data = await apiCall('getInitialData');      
+      db = data; 
+      db.rawLocations = [...data.locations];
+      const currentUser = data.users.find(u => u.email.toLowerCase() === localStorage.getItem('ims_user_email').toLowerCase());
       if (currentUser) {
         currentUserEmail = currentUser.email;
         currentUserRole = currentUser.role;
-        const matchedRole = data.roles ? data.roles.find(r => r.Role.toLowerCase() === currentUser.role.toLowerCase()) : null;
-        currentUserPerms = matchedRole || { 'Global Access': false };
+        if (currentUserRole.toLowerCase() === 'admin') {
+            currentUserPerms = { 'Global Access': true, 'View Dashboard': true, 'Manage Items': true, 'Manage Locations': true, 'Perform Transactions': true, 'Perform Audits': true, 'Export Data': true, 'View Logs': true, 'View SysLogs': true, 'Manage Users': true, 'Manage Theme': true };
+        } else {
+            const matchedRole = data.roles ? data.roles.find(r => r.Role.toLowerCase() === currentUser.role.toLowerCase()) : null;
+            currentUserPerms = matchedRole || { 'Global Access': false };
+        }
         currentUserLocations = (currentUser.locations || "").split(',').map(s => s.trim()).filter(s => s);
       } else {
         currentUserRole = 'Admin'; 
