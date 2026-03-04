@@ -491,8 +491,8 @@
           <li class="nav-item"><a class="nav-link active text-nowrap" id="t0" onclick="switchMgmt('dash')">Dashboard</a></li>
           <li class="nav-item"><a class="nav-link text-nowrap" id="t1" onclick="switchMgmt('item')">Items</a></li>
           <li class="nav-item"><a class="nav-link text-nowrap" id="t2" onclick="switchMgmt('loc')">Locations</a></li>
-          <li class="nav-item"><a class="nav-link text-nowrap" id="t3" onclick="switchMgmt('log')">Logs</a></li>
-          <li class="nav-item"><a class="nav-link text-nowrap" id="t6" onclick="switchMgmt('syslog')">System Audit</a></li>
+          <li class="nav-item" id="tabLogs"><a class="nav-link text-nowrap" id="t3" onclick="switchMgmt('log')">Logs</a></li>
+          <li class="nav-item" id="tabSysLogs"><a class="nav-link text-nowrap" id="t6" onclick="switchMgmt('syslog')">System Audit</a></li>
           <li class="nav-item d-none" id="tabUserAccess"><a class="nav-link text-nowrap" id="t4" onclick="switchMgmt('user')">Users</a></li>
           <li class="nav-item d-none" id="tabTheme"><a class="nav-link text-nowrap" id="t5" onclick="switchMgmt('theme')">Theme</a></li>
         </ul>
@@ -1266,15 +1266,24 @@
           document.getElementById('btnAuditLocInner').classList.add('hidden');
       }
       if (currentUserRole === 'Admin') {
-          document.getElementById('tabUserAccess').classList.remove('d-none');
-          document.getElementById('tabTheme').classList.remove('d-none');
-      } else if (currentUserRole === 'Sub-Admin') {
-          document.getElementById('tabUserAccess').classList.remove('d-none');
-          document.getElementById('tabTheme').classList.add('d-none');
-      } else {
-          document.getElementById('tabUserAccess').classList.add('d-none');
-          document.getElementById('tabTheme').classList.add('d-none');
-      }      
+          document.getElementById('tabUserAccess').classList.remove('d-none');
+          document.getElementById('tabTheme').classList.remove('d-none');
+      } else if (currentUserRole === 'Sub-Admin') {
+          document.getElementById('tabUserAccess').classList.remove('d-none');
+          document.getElementById('tabTheme').classList.add('d-none');
+      } else {
+          document.getElementById('tabUserAccess').classList.add('d-none');
+          document.getElementById('tabTheme').classList.add('d-none');
+      }
+      
+      if (currentUserRole === 'Admin' || currentUserRole === 'Sub-Admin') {
+          document.getElementById('tabLogs').classList.remove('d-none');
+          document.getElementById('tabSysLogs').classList.remove('d-none');
+      } else {
+          document.getElementById('tabLogs').classList.add('d-none');
+          document.getElementById('tabSysLogs').classList.add('d-none');
+      }
+
       if (currentUserRole === 'Viewer') {
           document.getElementById('inlineActionForm').classList.add('hidden');
       } else {
