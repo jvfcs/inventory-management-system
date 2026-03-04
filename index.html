@@ -802,54 +802,76 @@
         </div>
       </div>
       <div id="mUser" class="hidden">
-        <div class="row">
-          <div class="col-lg-4 mb-4">
-            <h6 class="fw-bold mb-3" id="userFormTitle">Add New User</h6>
-            <input type="text" id="uName" class="form-control mb-2" placeholder="Full Name (Optional)">
-            <input type="email" id="uEmail" class="form-control mb-2" placeholder="User Email Address">            
-            <select id="uRole" class="form-select mb-2" onchange="updateRoleDescription()">
-            </select>            
-            <div id="uLocationsContainer" class="hidden mb-3 border rounded p-2 bg-light">
-               <label class="fw-bold small mb-1 text-primary">Assign Locations (LBAC)</label>
-               <div id="uLocationsList" style="max-height: 150px; overflow-y: auto;"></div>
-            </div>            
-            <div id="roleDesc" class="small text-muted mb-3 p-2 bg-light rounded border border-light hidden"></div>            
-            <button class="btn btn-primary w-100 mb-2" id="btnSaveUser" onclick="saveOrUpdateUser('add')">Add User</button>
-            <button class="btn btn-outline-secondary w-100 hidden" id="btnCancelEditUser" onclick="cancelEditUser()">Cancel Edit</button>
-          </div>
-          <div class="col-lg-8">
-            <h6 class="fw-bold mb-3">System Access Management</h6>
-            <div class="table-responsive bg-light p-2 rounded border">
-               <table class="table table-sm table-hover bg-white m-0">
-                 <thead>
-                   <tr>
-                     <th class="sortable" onclick="sortMgmt('user', 0)">Name</th>
-                     <th class="sortable" onclick="sortMgmt('user', 1)">Role</th>
-                     <th class="sortable" onclick="sortMgmt('user', 2)">Last Login</th>
-                     <th class="sortable centered-col" onclick="sortMgmt('user', 3)">Actions</th>
-                   </tr>
-                 </thead>
-                 <tbody id="bodyUsers"></tbody>
-               </table>
-            </div>
-            <div id="roleManagerContainer" class="mt-5 border-top pt-4">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="m-0 text-primary fw-bold">Dynamic Role Manager</h5>
-                <button class="btn btn-sm btn-outline-primary fw-bold" onclick="createNewRole()">+ New Custom Role</button>
-              </div>
-              <div class="alert alert-info small py-2 mb-3">Check the boxes below to instantly grant or revoke capabilities across the entire system.</div>
-              <div class="table-responsive">
-                <table class="table table-sm table-bordered align-middle text-center" style="font-size: 0.85rem;">
-                  <thead class="table-light" id="rolesTableHeader">
-                  </thead>
-                  <tbody id="rolesTableBody">
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        <div class="card p-3 bg-light shadow-sm mb-4 border">
+          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+            <h6 class="fw-bold m-0 text-primary" id="userFormTitle">Add New User</h6>
+          </div>
+          <div class="row g-3 align-items-start">
+            <div class="col-md-4">
+              <label class="small fw-bold text-muted mb-1">Full Name (Optional)</label>
+              <input type="text" id="uName" class="form-control" placeholder="e.g. Jane Doe">
+            </div>
+            <div class="col-md-4">
+              <label class="small fw-bold text-muted mb-1">Email Address (Required)</label>
+              <input type="email" id="uEmail" class="form-control" placeholder="user@domain.com">
+            </div>
+            <div class="col-md-4">
+              <label class="small fw-bold text-muted mb-1">Access Role</label>
+              <select id="uRole" class="form-select text-primary fw-bold" onchange="updateRoleDescription()">
+              </select>
+            </div>
+            
+            <div class="col-12 mt-1">
+              <div id="roleDesc" class="small text-muted px-2 py-1 bg-white rounded border hidden"></div>
+            </div>
+
+            <div class="col-12 mt-2 hidden" id="uLocationsContainer">
+               <div class="border border-primary rounded p-2 bg-white shadow-sm">
+                   <label class="fw-bold small mb-2 text-primary border-bottom pb-1 d-block">Assign Locations (LBAC)</label>
+                   <div id="uLocationsList" style="max-height: 200px; overflow-y: auto;"></div>
+               </div>
+            </div>
+            
+            <div class="col-12 mt-3 d-flex gap-2 justify-content-end border-top pt-3">
+              <button class="btn btn-outline-secondary hidden px-4 fw-bold" id="btnCancelEditUser" onclick="cancelEditUser()">Cancel</button>
+              <button class="btn btn-primary px-4 fw-bold" id="btnSaveUser" onclick="saveOrUpdateUser('add')">Add User</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-5">
+          <h6 class="fw-bold mb-3">System Access Management</h6>
+          <div class="table-responsive bg-light p-2 rounded border w-100">
+             <table class="table table-sm table-hover bg-white m-0 w-100">
+               <thead>
+                 <tr>
+                   <th class="sortable" onclick="sortMgmt('user', 0)">Name</th>
+                   <th class="sortable" onclick="sortMgmt('user', 1)">Role</th>
+                   <th class="sortable" onclick="sortMgmt('user', 2)">Last Login</th>
+                   <th class="sortable centered-col" onclick="sortMgmt('user', 3)">Actions</th>
+                 </tr>
+               </thead>
+               <tbody id="bodyUsers"></tbody>
+             </table>
+          </div>
+        </div>
+
+        <div id="roleManagerContainer" class="border-top pt-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="m-0 text-primary fw-bold">Dynamic Role Manager</h5>
+            <button class="btn btn-sm btn-outline-primary fw-bold" onclick="createNewRole()">+ New Custom Role</button>
+          </div>
+          <div class="alert alert-info small py-2 mb-3 shadow-sm border-info">Check the boxes below to instantly grant or revoke capabilities across the entire system.</div>
+          <div class="table-responsive w-100 bg-white rounded border">
+            <table class="table table-sm table-bordered align-middle text-center w-100 m-0" style="font-size: 0.85rem;">
+              <thead class="table-light" id="rolesTableHeader">
+              </thead>
+              <tbody id="rolesTableBody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
       <div id="mTheme" class="hidden">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <div>
