@@ -15,9 +15,10 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>  
   <script>
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-bs-theme', savedTheme);
-  </script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxRM7pblum2TVubgCvVQBRWF6FWKkHhtT-2pJuA8kCueVGo8izlXv6BCbNOQPzOH9PqCA/exec";
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-bs-theme', savedTheme);
+  </script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
   <style>
@@ -32,56 +33,59 @@
       --dark-card: #1e1e1e;
       --dark-text: #e0e0e0;
     }
-        [data-bs-theme="dark"] {
-      --brand-color: var(--dark-theme);
-    }
-    ::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
-    * { scrollbar-width: none !important; -ms-overflow-style: none !important; box-sizing: border-box; }
-    html, body { width: 100%; max-width: 100vw; margin: 0; padding: 0; overflow-x: hidden; }
-    body { background-color: var(--light-bg); color: var(--light-text); padding-bottom: 50px; font-family: sans-serif; transition: background-color 0.3s ease, color 0.3s ease; -webkit-touch-callout: none; -webkit-font-smoothing: antialiased; }
-    
-    @media screen and (max-width: 768px) {
-      input.form-control, select.form-select, textarea.form-control, input[type="text"], input[type="number"], input[type="email"] { font-size: 16px !important; }
-    }
-
-    .text-muted, .meta-text { color: var(--light-text) !important; opacity: 0.7; }
-    .table { color: var(--light-text); --bs-table-color: var(--light-text); }
-    .text-primary { color: var(--brand-color) !important; }
-    .bg-primary, .btn-primary { background-color: var(--brand-color) !important; border-color: var(--brand-color) !important; color: #fff !important; }
-    .btn-outline-primary { color: var(--brand-color) !important; border-color: var(--brand-color) !important; }
-    .btn-outline-primary:hover { background-color: var(--brand-color) !important; color: #fff !important; }
-    .nav-tabs .nav-link.active { color: var(--brand-color) !important; font-weight: 900; border-bottom-color: var(--brand-color); }
-    .loc-card h6, #selectedLocTitle, #detName, #cameraModalTitle, #loginTitle, #appTitleText, #appShortTitleText, #catalogFormTitle, #locFormTitle, #userFormTitle { color: var(--brand-color) !important; }
-    .card, .loc-card, .item-card, .item-row { background-color: var(--light-card); border: 1px solid rgba(0,0,0,0.05); }
-    
-    #appContainer {
-      padding-bottom: calc(env(safe-area-inset-bottom) + 15px) !important;
-      padding-left: env(safe-area-inset-left) !important;
-      padding-right: env(safe-area-inset-right) !important;
-    }
-    
-    #stickyHeaderContainer {
-      position: -webkit-sticky !important;
-      position: sticky !important;
-      top: 0 !important;
-      z-index: 1040;
-      background-color: var(--light-bg);
-      padding-top: calc(env(safe-area-inset-top) + 15px);
-      margin-left: calc(-.75rem - env(safe-area-inset-left));
-      margin-right: calc(-.75rem - env(safe-area-inset-right));
-      padding-left: calc(.75rem + env(safe-area-inset-left));
-      padding-right: calc(.75rem + env(safe-area-inset-right));
-      transition: background-color 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-
-    /* Fix the Search Bar overflow that was causing the screen to wobble */
-    #searchContainer { width: 100%; max-width: 100%; }
-    #searchResults { width: 100%; max-width: 100%; overflow-x: hidden; }
+    [data-bs-theme="dark"] {
+      --brand-color: var(--dark-theme);
+    }
+    ::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+    * { scrollbar-width: none !important; -ms-overflow-style: none !important; box-sizing: border-box; }    
+    
+    /* Removed overflow-x: hidden to restore position: sticky */
+    html { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
+    body { width: 100%; position: relative; margin: 0; padding: 0; background-color: var(--light-bg); color: var(--light-text); padding-bottom: 50px; font-family: sans-serif; transition: background-color 0.3s ease, color 0.3s ease; -webkit-touch-callout: none; -webkit-font-smoothing: antialiased; }
+    #viewInventory, #viewManagement { overflow-x: hidden; width: 100%; }
+    
+    @media screen and (max-width: 768px) {
+      input.form-control, select.form-select, textarea.form-control, input[type="text"], input[type="number"], input[type="email"] { font-size: 16px !important; }
+      /* Fixed negative margins on bootstrap rows to prevent horizontal scroll without breaking sticky */
+      .row { margin-left: 0 !important; margin-right: 0 !important; width: 100% !important; max-width: 100%; display: flex; flex-wrap: wrap; }
+      .row > * { padding-left: 0.35rem !important; padding-right: 0.35rem !important; max-width: 100%; }
+    }
+    
+    .text-muted, .meta-text { color: var(--light-text) !important; opacity: 0.7; }
+    .table { color: var(--light-text); --bs-table-color: var(--light-text); }
+    .text-primary { color: var(--brand-color) !important; }
+    .bg-primary, .btn-primary { background-color: var(--brand-color) !important; border-color: var(--brand-color) !important; color: #fff !important; }
+    .btn-outline-primary { color: var(--brand-color) !important; border-color: var(--brand-color) !important; }
+    .btn-outline-primary:hover { background-color: var(--brand-color) !important; color: #fff !important; }
+    .nav-tabs .nav-link.active { color: var(--brand-color) !important; font-weight: 900; border-bottom-color: var(--brand-color); }
+    .loc-card h6, #selectedLocTitle, #detName, #cameraModalTitle, #loginTitle, #appTitleText, #appShortTitleText, #catalogFormTitle, #locFormTitle, #userFormTitle { color: var(--brand-color) !important; }
+    .card, .loc-card, .item-card, .item-row { background-color: var(--light-card); border: 1px solid rgba(0,0,0,0.05); }
+    
+    #appContainer {
+      padding-bottom: calc(env(safe-area-inset-bottom) + 15px) !important;
+      padding-left: env(safe-area-inset-left) !important;
+      padding-right: env(safe-area-inset-right) !important;
+    }
+    
+    /* Restored padding/margin logic from your working version */
+    #stickyHeaderContainer {
+      position: sticky;
+      top: 0;
+      z-index: 1040;
+      background-color: var(--light-bg);
+      padding-top: calc(env(safe-area-inset-top) + 15px);
+      margin-left: calc(-15px - env(safe-area-inset-left));
+      margin-right: calc(-15px - env(safe-area-inset-right));
+      padding-left: calc(15px + env(safe-area-inset-left));
+      padding-right: calc(15px + env(safe-area-inset-right));
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
     [data-bs-theme="dark"] #stickyHeaderContainer {
       background-color: var(--dark-bg);
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     }    
+    
     #syncIndicator {
       bottom: calc(env(safe-area-inset-bottom) + 20px) !important;
     }
@@ -129,10 +133,10 @@
     #actSerialsIn, #saScanInput { text-transform: uppercase; }
     .tabs-scroll-wrapper { position: relative; width: 100%; max-width: 100%; }
     .hide-scroll {
-      display: flex; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
-      scrollbar-width: none; -ms-overflow-style: none;
-      scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
-    }
+      display: flex; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
+      scrollbar-width: none; -ms-overflow-style: none;
+      scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+    }
     .hide-scroll::-webkit-scrollbar { display: none; }
     .tab-scroll-btn {
       position: absolute; top: 0; bottom: 1px; width: 32px;
@@ -185,7 +189,7 @@
     [data-bs-theme="dark"] .card, [data-bs-theme="dark"] .loc-card, [data-bs-theme="dark"] .item-card, [data-bs-theme="dark"] .item-row { background-color: var(--dark-card) !important; border-color: rgba(255,255,255,0.05); }
     [data-bs-theme="dark"] .bg-white { background-color: var(--dark-card) !important; color: var(--dark-text) !important; }
     [data-bs-theme="dark"] .bg-light { background-color: rgba(255,255,255,0.05) !important; color: var(--dark-text) !important; }
-    [data-bs-theme="dark"] .table-light, [data-bs-theme="dark"] .table-light th, [data-bs-theme="dark"] .table-light td { background-color: rgba(255,255,255,0.05) !important; color: var(--dark-text) !important; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    [data-bs-theme="dark"] .table-light, [data-bs-theme="dark"] .table-light th, [data-bs-theme="dark"] .table-light td { background-color: rgba(255,255,255,0.05) !important; color: var(--dark-text) !important; border-bottom: 1px solid rgba(255,255,255,0.1); }
     [data-bs-theme="dark"] .table-secondary { background-color: rgba(0,0,0,0.5) !important; color: rgba(255,255,255,0.5); }
     [data-bs-theme="dark"] .stock-critical > td { background-color: #4a191e !important; color: #fff !important; }
     [data-bs-theme="dark"] .border, [data-bs-theme="dark"] .border-top, [data-bs-theme="dark"] .border-bottom { border-color: rgba(255,255,255,0.1) !important; }
@@ -260,7 +264,6 @@
 <div id="appContainer" class="container hidden">
   <div id="syncIndicator">
     <div class="spinner-border text-light" role="status" style="width: 14px; height: 14px; border-width: 2px;"></div>
-    <span>Syncing...</span>
   </div>
   <div id="stickyHeaderContainer" class="pb-3 mb-3">
     <div id="globalStockAlert" class="alert alert-danger text-center fw-bold shadow-sm mb-3 hidden" style="cursor: pointer;" onclick="showView('management'); switchMgmt('dash');">
@@ -1226,15 +1229,14 @@
     return loc ? `${loc.type} - ${loc.locationName}` : locName;
   }  
   function formatCurrencyInput(input) {
-    let val = input.value.replace(/[^0-9.-]+/g,"");
-    if(val) {
-      input.value = appCurrency + parseFloat(val).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    } else {
-      input.value = "";
-    }
-  }
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbxRM7pblum2TVubgCvVQBRWF6FWKkHhtT-2pJuA8kCueVGo8izlXv6BCbNOQPzOH9PqCA/exec";
-  function handleCredentialResponse(response) {
+    let val = input.value.replace(/[^0-9.-]+/g,"");
+    if(val) {
+      input.value = appCurrency + parseFloat(val).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    } else {
+      input.value = "";
+    }
+  }
+  function handleCredentialResponse(response) {
     const jwt = response.credential;
     const payload = JSON.parse(atob(jwt.split('.')[1]));
     const userEmail = payload.email;
@@ -1278,19 +1280,24 @@
           document.getElementById('appTitleText').innerText = t.appTitle;
       }
       if (t.appShortName) {
-          document.getElementById('appShortTitleText').innerText = t.appShortName;
-      }
+          document.getElementById('appShortTitleText').innerText = t.appShortName;
+          const appleMeta = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+          if (appleMeta) appleMeta.setAttribute("content", t.appShortName);
+      }
       const useShort = (t.loginUseShortName && t.loginUseShortName.toLowerCase() === 'yes');
       const loginStr = (useShort && t.appShortName) ? t.appShortName : (t.appTitle || "IMS");
       document.getElementById('loginTitle').innerText = loginStr + " Login";
 
       if (t.logoUrl) {
-          ['loginLogo', 'loadLogo', 'appLogo'].forEach(id => {
-              const el = document.getElementById(id);
-              el.src = t.logoUrl;
-              el.onload = () => el.style.opacity = '1';
-          });
-      }
+          ['loginLogo', 'loadLogo', 'appLogo'].forEach(id => {
+              const el = document.getElementById(id);
+              el.src = t.logoUrl;
+              el.onload = () => el.style.opacity = '1';
+          });
+          let link = document.querySelector("link[rel~='icon']");
+          if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+          link.href = t.logoUrl;
+      }
       if (t.lightTheme) document.documentElement.style.setProperty('--light-theme', t.lightTheme);
       if (t.darkTheme) document.documentElement.style.setProperty('--dark-theme', t.darkTheme);
       const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
