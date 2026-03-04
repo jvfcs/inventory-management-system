@@ -27,29 +27,22 @@
     .text-primary { color: var(--brand-color) !important; }
     .bg-primary, .btn-primary { background-color: var(--brand-color) !important; border-color: var(--brand-color) !important; color: #fff !important; }
     .btn-outline-primary { color: var(--brand-color) !important; border-color: var(--brand-color) !important; }
-    
-    /* Overlays */
     #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--light-bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.3s ease; }
     [data-bs-theme="dark"] #loadingOverlay { background-color: var(--dark-bg); }    
     #gdprBanner { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10500; background: var(--light-bg); border-top: 1px solid rgba(0,0,0,0.1); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
     [data-bs-theme="dark"] #gdprBanner { background: var(--dark-bg); border-top: 1px solid rgba(255,255,255,0.1); }
     #gdprBanner.visible { transform: translateY(0); }
-    
-    /* Modal absolute front fix */
     .modal-backdrop { z-index: 10550 !important; }
     .modal { z-index: 10600 !important; }
   </style>
 </head>
 <body>
-
 <div id="loginOverlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--light-bg); z-index: 10000; display: flex; align-items: center; justify-content: center;">
-  <div class="card p-4 shadow-sm text-center" style="max-width: 400px; width: 90%; background: var(--light-card); min-height: 400px; display: flex; flex-direction: column; justify-content: center;">
-    
+  <div class="card p-4 shadow-sm text-center" style="max-width: 400px; width: 90%; background: var(--light-card); min-height: 400px; display: flex; flex-direction: column; justify-content: center;">    
     <div id="loginSpinner">
       <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
       <h5 class="fw-bold text-muted m-0">Connecting...</h5>
     </div>
-
     <div id="loginContent" class="hidden">
       <img id="loginLogo" src="" alt="" style="width:300px; height:300px; object-fit:contain; margin: 0 auto; opacity: 0; transition: opacity 0.5s;" class="mb-3">
       <h3 id="loginTitle" class="fw-bold text-primary mb-3">Login</h3> 
@@ -59,16 +52,13 @@
           <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="sign_in_with" data-size="large" data-logo_alignment="left"></div>
       </div>
     </div>
-
   </div>
 </div>
-
 <div id="loadingOverlay">
   <img id="loadLogo" src="" alt="" style="width:300px; height:300px; object-fit:contain; opacity: 0; transition: opacity 0.5s;" class="mb-3">
   <h5 class="fw-bold text-secondary">Loading Secure Environment...</h5><br>
   <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
 </div>
-
 <div id="accessDenied" class="container py-5 text-center hidden">
   <div class="card p-5 shadow-sm mx-auto mt-5" style="max-width: 500px;">
     <h2 class="text-danger fw-bold mb-3">Access Denied</h2>
@@ -76,16 +66,14 @@
     <p id="deniedEmail" class="fw-bold mt-3 text-secondary"></p>
   </div>
 </div>
-
 <div id="gdprBanner" class="p-3">
   <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-    <div style="font-size: 0.85rem;" class="text-md-start text-center text-muted">
-      <strong>We value your privacy.</strong> By continuing to use this application, you consent to our <a href="#" onclick="showLegalModal(event)" style="color: var(--brand-color); font-weight: bold; text-decoration: none;">Privacy Policy & Terms</a>.
+    <div style="font-size: 0.85rem;" class="text-md-start text-center text-muted gdpr-text">
+      <strong>We value your privacy.</strong> This system uses essential browser storage and Google authentication tokens to maintain your session, enforce security roles, and save your theme preferences. We do not track you across the web or sell your data. By continuing to use this application, you consent to our <a href="#" onclick="showLegalModal(event)" style="color: var(--brand-color); font-weight: bold; text-decoration: none;">Privacy Policy & Terms</a>.
     </div>
     <button class="btn btn-sm text-white fw-bold text-nowrap px-4" style="background-color: var(--brand-color);" onclick="acceptGDPR()">I Understand & Accept</button>
   </div>
 </div>
-
 <div class="modal fade" id="legalModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
     <div class="modal-content bg-white" style="border-radius: 12px;">
@@ -100,26 +88,18 @@
     </div>
   </div>
 </div>
-
 <div id="secureAppContainer"></div>
-
 <script>
-  // Global Shared Variables
   var db = { template: {} };
   var appCurrency = "$";
   var appDefaultImg = "";
-  // IMPORTANT: REPLACE THE URL BELOW WITH YOUR NEW GOOGLE APPS SCRIPT WEB APP URL
   var GAS_URL = "https://script.google.com/macros/s/AKfycbwaSuyBWnqziZSdrIHCqNESBDAhciig8SSDxI3wh4nc2Fgb70koPRb7zfCWwlOu0Zf-Ew/exec";
-
   document.addEventListener("DOMContentLoaded", function() {
     checkGDPR();
-    
-    // Fetch template in the background without holding up the boot process
     apiCall('getTemplateConfig').then(tConfig => {
         db.template = tConfig;
         applyTemplateVars(tConfig);
     }).catch(e => console.warn("Failed to load pre-boot template."));
-    
     const savedEmail = localStorage.getItem('ims_user_email');
     if (savedEmail) {
         bootApp(savedEmail);
@@ -128,7 +108,6 @@
         document.getElementById('loginOverlay').classList.remove('hidden');
     }
   });
-
   async function apiCall(actionName, payloadData = {}) {
     const email = localStorage.getItem('ims_user_email');
     if (!email && actionName !== 'getTemplateConfig') {
@@ -144,7 +123,6 @@
     if (result.error) throw new Error(result.error);
     return result.data;
   }
-
   function handleCredentialResponse(response) {
     const jwt = response.credential;
     const payload = JSON.parse(atob(jwt.split('.')[1]));
@@ -152,58 +130,39 @@
     localStorage.setItem('ims_google_token', jwt);    
     bootApp(payload.email);
   }
-
   function signOut() {
     localStorage.removeItem('ims_user_email');
     localStorage.removeItem('ims_google_token');
     window.location.reload(); 
   }
-
-  // --- THE MAGIC INJECTION FUNCTION ---
   async function bootApp(email) {
     document.getElementById('loginOverlay').classList.add('hidden');
     document.getElementById('loadingOverlay').classList.remove('hidden');
     document.getElementById('loadingOverlay').style.opacity = '1';
-    
     try {
-      // Fetch the app code AND the database at the exact same time
       const [payloadHtml, initialData] = await Promise.all([
          apiCall('getSecureApp'),
          apiCall('getInitialData')
       ]);
-      
-      // Store db globally so the injected code doesn't have to ask the server again
       window._PRELOADED_DB = initialData; 
-      
-      // Load it into a temporary memory container
       const temp = document.createElement('div');
       temp.innerHTML = payloadHtml;
-      
-      // 3. Extract and apply the CSS
       const styles = temp.querySelectorAll('style');
       styles.forEach(s => document.head.appendChild(s));
-      
-      // 4. Extract the JS (Scripts won't run if just dropped via innerHTML)
       const scripts = temp.querySelectorAll('script');
       scripts.forEach(s => s.remove());
-      
-      // 5. Drop the Application HTML onto the page
       document.getElementById('secureAppContainer').innerHTML = temp.innerHTML;
-      
-      // 6. Execute the Javascript (This boots the app logic)
       scripts.forEach(script => {
         const newScript = document.createElement('script');
         newScript.textContent = script.textContent;
         document.body.appendChild(newScript);
       });
-
     } catch (err) {
       document.getElementById('loadingOverlay').classList.add('hidden');
       document.getElementById('accessDenied').classList.remove('hidden');
       document.getElementById('deniedEmail').innerText = err.message;
     }
   }
-
   function applyTemplateVars(t) {
       if (t.appTitle) {
           document.title = t.appTitle;
@@ -213,13 +172,11 @@
       const useShort = (t.loginUseShortName && t.loginUseShortName.toLowerCase() === 'yes');
       const loginStr = (useShort && t.appShortName) ? t.appShortName : (t.appTitle || "IMS");
       document.getElementById('loginTitle').innerText = loginStr + " Login";
-
       const loginMsgEl = document.getElementById('loginMessage');
       if (t.loginMessage && t.loginMessage.trim() !== "") {
           loginMsgEl.innerText = t.loginMessage;
           loginMsgEl.classList.remove('hidden');
       }
-
       if (t.logoUrl) {
           ['loginLogo', 'loadLogo'].forEach(id => {
               const el = document.getElementById(id);
@@ -243,7 +200,6 @@
       if (t.currencySymbol) appCurrency = t.currencySymbol;
       if (t.defaultImgUrl) appDefaultImg = t.defaultImgUrl;
       if (t.adminContact) document.getElementById('accessDeniedMsg').innerText = `You do not have permission to view the IMS. Please contact ${t.adminContact} to request access.`;
-      
       if (t.googleClientId) {
           const googleDiv = document.getElementById('g_id_onload');
           googleDiv.setAttribute('data-client_id', t.googleClientId);
@@ -252,12 +208,9 @@
               window.google.accounts.id.renderButton(document.querySelector('.g_id_signin'), { theme: "outline", size: "large", type: "standard", shape: "rectangular", logo_alignment: "left" });
           }
       }
-      
-      // Reveal the fully rendered login form and hide the spinner
       document.getElementById('loginSpinner').classList.add('hidden');
       document.getElementById('loginContent').classList.remove('hidden');
   }
-
   function checkGDPR() {
     if (!localStorage.getItem('ims_gdpr_consent')) {
       setTimeout(() => { document.getElementById('gdprBanner').classList.add('visible'); }, 1000);
@@ -267,7 +220,6 @@
     localStorage.setItem('ims_gdpr_consent', 'true');
     document.getElementById('gdprBanner').classList.remove('visible');
   }
-
   function showLegalModal(e) {
       if (e) e.preventDefault();      
       const t = db.template || {};
@@ -276,7 +228,6 @@
       const appName = t.appTitle || "Inventory Management System";
       const contact = t.adminContact || "your system administrator";
       const contactLink = t.adminContact ? `mailto:${t.adminContact}` : '#';
-      
       document.getElementById('legalModalBody').innerHTML = `
         <h6 class="fw-bold" style="color: var(--brand-color);">1. Introduction & Acceptance</h6>
         <p>This Privacy Policy and Terms of Service govern the use of the ${appName} ("The Application"). By accessing, authenticating, or utilizing this system, you ("The User") agree to be bound by these terms in full. If you do not agree to these terms, you must exit The Application immediately.</p>
