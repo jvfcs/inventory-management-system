@@ -168,6 +168,8 @@
       box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
     }
     #gdprBanner.visible { transform: translateY(0); }
+    .modal { z-index: 10700 !important; }
+    .modal-backdrop { z-index: 10650 !important; }
     [data-bs-theme="dark"] .text-dark { color: var(--dark-text) !important; }
     [data-bs-theme="dark"] .text-muted { color: #adb5bd !important; }
     [data-bs-theme="dark"] .form-check-label { color: var(--dark-text) !important; }
@@ -1267,8 +1269,9 @@
     });
   };
   function applyTemplateVars(t) {
-      if (t.appTitle) {
-          document.title = t.appTitle;
+      db.template = t;
+      if (t.appTitle) {
+          document.title = t.appTitle;
           document.getElementById('appTitleText').innerText = t.appTitle;
       }
       if (t.appShortName) {
