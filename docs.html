@@ -668,7 +668,7 @@
           <span class="text-muted small">When you deploy a brand-new, completely blank database, <strong>the very first Google account to log into the app is permanently and automatically granted the Admin role.</strong> Do not share your live URL with employees or testers until you have successfully logged in yourself to claim the Admin seat!</span>
         </div>
         <p>IMS utilizes a <strong>Dynamic Role-Based Access Control (RBAC)</strong> engine. Instead of hardcoding permissions, Admins can create unlimited custom roles and instantly modify their capabilities using the visual matrix in the Users tab.</p>
-        
+        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Role+Manager+Screenshot+Here" class="doc-screenshot w-100" alt="Role Manager Matrix">
         
         <h3 class="mt-4">The Admin Safety Net</h3>
         <p>To prevent accidental system lockouts, the core <strong>Admin</strong> role is hardcoded with a permanent safety net.</p>
@@ -683,24 +683,24 @@
       </section>
       <section id="lbac" class="doc-section">
         <h2>Location-Based Access Control (LBAC)</h2>
-        <p>If a user is a Manager, Operator, or Viewer, they are subjected to LBAC filters. If an Admin does not explicitly assign them to a Location, that location literally does not exist to them in the app. It will not appear on their dashboard, in their grid, or in their transaction dropdowns.</p>
+        <p>If a user's role does not have the <strong>Global Access</strong> permission checked, they are subjected to strict LBAC filters. If an Admin does not explicitly assign them to a Location, that location literally does not exist to them in the app. It will not appear on their dashboard, in their grid, or in their transaction dropdowns.</p>
         <h3>Access Groups</h3>
         <p>To make assigning locations easier, Admins can create "Access Groups" (e.g., <i>West Coast</i>, <i>Arizona</i>). When editing a location, you can tag it with a group. When assigning a user, you can assign them the entire group with one click, instantly granting them access to all locations bearing that tag.</p>
-        <p><img src="docs/screenshot-lbac.png" class="doc-screenshot" alt="Documentation Image"></p>
+        <img src="https://dummyimage.com/800x300/eef2f3/34495e.png&text=Insert+LBAC+Assignment+Screenshot+Here" class="doc-screenshot w-100" alt="LBAC Assignment">
         
         <h3>Visibility Without Vulnerability (Management Tab)</h3>
-        <p>In the <strong>Locations Management Tab</strong>, the system displays <em>all</em> locations to Managers, even ones they don't own. This is a deliberate design choice to prevent users from unknowingly creating duplicate locations with slightly different names.</p>
+        <p>In the <strong>Locations Management Tab</strong>, the system displays <em>all</em> locations to users with the 'Manage Locations' permission, even ones they don't explicitly own. This is a deliberate design choice to prevent users from unknowingly creating duplicate locations with slightly different names.</p>
         <ul>
           <li><strong>Read-Only Rows:</strong> If a user does not have LBAC permission for a location, that row will be visually dimmed. The inventory count will be hidden behind a 🔒 lock icon, and the Action buttons will be replaced with a "Read Only" badge.</li>
-          <li><strong>Locked Access Groups:</strong> When a restricted Manager creates or edits a location, they will see a list of all Access Groups in the company. Groups they do not own will be greyed out and marked with a 🔒 lock icon. They cannot add or remove these locked tags, but the tags are safely preserved in the database.</li>
+          <li><strong>Locked Access Groups:</strong> When a restricted user creates or edits a location, they will see a list of all Access Groups in the company. Groups they do not own will be greyed out and marked with a 🔒 lock icon. They cannot add or remove these locked tags, but the tags are safely preserved in the database.</li>
         </ul>
       </section>
       <section id="dashboard" class="doc-section">
         <h2>Dashboard &amp; Global State Toggle</h2>
         <p>The Management view features a unified <strong>State Toggle (Stock vs Deployed)</strong> at the top right of the screen. Flipping this switch instantly recalculates the entire dashboard, the Items catalog, and the Locations catalog to reflect the chosen state.</p>
-        
+        <img src="https://dummyimage.com/800x200/eef2f3/34495e.png&text=Insert+State+Toggle+Screenshot+Here" class="doc-screenshot w-100" alt="State Toggle">
         <p>The Dashboard provides a real-time financial and operational snapshot based on the active toggle:</p>
-        <img src="docs/screenshot-dashboard.png" class="doc-screenshot" alt="IMS Dashboard Snapshot">
+        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Dashboard+Screenshot+Here" class="doc-screenshot w-100" alt="IMS Dashboard Snapshot">
         <ul>
           <li><strong>Global Snapshot:</strong> <i>(Requires Global Access permission)</i>. Shows total unit counts and financial valuations across the entire company. Breaks down values by Physical Spaces vs Mobile Kits.</li>
           <li><strong>Location Groups Snapshot:</strong> Allows you to select an Access Group from a dropdown (e.g., "Arizona") and instantly recalculate the financial valuations and unit counts strictly for assets within that region.</li>
@@ -720,16 +720,15 @@
         <div class="callout border-primary">
           <strong>Dual-State Locations:</strong> Inside every location, inventory is strictly separated into two tabs: <strong>Stock Inventory</strong> (items sitting on a shelf ready to be used) and <strong>Deployed Assets</strong> (items currently in use or active at that location).
         </div>
-        
-        <img src="docs/screenshot-locgrid.png" class="doc-screenshot" alt="Item Details View">
+        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Location+Detail+Screenshot+Here" class="doc-screenshot w-100" alt="Location Detail">
         <ul>
           <li><strong>Global "Everywhere" Location:</strong> At the end of the Physical Spaces grid is a special blue 🌎 card called "Everywhere". This is a system-generated master view. Clicking it will show you every single item across your entire company in one massive list.</li>
           <li><strong>Sorting:</strong> When viewing a location, use the dropdown in the top right to sort items alphabetically (A-Z, Z-A) or by Quantity (High-Low).</li>
           <li><strong>Grid vs. List View:</strong> Next to the sort dropdown is a physical toggle switch. Click it to swap between a visual "Grid" layout (large images, square cards) and a condensed "List" layout (small thumbnails, compact rows).</li>
           <li><strong>Image Zoom (Lightbox):</strong> If you click on an item's main image on its Detail Page, it will pop out into a high-resolution Lightbox overlay. Click the background to close it.</li>
-          <li><strong>Quick Edit Shortcut:</strong> If you are an Admin/Manager looking at an Item or Location detail page, you will see a small "✎ Edit" button under the image. Clicking this instantly teleports you directly to the Management form for that specific entity, saving you time!</li>
+          <li><strong>Quick Edit Shortcut:</strong> If your role has 'Manage Items' or 'Manage Locations' permission, you will see a small "✎ Edit" button under the image on detail pages. Clicking this instantly teleports you directly to the Management form for that specific entity, saving you time!</li>
         </ul>
-        <div><img src="docs/screenshot-item.png" class="doc-screenshot" alt="Documentation Image"></div>
+        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Item+Detail+Screenshot+Here" class="doc-screenshot w-100 mb-4" alt="Item Details">
         <h3>Global Search Engine</h3>
         <p>The Search Bar at the top of the app is incredibly powerful. As you type, the app searches through Barcodes, Make, Model, Descriptions, Notes, and Serial Numbers. Matches are highlighted in yellow. Click any result to jump directly to that item.</p>        
         <div class="callout py-2 my-3 border-warning">
@@ -744,7 +743,7 @@
       <section id="transactions" class="doc-section">
         <h2>Asset Lifecycle (Move, Deploy, Return, Consume)</h2>
         <p>To execute a transaction, go to the Item Detail page. At the bottom, you will find the Action Form, which is split into two tabs depending on the item's current state.</p>
-        
+        <img src="https://dummyimage.com/800x300/eef2f3/34495e.png&text=Insert+Action+Form+Screenshot+Here" class="doc-screenshot w-100 mb-4" alt="Action Form">
         <ul class="mb-4">
           <li><strong>Stock Actions:</strong> 
             <ul>
@@ -778,9 +777,8 @@
       </section>
       <section id="audits" class="doc-section">
         <h2>Performing Audits</h2>
-        <p>Audits are true-ups of physical stock compared to what the system expects. Only Admins, Sub-Admins, Managers, and Operators can perform audits.</p>
-        
-        <img src="docs/screenshot-audit.png" class="doc-screenshot" alt="Audit Mode">
+        <p>Audits are true-ups of physical stock compared to what the system expects. <i>(Requires Permission: <strong>Perform Audits</strong>)</i></p>
+        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Audit+Screen+Screenshot+Here" class="doc-screenshot w-100" alt="Audit Screen">
         <ol>
           <li>Navigate to a Location. <strong>Important:</strong> Select either the "Stock Inventory" tab or the "Deployed Assets" tab first, depending on what you intend to count.</li>
           <li>Click the yellow <strong>Audit</strong> button in the top right. The audit will lock into whatever mode you selected (Stock or Deployed) to prevent mixed counting.</li>
@@ -794,13 +792,13 @@
         <h2>Exporting Data (CSV)</h2>
         <p>The system allows you to easily extract data for external reporting or spreadsheets.</p>
         <ul>
-          <li><strong>Location Inventory CSV:</strong> <i>(Access: Admin, Sub-Admin, Manager, Operator)</i>. Navigate to any Location (or the Global "Everywhere" view) and click the green <strong>Download CSV</strong> button in the top right. This generates a clean spreadsheet of every item, its category, exact spot/bin, quantity, and unit price for that specific location.</li>
-          <li><strong>Transaction Logs CSV:</strong> <i>(Access: Admin, Sub-Admin, Manager)</i>. Go to Management &gt; Logs. In the top right, there is a small input box and a green Download button. Enter the exact number of rows you want to export (e.g., 500, or 5000) and click Download. This exports the raw, chronological history of every movement in the system.</li>
+          <li><strong>Location Inventory CSV:</strong> <i>(Requires Permission: <strong>Export Data</strong>)</i>. Navigate to any Location (or the Global "Everywhere" view) and click the green <strong>Download CSV</strong> button in the top right. This generates a clean spreadsheet of every item, its category, exact spot/bin, quantity, and unit price for that specific location.</li>
+          <li><strong>Transaction Logs CSV:</strong> <i>(Requires Permissions: <strong>View Logs</strong> &amp; <strong>Export Data</strong>)</i>. Go to Management &gt; Logs. In the top right, there is a small input box and a green Download button. Enter the exact number of rows you want to export (e.g., 500, or 5000) and click Download. This exports the raw, chronological history of every movement in the system.</li>
         </ul>
       </section>
       <section id="manage-items" class="doc-section">
         <h2>Management: Items (Catalog)</h2>
-        <p><i>Access: Admin, Sub-Admin, Manager</i></p>
+        <p><i>Requires Permission: <strong>Manage Items</strong></i></p>
         <p>The Items tab is where you define the catalog of equipment your company owns. In the data tables, <strong>click the column headers (blue underlined text)</strong> to instantly sort the database (including mathematically sorting the <strong>Total</strong> column to see your highest/lowest stocked items).</p>
         <div class="callout py-2 mb-3 border-secondary bg-light text-dark">
           <span class="small fw-bold">At-A-Glance Context:</span> <span class="text-muted small">Item Descriptions and Notes are printed in small text directly underneath the Item Name in the table, saving you from having to click "Edit" just to read the fine print.</span>
@@ -811,7 +809,6 @@
             <div class="mt-2 p-2 rounded" style="background: rgba(99, 102, 241, 0.05); border-left: 3px solid var(--accent);">
               <span class="small fw-bold" style="color: var(--accent);">Admin Override & Database Cascade:</span><br>
               <span class="text-muted small">By default, once an item is created, the barcode is permanently locked to preserve database integrity. However, <strong>Admins</strong> have the exclusive ability to edit existing barcodes. If an Admin changes a barcode, the backend engine automatically cascades this change throughout the entire database, updating all historical transaction logs to match the new barcode so no historical data is orphaned. <em>Note: If the item has active stock, the system will prompt you for a final confirmation before initiating the cascade.</em></span>
-              <br>
             </div>
           </li>
           <li><strong>Make &amp; Model:</strong> The manufacturer (e.g., Sony) and the product name (e.g., FX6 Camera).</li>
@@ -830,7 +827,7 @@
       </section>
       <section id="manage-locations" class="doc-section">
         <h2>Management: Locations</h2>
-        <p><i>Access: Admin, Sub-Admin, Manager</i></p>
+        <p><i>Requires Permission: <strong>Manage Locations</strong></i></p>
         <p>The Locations tab is where you create the places your items reside. Like the items table, column headers are clickable for rapid sorting, including the dynamically calculated <strong>Count</strong> column.</p>
         <div class="callout py-2 mb-3 border-secondary bg-light text-dark">
           <span class="small fw-bold">At-A-Glance Context:</span> <span class="text-muted small">Location Descriptions and Notes are printed directly underneath the Location Name in the table. On mobile devices, the action buttons automatically stack vertically to keep the table clean and readable.</span>
@@ -859,14 +856,14 @@
       </section>
       <section id="manage-logs" class="doc-section">
         <h2>Management: Transaction Logs</h2>
-        <p><i>Access: Admin, Sub-Admin, Manager</i></p>
+        <p><i>Requires Permission: <strong>View Logs</strong></i></p>
         <p>The Logs tab provides an immutable, chronological history of every action taken in the system. By default, it loads the 20 most recent transactions to ensure the app stays lightning-fast and responsive.</p>
         <p>If you need to look further back in time, simply scroll to the bottom and click the blue <strong>Load More Activities</strong> button to pull the next 20 records into the view.</p>
       </section>
 
       <section id="system-audit" class="doc-section">
         <h2>Management: System Audit</h2>
-        <p><i>Access: Admin, Sub-Admin</i></p>
+        <p><i>Requires Permission: <strong>View SysLogs</strong></i></p>
         <p>In addition to standard inventory movement logs, the IMS features a permanent, immutable <strong>System Audit Trail</strong>. This tracks all administrative and configuration changes made across the platform.</p>
         <ul>
           <li><strong>Detailed Diffing:</strong> Whenever an Item, Location, or User is updated, the backend engine automatically compares the old data against the new data and records the exact changes (e.g., <code>Min Stock: 5 -&gt; 10</code>, <code>Role: Operator -&gt; Manager</code>).</li>
@@ -876,9 +873,9 @@
       </section>
       <section id="manage-users" class="doc-section">
         <h2>Management: Users</h2>
-        <p><i>Access: Admin & Sub-Admin</i></p>
+        <p><i>Requires Permission: <strong>Manage Users</strong></i></p>
         <p>The Users tab controls who can log in. If an email is not in this list, they will hit an "Access Denied" screen.</p>
-        <p><img src="docs/screenshot-users.png" class="doc-screenshot" alt="Documentation Image"></p>
+        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Users+Table+Screenshot+Here" class="doc-screenshot w-100" alt="Users Management">
         <div class="callout border-info mb-4">
           <strong class="text-info">Security Hierarchy Enforcement</strong><br>
           <span class="text-muted small">While Sub-Admins have access to this tab to manage Managers, Operators, and Viewers, they are strictly prohibited by the API from creating new Admins/Sub-Admins, or modifying/disabling existing Admins/Sub-Admins. Only a full Admin can manage protected top-level roles. Furthermore, Admins cannot accidentally or maliciously demote or disable other Admins.</span>
@@ -908,9 +905,9 @@
       </section>
       <section id="theming" class="doc-section">
         <h2>Administration: Theme &amp; Branding</h2>
-        <p><i>Access: Admin Only</i></p>
+        <p><i>Requires Permission: <strong>Manage Theme</strong></i></p>
         <p>The Theme tab allows Admins to completely white-label the software without ever touching code. Here is a breakdown of every field:</p>
-        <p><img src="docs/screenshot-theme.png" class="doc-screenshot" alt="Documentation Image"></p>
+        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Theme+Settings+Screenshot+Here" class="doc-screenshot w-100" alt="Theme Settings">
         <ul>
           <li><strong>Company Name:</strong> Legal entity name. This is automatically injected into the dynamically generated Legal/Privacy Modal in the footer.</li>
           <li><strong>Developer Name:</strong> Name of the primary architect (injected into the Legal Modal).</li>
@@ -966,9 +963,9 @@
         <p>Now we will build the actual database using Google Sheets. <strong>Accuracy is critical here!</strong> Do not delete columns once established, as it can skew historical indexing.</p>
         <ol>
           <li>Create a brand new, blank Google Sheet. Name it "IMS Database".</li>
-          <li>At the bottom of the screen, you will see "Sheet1". Double click it to rename it. You need to create exactly <strong>eight</strong> tabs with specific names. Use the "+" button to add new tabs.</li>
-          <li>Create these 8 tabs and set up the exact Headers/Formulas required in Row 1:
-            <ul class="mt-2">
+          <li>At the bottom of the screen, you will see "Sheet1". Double click it to rename it. You need to manually create <strong>seven</strong> tabs with specific names. <i>(The system will automatically generate an 8th tab called "Roles" later)</i>. Use the "+" button to add new tabs.</li>
+          <li>Create these 7 tabs and set up the exact Headers/Formulas required in Row 1:
+            <ul class="mt-2 mb-3">
               <li>Tab 1: <strong>Items</strong>
                 <br><span class="small text-muted">Type Headers (A1 to M1): Barcode, Make, Model, Category, Min, Spec, Image URL, Status, Description, Price, Image File, Notes, Track Serials</span>
               </li>
@@ -991,9 +988,6 @@
               <li>Tab 7: <strong>Alerts</strong>
                 <br><span class="small text-muted">Paste this EXACT formula into cell <strong>A1</strong>:</span>
                 <pre class="bg-dark text-light p-2 rounded mt-1 mb-2" style="font-size: 0.75rem;"><code>=ARRAYFORMULA(QUERY({Items!A2:B, Items!E2:E, IFERROR(VLOOKUP(Items!A2:A, QUERY(Log!A:G, "SELECT C, SUM(F) GROUP BY C"), 2, FALSE), 0)}, "SELECT Col1, Col2, Col3, Col4 WHERE Col4 &lt; Col3 AND Col1 IS NOT NULL LABEL Col1 'Barcode', Col2 'Item', Col3 'Min Threshold', Col4 'Total On Hand'"))</code></pre>
-              </li>
-              <li>Tab 8: <strong>Roles</strong>
-                <br><span class="small text-muted">Leave this tab completely blank. The backend API will automatically inject the security matrix headers and default roles the very first time you boot the application!</span>
               </li>
             </ul>
           </li>
@@ -1093,7 +1087,7 @@ git push -u origin main</code></pre>
       </section>
       <section id="it-compliance" class="doc-section mb-5">
         <h2>IT Compliance &amp; Data Integrity</h2>
-        <p><i>Access: Infrastructure / IT Administrators</i></p>
+        <p><i>Target Audience: Infrastructure / IT Administrators</i></p>
         <p>For organizations undergoing internal audits or strict compliance reviews, the IMS architecture is designed to enforce an <strong>Immutable Ledger</strong>. However, this is only legally valid if the underlying Google Workspace infrastructure is secured correctly.</p>
         
         <h3>1. Securing the Underlying Database (Crucial)</h3>
