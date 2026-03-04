@@ -33,10 +33,14 @@
       --dark-text: #e0e0e0;
     }
         [data-bs-theme="dark"] {
-      --brand-color: var(--dark-theme);
-    }
-    body { background-color: var(--light-bg); color: var(--light-text); padding-bottom: 50px; font-family: sans-serif; transition: background-color 0.3s ease, color 0.3s ease; -webkit-touch-callout: none; }
-    .text-muted, .meta-text { color: var(--light-text) !important; opacity: 0.7; }
+      --brand-color: var(--dark-theme);
+    }
+    html, body { overflow-x: hidden; width: 100%; max-width: 100vw; }
+    body { background-color: var(--light-bg); color: var(--light-text); padding-bottom: 50px; font-family: sans-serif; transition: background-color 0.3s ease, color 0.3s ease; -webkit-touch-callout: none; }
+    @media screen and (max-width: 768px) {
+      input.form-control, select.form-select, textarea.form-control, input[type="text"], input[type="number"], input[type="email"] { font-size: 16px !important; }
+    }
+    .text-muted, .meta-text { color: var(--light-text) !important; opacity: 0.7; }
     .table { color: var(--light-text); --bs-table-color: var(--light-text); }
     .text-primary { color: var(--brand-color) !important; }
     .bg-primary, .btn-primary { background-color: var(--brand-color) !important; border-color: var(--brand-color) !important; color: #fff !important; }
@@ -963,12 +967,12 @@
         </div>
         <div id="collapseRoleManager" class="collapse show">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
-              <div class="alert alert-info small py-2 m-0 shadow-sm border-info flex-grow-1">Check the boxes below to instantly grant or revoke capabilities across the entire system.</div>
-              <button class="btn btn-sm btn-outline-primary fw-bold text-nowrap" onclick="createNewRole()">+ New Custom Role</button>
-            </div>
-            <div class="table-responsive w-100 bg-white rounded border">
-              <table class="table table-sm table-bordered align-middle text-center w-100 m-0" style="font-size: 0.85rem;">
-                <thead class="table-light" id="rolesTableHeader">
+              <div class="alert alert-info small py-2 mb-3 shadow-sm border-info flex-grow-1">Check the boxes below to instantly grant or revoke capabilities across the entire system.</div>
+          <button class="btn btn-sm btn-outline-primary fw-bold text-nowrap" onclick="createNewRole()">+ New Custom Role</button>
+        </div>
+        <div class="table-responsive w-100 bg-white rounded border">
+          <table class="table table-sm table-bordered align-middle text-center m-0" style="font-size: 0.85rem; min-width: 850px;">
+            <thead class="table-light" id="rolesTableHeader">
                 </thead>
                 <tbody id="rolesTableBody">
                 </tbody>
@@ -1932,7 +1936,7 @@ async function fetchData(callback) {
       let tbody = '';
       db.roles.forEach((r, idx) => {
           const isAdmin = r.Role.toLowerCase() === 'admin';
-          let row = `<tr><td class="text-start fw-bold ${isAdmin ? 'text-danger' : ''}">${r.Role}</td>`;
+          let row = `<tr><td class="text-start fw-bold text-nowrap ${isAdmin ? 'text-danger' : ''}">${r.Role}</td>`;
           perms.forEach(p => {
               row += `<td><input type="checkbox" class="form-check-input role-cb-${idx}" data-perm="${p}" ${r[p] ? 'checked' : ''} ${isAdmin ? 'disabled' : ''} onchange="pauseSyncForEditing()"></td>`;
           });
