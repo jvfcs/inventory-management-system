@@ -1484,6 +1484,35 @@
       apiCall('saveUserTheme', { data: { theme: newTheme } });
     } catch(e) { console.error("Could not save theme to backend", e); }
   }
+function handleInitialRoute() {
+      const rawHash = window.location.hash.replace('#', '');
+      const hash = rawHash.toLowerCase();
+      if (!hash) {
+          history.replaceState({ view: 'grid' }, "", window.location.pathname);
+          return;
+      }
+      if (['dashboard', 'dash'].includes(hash)) { showView('management'); switchMgmt('dash', true); }
+      else if (['items', 'item'].includes(hash)) { showView('management'); switchMgmt('item', true); }
+      else if (['locations', 'loc'].includes(hash)) { showView('management'); switchMgmt('loc', true); }
+      else if (['logs', 'log'].includes(hash)) { showView('management'); switchMgmt('log', true); }
+      else if (['syslogs', 'syslog'].includes(hash)) { showView('management'); switchMgmt('syslog', true); }
+      else if (['users', 'user'].includes(hash)) { showView('management'); switchMgmt('user', true); }
+      else if (hash === 'theme') { showView('management'); switchMgmt('theme', true); }
+      else if (hash.startsWith('item-')) {
+          let bc = decodeURIComponent(rawHash.substring(5));
+          showView('inventory');
+          viewItem(bc, true);
+      }
+      else if (hash.startsWith('loc-')) {
+          let ln = decodeURIComponent(rawHash.substring(4));
+          const locMatch = db.locations.find(l => l.locationName.toLowerCase() === ln.toLowerCase());
+          showView('inventory');
+          viewLoc(locMatch ? locMatch.locationName : ln, locMatch ? locMatch.type : 'Location', true);
+      }
+      else {
+          history.replaceState({ view: 'grid' }, "", window.location.pathname);
+      }
+  }
 async function fetchData(callback) {
     try {
       const data = await apiCall('getInitialData');      
@@ -1531,8 +1560,8 @@ async function fetchData(callback) {
       renderDashboard(); 
       document.getElementById('loadingOverlay').style.opacity = '0';
       setTimeout(() => document.getElementById('loadingOverlay').classList.add('hidden'), 300);
-      if (callback) callback();       
-      history.replaceState({ view: 'grid' }, ""); 
+      if (callback) callback();        
+      handleInitialRoute(); 
       if (syncTimer) clearInterval(syncTimer);
       syncTimer = setInterval(silentSync, syncIntervalMs); 
     } catch (err) {
@@ -2703,7 +2732,7 @@ async function fetchData(callback) {
   }
   function viewLoc(n, t, isBack = false) { 
     window.scrollTo(0, 0);
-    if (!isBack) history.pushState({ view: 'loc', name: n, type: t }, "");
+    if (!isBack) history.pushState({ view: 'loc', name: n, type: t }, "", "#loc-" + encodeURIComponent(n));
     hideAll(); 
     document.getElementById('locationDetail').classList.remove('hidden');     
     document.getElementById('auditContainer').classList.add('hidden');
@@ -3013,7 +3042,7 @@ async function fetchData(callback) {
   }
   function viewItem(bc, isBack = false) { 
     window.scrollTo(0, 0);
-    if (!isBack) history.pushState({ view: 'item', bc: bc }, "");
+    if (!isBack) history.pushState({ view: 'item', bc: bc }, "", "#item-" + encodeURIComponent(bc));
     hideAll(); 
     activeBc = bc;
     const itm = db.items.find(i => i.barcode === bc);
@@ -3257,7 +3286,7 @@ async function fetchData(callback) {
   }
   function showGrid(isBack = false) { 
     window.scrollTo(0, 0);
-    if (!isBack) history.pushState({ view: 'grid' }, "");
+    if (!isBack) history.pushState({ view: 'grid' }, "", window.location.pathname);
     hideAll(); 
     const gridTgl = document.getElementById('gridStateToggle');
     if (gridTgl) gridTgl.checked = false;
@@ -3282,7 +3311,8 @@ async function fetchData(callback) {
       else if (!currentUserPerms['View Dashboard'] && currentUserPerms['Manage Locations']) defaultTab = 'loc';
       else if (!currentUserPerms['View Dashboard'] && currentUserPerms['Manage Users']) defaultTab = 'user';
       
-      history.pushState({ view: 'mgmt', tab: defaultTab }, "");
+      const hashMap = { dash: 'dashboard', item: 'items', loc: 'locations', log: 'logs', syslog: 'syslogs', user: 'users', theme: 'theme' };
+      history.pushState({ view: 'mgmt', tab: defaultTab }, "", "#" + hashMap[defaultTab]);
       switchMgmt(defaultTab, true);
       setTimeout(updateTabArrows, 50);
     }
@@ -3348,7 +3378,8 @@ async function fetchData(callback) {
   }
   function switchMgmt(t, isBack = false) { 
     window.scrollTo(0, 0);
-    if (!isBack) history.pushState({ view: 'mgmt', tab: t }, "");
+    const hashMap = { dash: 'dashboard', item: 'items', loc: 'locations', log: 'logs', syslog: 'syslogs', user: 'users', theme: 'theme' };
+    if (!isBack) history.pushState({ view: 'mgmt', tab: t }, "", "#" + hashMap[t]);
     ['mDash','mItem','mLoc','mLog', 'mSysLog', 'mUser', 'mTheme'].forEach(id => document.getElementById(id).classList.add('hidden'));
     ['t0','t1','t2','t3', 't4', 't5', 't6'].forEach(id => document.getElementById(id).classList.remove('active'));    
     cancelEditItem();
