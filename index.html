@@ -2460,12 +2460,12 @@ async function fetchData(callback) {
           if (l.toLoc === loc.locationName && l.subLoc) spotsUsed.add(l.subLoc);
           if (l.fromLoc === loc.locationName && l.subLoc) spotsUsed.add(l.subLoc);
         });        
-        let defaultQ = getStockBalance(i.barcode, loc.locationName, "");
+        let defaultQ = getStockBalance(i.barcode, loc.locationName, "", currentContextState);
         if (defaultQ > 0 && (isG || loc.locationName === currentLocName)) {
            csv += `"${i.barcode}","${i.make}","${i.model}","${i.category}","${loc.locationName}","Default","${loc.type}",${defaultQ},${i.price}\n`;
         }
         spotsUsed.forEach(spot => {
-          let q = getStockBalance(i.barcode, loc.locationName, spot);
+          let q = getStockBalance(i.barcode, loc.locationName, spot, currentContextState);
           if (q > 0 && (isG || loc.locationName === currentLocName)) {
              csv += `"${i.barcode}","${i.make}","${i.model}","${i.category}","${loc.locationName}","${spot}","${loc.type}",${q},${i.price}\n`;
           }
@@ -2476,7 +2476,8 @@ async function fetchData(callback) {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Inventory_${currentLocName.replace(/\s/g, '_')}.csv`;
+    const prefix = currentContextState.charAt(0).toUpperCase() + currentContextState.slice(1);
+    a.download = `${prefix}_Inventory_${currentLocName.replace(/\s/g, '_')}.csv`;
     a.click();
   }
   function renderGrid() {
