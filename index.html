@@ -808,48 +808,49 @@
             <input type="text" id="uName" class="form-control mb-2" placeholder="Full Name (Optional)">
             <input type="email" id="uEmail" class="form-control mb-2" placeholder="User Email Address">            
             <select id="uRole" class="form-select mb-2" onchange="updateRoleDescription()">
-              <option value="" disabled selected>Select Access Role</option>
-              <option value="Admin">Admin</option>
-              <option value="Sub-Admin">Sub-Admin (Global)</option>
-              <option value="Manager">Manager (Restricted)</option>
-              <option value="Operator">Operator (Restricted)</option>
-              <option value="Viewer">Viewer (Restricted)</option>
-            </select>            
-            <div id="uLocationsContainer" class="hidden mb-3 border rounded p-2 bg-light">
-               <label class="fw-bold small mb-1 text-primary">Assign Locations (LBAC)</label>
-               <div id="uLocationsList" style="max-height: 150px; overflow-y: auto;"></div>
-            </div>            
-            <div id="roleDesc" class="small text-muted mb-3 p-2 bg-light rounded border border-light hidden"></div>            
-            <button class="btn btn-primary w-100 mb-2" id="btnSaveUser" onclick="saveOrUpdateUser('add')">Add User</button>
-            <button class="btn btn-outline-secondary w-100 hidden" id="btnCancelEditUser" onclick="cancelEditUser()">Cancel Edit</button>            
-            <div class="mt-4 p-3 bg-light rounded border small text-muted">
-  <h6 class="fw-bold mb-2">Role Permissions</h6>
-  <strong>Admin:</strong> Full system access, including User Access and Theme management.<br>
-  <strong>Sub-Admin:</strong> Global access to manage all Items, Locations, view Logs, and manage non-admin Users. Cannot manage Theme.<br>
-  <strong>Manager:</strong> Can manage Items, Locations, and Audits, but ONLY for their assigned locations. Cannot manage Users or Theme.<br>
-  <strong>Operator:</strong> Can Check-In, Check-Out, Move inventory, and manage Items/Locations. No access to Dashboard, Logs, or Users. Restricted to assigned locations.<br>
-  <strong>Viewer:</strong> Read-only access to view inventory levels ONLY for their assigned locations. No access to management tab.
-</div>
-          </div>
-          <div class="col-lg-8">
-            <h6 class="fw-bold mb-3">System Access Management</h6>
-            <div class="table-responsive bg-light p-2 rounded border">
-               <table class="table table-sm table-hover bg-white m-0">
-                 <thead>
-                   <tr>
-                     <th class="sortable" onclick="sortMgmt('user', 0)">Name</th>
-                     <th class="sortable" onclick="sortMgmt('user', 1)">Role</th>
-                     <th class="sortable" onclick="sortMgmt('user', 2)">Last Login</th>
-                     <th class="sortable centered-col" onclick="sortMgmt('user', 3)">Actions</th>
-                   </tr>
-                 </thead>
-                 <tbody id="bodyUsers"></tbody>
-               </table>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div id="mTheme" class="hidden">
+            </select>            
+            <div id="uLocationsContainer" class="hidden mb-3 border rounded p-2 bg-light">
+               <label class="fw-bold small mb-1 text-primary">Assign Locations (LBAC)</label>
+               <div id="uLocationsList" style="max-height: 150px; overflow-y: auto;"></div>
+            </div>            
+            <div id="roleDesc" class="small text-muted mb-3 p-2 bg-light rounded border border-light hidden"></div>            
+            <button class="btn btn-primary w-100 mb-2" id="btnSaveUser" onclick="saveOrUpdateUser('add')">Add User</button>
+            <button class="btn btn-outline-secondary w-100 hidden" id="btnCancelEditUser" onclick="cancelEditUser()">Cancel Edit</button>
+          </div>
+          <div class="col-lg-8">
+            <h6 class="fw-bold mb-3">System Access Management</h6>
+            <div class="table-responsive bg-light p-2 rounded border">
+               <table class="table table-sm table-hover bg-white m-0">
+                 <thead>
+                   <tr>
+                     <th class="sortable" onclick="sortMgmt('user', 0)">Name</th>
+                     <th class="sortable" onclick="sortMgmt('user', 1)">Role</th>
+                     <th class="sortable" onclick="sortMgmt('user', 2)">Last Login</th>
+                     <th class="sortable centered-col" onclick="sortMgmt('user', 3)">Actions</th>
+                   </tr>
+                 </thead>
+                 <tbody id="bodyUsers"></tbody>
+               </table>
+            </div>
+            <div id="roleManagerContainer" class="mt-5 border-top pt-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="m-0 text-primary fw-bold">Dynamic Role Manager</h5>
+                <button class="btn btn-sm btn-outline-primary fw-bold" onclick="createNewRole()">+ New Custom Role</button>
+              </div>
+              <div class="alert alert-info small py-2 mb-3">Check the boxes below to instantly grant or revoke capabilities across the entire system.</div>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered align-middle text-center" style="font-size: 0.85rem;">
+                  <thead class="table-light" id="rolesTableHeader">
+                  </thead>
+                  <tbody id="rolesTableBody">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="mTheme" class="hidden">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <div>
             <h6 class="fw-bold m-0">Theme & Branding Settings</h6>
@@ -1016,45 +1017,33 @@
     loc: { col: -1, asc: true },
     user: { col: -1, asc: true }
   };  
-  let currentSerialSort = { col: 'serial', asc: true };  
-  let currentUserEmail = "You"; 
-  let currentUserRole = "Viewer"; 
-  let currentUserLocations = [];
-  let isSyncing = false;
-  let appCurrency = "$";
-  let appDefaultImg = "";
-  let syncTimer = null;
-  let syncIntervalMs = 15000;
-  function getPlaceholder() {
-    if (appDefaultImg) return appDefaultImg;
-    const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-    return isDark 
-      ? 'https://dummyimage.com/400x400/1e1e1e/adb5bd.png&text=No+Image' 
-      : 'https://dummyimage.com/400x400/f8f9fa/adb5bd.png&text=No+Image';
-  }
-  const roleDescriptions = {
-      'Admin': 'Full system access, including User Access and Theme management.',
-      'Sub-Admin': 'Global access to manage all Items, Locations, view Logs, and manage non-admin Users. Cannot manage Theme.',
-      'Manager': 'Can manage Items, Locations, and Audits, but ONLY for their assigned locations. Cannot manage Users or Theme.',
-      'Operator': 'Can Check-In, Check-Out, Move inventory, and manage Items/Locations. No access to Dashboard, Logs, or Users. Restricted to assigned locations.',
-      'Viewer': 'Read-only access to view inventory levels ONLY for their assigned locations. No access to management tab.'
-  };
-  function updateRoleDescription() {
-      const val = document.getElementById('uRole').value;
-      const descEl = document.getElementById('roleDesc');
-      const locCont = document.getElementById('uLocationsContainer');      
-      if(val && roleDescriptions[val]) {
-          descEl.innerText = roleDescriptions[val];
-          descEl.classList.remove('hidden');
-      } else {
-          descEl.classList.add('hidden');
-      }
-      if (val === 'Manager' || val === 'Operator' || val === 'Viewer') {
-          locCont.classList.remove('hidden');
-      } else {
-          locCont.classList.add('hidden');
-      }
-  }
+  let currentSerialSort = { col: 'serial', asc: true };  
+  let currentUserEmail = "You"; 
+  let currentUserRole = "Viewer"; 
+  let currentUserPerms = {};
+  let currentUserLocations = [];
+  let isSyncing = false;
+  let appCurrency = "$";
+  let appDefaultImg = "";
+  let syncTimer = null;
+  let syncIntervalMs = 15000;
+  function getPlaceholder() {
+    if (appDefaultImg) return appDefaultImg;
+    const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    return isDark 
+      ? 'https://dummyimage.com/400x400/1e1e1e/adb5bd.png&text=No+Image' 
+      : 'https://dummyimage.com/400x400/f8f9fa/adb5bd.png&text=No+Image';
+  }
+  function updateRoleDescription() {
+      const val = document.getElementById('uRole').value;
+      const locCont = document.getElementById('uLocationsContainer');      
+      const targetRole = db.roles ? db.roles.find(r => r.Role === val) : null;
+      if (targetRole && !targetRole['Global Access']) {
+          locCont.classList.remove('hidden');
+      } else {
+          locCont.classList.add('hidden');
+      }
+  }
   function renderLocationChecklist(assignedStr = "") {
       const assigned = assignedStr.split(',').map(s => s.trim().toLowerCase()).filter(s => s);
       const listEl = document.getElementById('uLocationsList');
@@ -1248,70 +1237,62 @@
     return result.data;
   }
   function applyRolePermissions() {
-      const isMgmtActive = !document.getElementById('viewManagement').classList.contains('hidden');
-      if (['Admin', 'Sub-Admin', 'Manager', 'Operator'].includes(currentUserRole)) {
-          document.getElementById('btnNavManagement').classList.toggle('d-none', isMgmtActive);
-          document.getElementById('btnEditLocInner').classList.remove('hidden');
-          document.getElementById('btnEditItemInner').classList.remove('hidden');
-          document.getElementById('btnCsvLoc').classList.remove('hidden'); 
-          document.getElementById('btnAuditLocInner').classList.remove('hidden');
-      } else {
-          document.getElementById('btnNavManagement').classList.add('d-none');
-          document.getElementById('btnEditLocInner').classList.add('hidden');
-          document.getElementById('btnEditItemInner').classList.add('hidden');
-          document.getElementById('btnCsvLoc').classList.add('hidden'); 
-          document.getElementById('btnAuditLocInner').classList.add('hidden');
-      }
-      
-      const tabDash = document.getElementById('tabDashboard');
-      if (tabDash) {
-          if (currentUserRole === 'Operator') tabDash.classList.add('d-none');
-          else tabDash.classList.remove('d-none');
-      }
+      const isMgmtActive = !document.getElementById('viewManagement').classList.contains('hidden');
+      const canMgmt = currentUserPerms['View Dashboard'] || currentUserPerms['Manage Items'] || currentUserPerms['Manage Locations'] || currentUserPerms['View Logs'] || currentUserPerms['View SysLogs'] || currentUserPerms['Manage Users'] || currentUserPerms['Manage Theme'];
+      
+      document.getElementById('btnNavManagement').classList.toggle('d-none', !canMgmt || isMgmtActive);
+      document.getElementById('btnEditLocInner').classList.toggle('hidden', !currentUserPerms['Manage Locations']);
+      document.getElementById('btnEditItemInner').classList.toggle('hidden', !currentUserPerms['Manage Items']);
+      document.getElementById('btnCsvLoc').classList.toggle('hidden', !currentUserPerms['Export Data']);
+      document.getElementById('btnAuditLocInner').classList.toggle('hidden', !currentUserPerms['Perform Audits']);
+      
+      const tabDash = document.getElementById('tabDashboard');
+      if (tabDash) tabDash.classList.toggle('d-none', !currentUserPerms['View Dashboard']);
+      
+      const tabItems = document.getElementById('t1').parentElement;
+      if (tabItems) tabItems.classList.toggle('d-none', !currentUserPerms['Manage Items']);
+      
+      const tabLocs = document.getElementById('t2').parentElement;
+      if (tabLocs) tabLocs.classList.toggle('d-none', !currentUserPerms['Manage Locations']);
+      
+      const tabLogs = document.getElementById('tabLogs');
+      if (tabLogs) tabLogs.classList.toggle('d-none', !currentUserPerms['View Logs']);
+      
+      const tabSysLogs = document.getElementById('tabSysLogs');
+      if (tabSysLogs) tabSysLogs.classList.toggle('d-none', !currentUserPerms['View SysLogs']);
+      
+      const tabUser = document.getElementById('tabUserAccess');
+      if (tabUser) tabUser.classList.toggle('d-none', !currentUserPerms['Manage Users']);
+      
+      const tabTheme = document.getElementById('tabTheme');
+      if (tabTheme) tabTheme.classList.toggle('d-none', !currentUserPerms['Manage Theme']);
 
-      if (currentUserRole === 'Admin') {
-          document.getElementById('tabUserAccess').classList.remove('d-none');
-          document.getElementById('tabTheme').classList.remove('d-none');
-      } else if (currentUserRole === 'Sub-Admin') {
-          document.getElementById('tabUserAccess').classList.remove('d-none');
-          document.getElementById('tabTheme').classList.add('d-none');
-      } else {
-          document.getElementById('tabUserAccess').classList.add('d-none');
-          document.getElementById('tabTheme').classList.add('d-none');
-      }
-      
-      if (currentUserRole === 'Admin' || currentUserRole === 'Sub-Admin') {
-          document.getElementById('tabLogs').classList.remove('d-none');
-          document.getElementById('tabSysLogs').classList.remove('d-none');
-      } else {
-          document.getElementById('tabLogs').classList.add('d-none');
-          document.getElementById('tabSysLogs').classList.add('d-none');
-      }
-
-      if (currentUserRole === 'Viewer') {
-          document.getElementById('inlineActionForm').classList.add('hidden');
-      } else {
-          document.getElementById('inlineActionForm').classList.remove('hidden');
-      }
-  }
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") silentSync();
-  });
-  async function silentSync() {
-    if (isSyncing) return;
-    isSyncing = true;    
-    const ind = document.getElementById('syncIndicator');
-    if (ind) ind.style.opacity = 1;
-    try {
-      const d = await apiCall('getInitialData');
-      db = d; 
-      db.rawLocations = [...d.locations];
-      const currentUser = db.users.find(u => u.email.toLowerCase() === currentUserEmail.toLowerCase());
-      if (currentUser) {
-          currentUserRole = currentUser.role;
-          currentUserLocations = (currentUser.locations || "").split(',').map(s => s.trim()).filter(s => s);
-      }
-      if (!['Admin', 'Sub-Admin'].includes(currentUserRole)) {
+      if (!currentUserPerms['Perform Transactions']) {
+          document.getElementById('inlineActionForm').classList.add('hidden');
+      } else {
+          document.getElementById('inlineActionForm').classList.remove('hidden');
+      }
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") silentSync();
+  });
+  async function silentSync() {
+    if (isSyncing) return;
+    isSyncing = true;    
+    const ind = document.getElementById('syncIndicator');
+    if (ind) ind.style.opacity = 1;
+    try {
+      const d = await apiCall('getInitialData');
+      db = d; 
+      db.rawLocations = [...d.locations];
+      const currentUser = db.users.find(u => u.email.toLowerCase() === currentUserEmail.toLowerCase());
+      if (currentUser) {
+          currentUserRole = currentUser.role;
+          const matchedRole = db.roles ? db.roles.find(r => r.Role.toLowerCase() === currentUser.role.toLowerCase()) : null;
+          currentUserPerms = matchedRole || { 'Global Access': false };
+          currentUserLocations = (currentUser.locations || "").split(',').map(s => s.trim()).filter(s => s);
+      }
+      if (!currentUserPerms['Global Access']) {
           if (currentUserLocations.length > 0) {
               const assignedLower = currentUserLocations.map(s => s.toLowerCase());
               db.locations = db.locations.filter(l => {
@@ -1377,15 +1358,18 @@ async function fetchData(callback) {
       db = data; 
       db.rawLocations = [...data.locations];
       const currentUser = data.users.find(u => u.email.toLowerCase() === localStorage.getItem('ims_user_email').toLowerCase());
-      if (currentUser) {
-        currentUserEmail = currentUser.email;
-        currentUserRole = currentUser.role;
-        currentUserLocations = (currentUser.locations || "").split(',').map(s => s.trim()).filter(s => s);
-      } else {
-        currentUserRole = 'Admin'; 
-        currentUserLocations = []; 
-      }
-      if (!['Admin', 'Sub-Admin'].includes(currentUserRole)) {
+      if (currentUser) {
+        currentUserEmail = currentUser.email;
+        currentUserRole = currentUser.role;
+        const matchedRole = data.roles ? data.roles.find(r => r.Role.toLowerCase() === currentUser.role.toLowerCase()) : null;
+        currentUserPerms = matchedRole || { 'Global Access': false };
+        currentUserLocations = (currentUser.locations || "").split(',').map(s => s.trim()).filter(s => s);
+      } else {
+        currentUserRole = 'Admin'; 
+        currentUserPerms = { 'Global Access': true, 'View Dashboard': true, 'Manage Items': true, 'Manage Locations': true, 'Perform Transactions': true, 'Perform Audits': true, 'Export Data': true, 'View Logs': true, 'View SysLogs': true, 'Manage Users': true, 'Manage Theme': true };
+        currentUserLocations = []; 
+      }
+      if (!currentUserPerms['Global Access']) {
           if (currentUserLocations.length > 0) {
               const assignedLower = currentUserLocations.map(s => s.toLowerCase());
               db.locations = db.locations.filter(l => {
@@ -1801,11 +1785,78 @@ async function fetchData(callback) {
     document.getElementById('btnLoadMore').classList.toggle('hidden', logLimit >= sortedLogs.length);
   }
   function loadMoreLogs() { logLimit += 20; renderLogs(); }
-  function updateMgmtTables() {
-    const isDeployed = document.getElementById('mgmtStateToggle') && document.getElementById('mgmtStateToggle').checked;
-    const currentState = isDeployed ? 'deployed' : 'stock';
-      
-    const spotCounts = {};
+
+  function renderRoleMatrix() {
+      if (!db.roles || db.roles.length === 0) return;
+      const perms = ['Global Access', 'View Dashboard', 'Manage Items', 'Manage Locations', 'Perform Transactions', 'Perform Audits', 'Export Data', 'View Logs', 'View SysLogs', 'Manage Users', 'Manage Theme'];
+      
+      let thead = `<tr><th class="text-start">Role Name</th>` + perms.map(p => `<th><div style="writing-mode: vertical-rl; transform: rotate(180deg); padding: 5px; margin: 0 auto; height: 120px; text-align: left;">${p}</div></th>`).join('') + `<th>Save</th></tr>`;
+      document.getElementById('rolesTableHeader').innerHTML = `<tr>${thead}</tr>`;
+      
+      let tbody = '';
+      db.roles.forEach((r, idx) => {
+          const isAdmin = r.Role.toLowerCase() === 'admin';
+          let row = `<tr><td class="text-start fw-bold ${isAdmin ? 'text-danger' : ''}">${r.Role}</td>`;
+          perms.forEach(p => {
+              row += `<td><input type="checkbox" class="form-check-input role-cb-${idx}" data-perm="${p}" ${r[p] ? 'checked' : ''} ${isAdmin ? 'disabled' : ''}></td>`;
+          });
+          row += `<td><button class="btn btn-sm btn-success fw-bold" onclick="saveRolePerms(${idx}, '${r.Role}')" ${isAdmin ? 'disabled' : ''}>💾</button></td></tr>`;
+          tbody += row;
+      });
+      document.getElementById('rolesTableBody').innerHTML = tbody;
+  }
+
+  function createNewRole() {
+      const roleName = prompt("Enter a name for the new custom role (e.g., 'Auditor'):");
+      if (!roleName || roleName.trim() === "") return;
+      if (db.roles.some(r => r.Role.toLowerCase() === roleName.trim().toLowerCase())) return alert("Role already exists!");
+      
+      let newRole = { Role: roleName.trim() };
+      ['Global Access', 'View Dashboard', 'Manage Items', 'Manage Locations', 'Perform Transactions', 'Perform Audits', 'Export Data', 'View Logs', 'View SysLogs', 'Manage Users', 'Manage Theme'].forEach(p => newRole[p] = false);
+      db.roles.push(newRole);
+      renderRoleMatrix();
+      updateRoleDropdown();
+  }
+
+  async function saveRolePerms(idx, roleName) {
+      const checkboxes = document.querySelectorAll(`.role-cb-${idx}`);
+      let perms = {};
+      checkboxes.forEach(cb => {
+          perms[cb.getAttribute('data-perm')] = cb.checked;
+      });
+      db.roles[idx] = { Role: roleName, ...perms };
+      
+      document.getElementById('loadingOverlay').classList.remove('hidden');
+      document.getElementById('loadingOverlay').style.opacity = '1';
+      try {
+          await apiCall('saveOrUpdateRole', { roleName: roleName, perms: perms });
+          await fetchData();
+          document.getElementById('loadingOverlay').style.opacity = '0';
+          setTimeout(() => document.getElementById('loadingOverlay').classList.add('hidden'), 300);
+      } catch (err) {
+          document.getElementById('loadingOverlay').style.opacity = '0';
+          setTimeout(() => document.getElementById('loadingOverlay').classList.add('hidden'), 300);
+          alert(err.message);
+      }
+  }
+
+  function updateRoleDropdown() {
+      const uRoleSelect = document.getElementById('uRole');
+      if (uRoleSelect && db.roles) {
+          const currentVal = uRoleSelect.value;
+          uRoleSelect.innerHTML = '<option value="" disabled selected>Select Access Role</option>' + db.roles.map(r => `<option value="${r.Role}">${r.Role}</option>`).join('');
+          if (currentVal && db.roles.some(r => r.Role === currentVal)) uRoleSelect.value = currentVal;
+      }
+  }
+
+  function updateMgmtTables() {
+    const isDeployed = document.getElementById('mgmtStateToggle') && document.getElementById('mgmtStateToggle').checked;
+    const currentState = isDeployed ? 'deployed' : 'stock';
+      
+    renderRoleMatrix();
+    updateRoleDropdown();
+
+    const spotCounts = {};
     db.logs.forEach(log => {
       if (log.subLoc) {
         if (log.toLoc) {
@@ -1849,9 +1900,9 @@ async function fetchData(callback) {
       const spotBtnText = sCount > 0 ? `Spots (${sCount})` : 'Spots (0)';      
       
       const descHtml = l.description ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Desc:</strong> ' + l.description + '</div>' : '';
-      const notesHtml = l.notes ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Notes:</strong> ' + l.notes + '</div>' : '';
-      
-      const hasAccess = ['Admin', 'Sub-Admin'].includes(currentUserRole) || db.locations.some(allowed => allowed.locationName === l.locationName);
+      const notesHtml = l.notes ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Notes:</strong> ' + l.notes + '</div>' : '';
+      
+      const hasAccess = currentUserPerms['Global Access'] || db.locations.some(allowed => allowed.locationName === l.locationName);
       
       let invCount = 0;
       if (hasAccess) {
@@ -2356,12 +2407,12 @@ async function fetchData(callback) {
     document.getElementById('uName').value = u.name || "";
     document.getElementById('uEmail').value = u.email;
     document.getElementById('uEmail').disabled = true;
-    document.getElementById('uRole').value = u.role;
-    if ((currentUserRole === 'Sub-Admin' && (u.role === 'Admin' || u.role === 'Sub-Admin')) || (currentUserRole === 'Admin' && u.role === 'Admin')) {
-        document.getElementById('uRole').disabled = true;
-    } else {
-        document.getElementById('uRole').disabled = false;
-    }
+    document.getElementById('uRole').value = u.role;
+    if (currentUserRole !== 'Admin' && u.role.toLowerCase() === 'admin') {
+        document.getElementById('uRole').disabled = true;
+    } else {
+        document.getElementById('uRole').disabled = false;
+    }
     renderLocationChecklist(u.locations || "");
     updateRoleDescription();      
     const btn = document.getElementById('btnSaveUser');
@@ -3170,14 +3221,18 @@ async function fetchData(callback) {
     cancelEditUser();
 
     if(v === 'inventory') {
-      history.pushState({ view: 'grid' }, "");
-      showGrid(true); 
-    } else {
-      const defaultTab = currentUserRole === 'Operator' ? 'item' : 'dash';
-      history.pushState({ view: 'mgmt', tab: defaultTab }, "");
-      switchMgmt(defaultTab, true);
-      setTimeout(updateTabArrows, 50);
-    }
+      history.pushState({ view: 'grid' }, "");
+      showGrid(true); 
+    } else {
+      let defaultTab = 'dash';
+      if (!currentUserPerms['View Dashboard'] && currentUserPerms['Manage Items']) defaultTab = 'item';
+      else if (!currentUserPerms['View Dashboard'] && currentUserPerms['Manage Locations']) defaultTab = 'loc';
+      else if (!currentUserPerms['View Dashboard'] && currentUserPerms['Manage Users']) defaultTab = 'user';
+      
+      history.pushState({ view: 'mgmt', tab: defaultTab }, "");
+      switchMgmt(defaultTab, true);
+      setTimeout(updateTabArrows, 50);
+    }
   }
   function updateTabArrows() {
     const tabs = document.getElementById('mgmtTabs');
@@ -3364,8 +3419,7 @@ async function fetchData(callback) {
       if (email.toLowerCase() === currentUserEmail.toLowerCase()) return alert("Safety Net: You cannot disable your own account.");
       const targetUser = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
       if (targetUser) {
-          if (currentUserRole === 'Sub-Admin' && (targetUser.role === 'Admin' || targetUser.role === 'Sub-Admin')) return alert("Permission Denied: You cannot change the status of Admins or other Sub-Admins.");
-          if (currentUserRole === 'Admin' && targetUser.role === 'Admin') return alert("Permission Denied: Admins cannot change the status of other Admins.");
+          if (currentUserRole !== 'Admin' && targetUser.role.toLowerCase() === 'admin') return alert("Permission Denied: Only the core Admin can disable an Admin account.");
       }
       try {
           await apiCall('toggleUserStatus', { data: { email: email, newStatus: next } });
@@ -3470,8 +3524,8 @@ async function fetchData(callback) {
       let checkedGroups = [];
       document.querySelectorAll('.l-group-check:checked').forEach(cb => checkedGroups.push(cb.value));
 
-      if (!['Admin', 'Sub-Admin'].includes(currentUserRole)) {
-          if (checkedGroups.length === 0) {
+      if (!currentUserPerms['Global Access']) {
+          if (checkedGroups.length === 0) {
               btn.disabled = false;
               btn.innerText = originalText;
               return alert("Access Restriction: You must select at least one Access Group (LBAC) so you do not lose access to this location.");
@@ -3529,24 +3583,25 @@ async function fetchData(callback) {
       btn.disabled = true;
       btn.innerText = "Processing Data...";
       const role = document.getElementById('uRole').value;
-      let locs = [];
-      if (role === 'Manager' || role === 'Operator' || role === 'Viewer') {
-          document.querySelectorAll('.u-loc-check:checked').forEach(cb => locs.push(cb.value));
-      }
-      let payload = {
-          name: document.getElementById('uName').value,
-          email: document.getElementById('uEmail').value,
-          role: role,
-          locations: locs.join(','),
-          mode: mode
-      };      
-      if (!payload.email || !payload.role) {
+      let locs = [];
+      const targetRole = db.roles.find(r => r.Role === role);
+      if (targetRole && !targetRole['Global Access']) {
+          document.querySelectorAll('.u-loc-check:checked').forEach(cb => locs.push(cb.value));
+      }
+      let payload = {
+          name: document.getElementById('uName').value,
+          email: document.getElementById('uEmail').value,
+          role: role,
+          locations: locs.join(','),
+          mode: mode
+      };      
+      if (!payload.email || !payload.role) {
          alert("Please provide both an email and a role.");
          btn.disabled = false; btn.innerText = originalText;
          return;
       }
-      if (mode === 'add' && currentUserRole === 'Sub-Admin' && (payload.role === 'Admin' || payload.role === 'Sub-Admin')) {
-         alert("Permission Denied: Sub-Admins cannot create new Admin or Sub-Admin users.");
+      if (currentUserRole !== 'Admin' && payload.role.toLowerCase() === 'admin') {
+         alert("Security Restriction: Only the core Admin can assign or modify the Admin role.");
          btn.disabled = false; btn.innerText = originalText;
          return;
       }
@@ -3664,8 +3719,8 @@ async function fetchData(callback) {
           return;
       }
 
-      const hasFullAccess = ['Admin', 'Sub-Admin'].includes(currentUserRole);
-      const userLocsLower = currentUserLocations.map(s => s.toLowerCase());
+      const hasFullAccess = currentUserPerms['Global Access'];
+      const userLocsLower = currentUserLocations.map(s => s.toLowerCase());
 
       container.innerHTML = Array.from(allGroups).sort().map(g => {
           const isChecked = assigned.includes(g.toLowerCase()) ? 'checked' : '';
