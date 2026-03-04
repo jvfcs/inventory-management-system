@@ -1409,12 +1409,15 @@ async function fetchData(callback) {
     }
   }  
   function applySorts() {
+    const isDeployed = document.getElementById('mgmtStateToggle') && document.getElementById('mgmtStateToggle').checked;
+    const currentState = isDeployed ? 'deployed' : 'stock';
+
     if (currentSort.item.col !== -1) {
       const key = ["barcode", "make", "model", "category", "minStock", "specs", "img", "status", "total"][currentSort.item.col];
       db.items.sort((a,b) => {
         if (key === 'total') {
-            let valA = getStockBalance(a.barcode);
-            let valB = getStockBalance(b.barcode);
+            let valA = getStockBalance(a.barcode, null, null, currentState);
+            let valB = getStockBalance(b.barcode, null, null, currentState);
             return currentSort.item.asc ? valA - valB : valB - valA;
         }
         let valA = key === 'make' ? String(a.make + " " + a.model).toLowerCase() : String(a[key] || "").toLowerCase();
@@ -1438,10 +1441,18 @@ async function fetchData(callback) {
         if (key === 'count') {
           let countA = 0, countB = 0;
           db.logs.forEach(l => {
-            if (l.toLoc === a.locationName) countA += l.quantity;
-            if (l.fromLoc === a.locationName) countA -= Math.abs(l.quantity);
-            if (l.toLoc === b.locationName) countB += l.quantity;
-            if (l.fromLoc === b.locationName) countB -= Math.abs(l.quantity);
+            let isIn = false, isOut = false;
+            if (currentState === 'stock') {
+                isIn = ["In", "Move-In", "Return-In", "Audit-In"].includes(l.type);
+                isOut = ["Out", "Move-Out", "Deploy-Out", "Audit-Out"].includes(l.type);
+            } else {
+                isIn = ["Deploy-In"].includes(l.type);
+                isOut = ["Return-Out", "Consume-Out"].includes(l.type);
+            }
+            if (l.toLoc === a.locationName && isIn) countA += Math.abs(l.quantity);
+            if (l.fromLoc === a.locationName && isOut) countA -= Math.abs(l.quantity);
+            if (l.toLoc === b.locationName && isIn) countB += Math.abs(l.quantity);
+            if (l.fromLoc === b.locationName && isOut) countB -= Math.abs(l.quantity);
           });
           return currentSort.loc.asc ? countA - countB : countB - countA;
         }
@@ -1561,12 +1572,13 @@ async function fetchData(callback) {
       gUnits += itemLocTotal;
       gValue += (itemLocTotal * price);
 
-      if (currentState === 'stock' && itemLocTotal <= parseFloat(itm.minStock)) {
+      const globalStockQty = getStockBalance(itm.barcode, null, null, 'stock');
+      if (globalStockQty <= parseFloat(itm.minStock)) {
         lowStockAlerts.push({
           bc: itm.barcode,
           category: itm.category,
           name: `${itm.make} ${itm.model}`,
-          onHand: itemLocTotal,
+          onHand: globalStockQty,
           min: itm.minStock
         });
       }
@@ -3128,10 +3140,12 @@ async function fetchData(callback) {
     succ.classList.remove('hidden');
     setTimeout(() => succ.classList.add('hidden'), 5000); 
   }
-  function showGrid(isBack = false) { 
-    window.scrollTo(0, 0);
-    if (!isBack) history.pushState({ view: 'grid' }, "");
+  function showGrid(isBack = false) { 
+    window.scrollTo(0, 0);
+    if (!isBack) history.pushState({ view: 'grid' }, "");
     hideAll(); 
+    const gridTgl = document.getElementById('gridStateToggle');
+    if (gridTgl) gridTgl.checked = false;
     renderGrid(); 
     document.getElementById('gridView').classList.remove('hidden'); 
   }
@@ -3225,6 +3239,9 @@ async function fetchData(callback) {
     cancelEditUser();
 
     const tgl = document.getElementById('mgmtStateToggleContainer');
+    const tglInput = document.getElementById('mgmtStateToggle');
+    if (tglInput) tglInput.checked = false;
+
     if (t === 'dash' || t === 'item' || t === 'loc') tgl.classList.remove('hidden');
     else tgl.classList.add('hidden');
 
