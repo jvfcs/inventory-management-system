@@ -35,13 +35,11 @@
         [data-bs-theme="dark"] {
       --brand-color: var(--dark-theme);
     }
-    /* Completely hide scrollbars for a Native App feel */
     ::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
-    * { scrollbar-width: none !important; -ms-overflow-style: none !important; box-sizing: border-box; }
-    
-    html { overflow-x: hidden !important; -webkit-text-size-adjust: 100%; touch-action: manipulation; }
-    body { overflow-x: hidden !important; width: 100%; position: relative; margin: 0; padding: 0; background-color: var(--light-bg); color: var(--light-text); padding-bottom: 50px; font-family: sans-serif; transition: background-color 0.3s ease, color 0.3s ease; -webkit-touch-callout: none; -webkit-font-smoothing: antialiased; }
-    #appContainer { overflow-x: hidden !important; width: 100%; max-width: 100vw; position: relative; }
+    * { scrollbar-width: none !important; -ms-overflow-style: none !important; box-sizing: border-box; }    
+    html { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
+    body { width: 100%; max-width: 100%; position: relative; margin: 0; padding: 0; background-color: var(--light-bg); color: var(--light-text); padding-bottom: 50px; font-family: sans-serif; transition: background-color 0.3s ease, color 0.3s ease; -webkit-touch-callout: none; -webkit-font-smoothing: antialiased; }
+    #appContainer { width: 100%; max-width: 100%; position: relative; }
     @media screen and (max-width: 768px) {
       input.form-control, select.form-select, textarea.form-control, input[type="text"], input[type="number"], input[type="email"] { font-size: 16px !important; }
       .row { margin-left: 0 !important; margin-right: 0 !important; width: 100% !important; max-width: 100%; display: flex; flex-wrap: wrap; }
@@ -258,7 +256,6 @@
     <div class="spinner-border text-light" role="status" style="width: 14px; height: 14px; border-width: 2px;"></div>
     <span>Syncing...</span>
   </div>
-
   <div id="stickyHeaderContainer" class="pb-3 mb-3">
     <div id="globalStockAlert" class="alert alert-danger text-center fw-bold shadow-sm mb-3 hidden" style="cursor: pointer;" onclick="showView('management'); switchMgmt('dash');">
       ⚠️ Low Stock: Click here for details.
@@ -667,8 +664,7 @@
                     <option value="Tools">Tools</option>
                     <option value="Other">Other</option>
                   </select>
-                </div>
-                
+                </div>                
                 <div class="col-md-3">
                   <label class="small fw-bold text-muted mb-1">Tracking Type</label>
                   <select id="mSerialized" class="form-select text-primary fw-bold">
@@ -697,7 +693,6 @@
                   <label class="small fw-bold text-muted mb-1">Notes</label>
                   <textarea id="mNotes" class="form-control" placeholder="Notes" rows="2"></textarea>
                 </div>
-
                 <div class="col-md-6">
                   <label class="small fw-bold text-muted mb-1">Image URL (Optional)</label>
                   <input type="text" id="mImg" class="form-control" placeholder="Image URL">
@@ -707,7 +702,6 @@
                   <input type="file" id="mImgFile" class="form-control" accept=".png, .jpg, .jpeg">
                   <img id="mImgPreview" class="hidden mt-2 border rounded shadow-sm" style="max-width: 100px; max-height: 100px; object-fit: cover;">
                 </div>
-
                 <div class="col-12 mt-3 d-flex gap-2 justify-content-end border-top pt-3">
                   <button class="btn btn-outline-secondary hidden px-4 fw-bold" id="btnCancelEdit" onclick="cancelEditItem()">Cancel</button>
                   <button class="btn btn-primary px-4 fw-bold" id="btnSaveItem" onclick="saveOrUpdateItem('add')">Save Item</button>
@@ -715,7 +709,6 @@
               </div>
             </div>
         </div>
-
         <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseItemTable" aria-expanded="true">
             <h6 class="fw-bold text-uppercase letter-spacing-1 text-secondary small m-0">Catalog</h6>
             <span class="text-secondary fw-bold toggle-icon">▼</span>
@@ -766,13 +759,11 @@
                     <option value="Physical Space">Physical Space</option>
                     <option value="Mobile Kit">Mobile Kit</option>
                   </select>
-                </div>
-                
+                </div>                
                 <div class="col-md-12 hidden" id="mDeployLocContainer">
                   <label class="small fw-bold text-info mb-1">Deployment Location</label>
                   <input type="text" id="mDeployLoc" class="form-control border-info" placeholder="Site Name (e.g. Desert Festival)">
                 </div>
-
                 <div class="col-md-6">
                   <label class="small fw-bold text-muted mb-1">Description</label>
                   <textarea id="mLDesc" class="form-control" placeholder="Description" rows="2"></textarea>
@@ -781,7 +772,6 @@
                   <label class="small fw-bold text-muted mb-1">Notes</label>
                   <textarea id="mLNotes" class="form-control" placeholder="Notes" rows="2"></textarea>
                 </div>
-
                 <div class="col-md-6">
                   <label class="small fw-bold text-muted mb-1">Image URL (Optional)</label>
                   <input type="text" id="mLImg" class="form-control" placeholder="Image URL">
@@ -791,7 +781,6 @@
                   <input type="file" id="mLImgFile" class="form-control" accept=".png, .jpg, .jpeg">
                   <img id="mLImgPreview" class="hidden mt-2 border rounded shadow-sm" style="max-width: 100px; max-height: 100px; object-fit: cover;">
                 </div>
-
                 <div class="col-12 mt-2">
                    <div class="border border-primary rounded p-2 bg-white shadow-sm">
                        <label class="fw-bold small mb-2 text-primary border-bottom pb-1 d-block">Access Groups (LBAC)</label>
@@ -802,7 +791,6 @@
                        </div>
                    </div>
                 </div>
-
                 <div class="col-12 mt-3 d-flex gap-2 justify-content-end border-top pt-3">
                   <button class="btn btn-outline-secondary hidden px-4 fw-bold" id="btnCancelEditLoc" onclick="cancelEditLoc()">Cancel</button>
                   <button class="btn btn-primary px-4 fw-bold" id="btnSaveLoc" onclick="saveOrUpdateLoc('add')">Create Location</button>
@@ -810,7 +798,6 @@
               </div>
             </div>
         </div>
-
         <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseLocTable" aria-expanded="true">
             <h6 class="fw-bold text-uppercase letter-spacing-1 text-secondary small m-0">Locations Directory</h6>
             <span class="text-secondary fw-bold toggle-icon">▼</span>
@@ -830,8 +817,7 @@
                      <tbody id="bodyLocs"></tbody>
                    </table>
                 </div>
-            </div>                    
-            
+            </div>            
             <div id="spotManagerContainer" class="hidden mb-4">
               <div class="d-flex justify-content-between align-items-center mb-3">
                   <h6 class="fw-bold m-0" id="spotManagerTitle">Manage Spots</h6>
@@ -847,7 +833,6 @@
               </div>
             </div>
         </div>
-
         <div class="d-flex justify-content-between align-items-center mb-3 border-top pt-4 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseAccessGroups" aria-expanded="true">
             <h6 class="fw-bold text-uppercase letter-spacing-1 text-muted small m-0">Access Group Summary</h6>
             <span class="text-muted fw-bold toggle-icon">▼</span>
@@ -927,19 +912,16 @@
                   <label class="small fw-bold text-muted mb-1">Access Role</label>
                   <select id="uRole" class="form-select text-primary fw-bold" onchange="updateRoleDescription()">
                   </select>
-                </div>
-                
+                </div>                
                 <div class="col-12 mt-1">
                   <div id="roleDesc" class="small text-muted px-2 py-1 bg-white rounded border hidden"></div>
                 </div>
-
                 <div class="col-12 mt-2 hidden" id="uLocationsContainer">
                    <div class="border border-primary rounded p-2 bg-white shadow-sm">
                        <label class="fw-bold small mb-2 text-primary border-bottom pb-1 d-block">Assign Locations (LBAC)</label>
                        <div id="uLocationsList" style="max-height: 200px; overflow-y: auto;"></div>
                    </div>
-                </div>
-                
+                </div>                
                 <div class="col-12 mt-3 d-flex gap-2 justify-content-end border-top pt-3">
                   <button class="btn btn-outline-secondary hidden px-4 fw-bold" id="btnCancelEditUser" onclick="cancelEditUser()">Cancel</button>
                   <button class="btn btn-primary px-4 fw-bold" id="btnSaveUser" onclick="saveOrUpdateUser('add')">Add User</button>
@@ -947,7 +929,6 @@
               </div>
             </div>
         </div>
-
         <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseUserTable" aria-expanded="true">
             <h6 class="fw-bold text-uppercase letter-spacing-1 text-secondary small m-0">System Access Management</h6>
             <span class="text-secondary fw-bold toggle-icon">▼</span>
@@ -967,7 +948,6 @@
                </table>
             </div>
         </div>
-
         <div class="d-flex justify-content-between align-items-center mb-3 border-top pt-4 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseRoleManager" aria-expanded="true">
             <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0">Dynamic Role Manager</h6>
             <span class="text-primary fw-bold toggle-icon">▼</span>
@@ -1375,35 +1355,26 @@
   }
   function applyRolePermissions() {
       const isMgmtActive = !document.getElementById('viewManagement').classList.contains('hidden');
-      const canMgmt = currentUserPerms['View Dashboard'] || currentUserPerms['Manage Items'] || currentUserPerms['Manage Locations'] || currentUserPerms['View Logs'] || currentUserPerms['View SysLogs'] || currentUserPerms['Manage Users'] || currentUserPerms['Manage Theme'];
-      
+      const canMgmt = currentUserPerms['View Dashboard'] || currentUserPerms['Manage Items'] || currentUserPerms['Manage Locations'] || currentUserPerms['View Logs'] || currentUserPerms['View SysLogs'] || currentUserPerms['Manage Users'] || currentUserPerms['Manage Theme'];      
       document.getElementById('btnNavManagement').classList.toggle('d-none', !canMgmt || isMgmtActive);
       document.getElementById('btnEditLocInner').classList.toggle('hidden', !currentUserPerms['Manage Locations']);
       document.getElementById('btnEditItemInner').classList.toggle('hidden', !currentUserPerms['Manage Items']);
       document.getElementById('btnCsvLoc').classList.toggle('hidden', !currentUserPerms['Export Data']);
-      document.getElementById('btnAuditLocInner').classList.toggle('hidden', !currentUserPerms['Perform Audits']);
-      
+      document.getElementById('btnAuditLocInner').classList.toggle('hidden', !currentUserPerms['Perform Audits']);      
       const tabDash = document.getElementById('tabDashboard');
-      if (tabDash) tabDash.classList.toggle('d-none', !currentUserPerms['View Dashboard']);
-      
+      if (tabDash) tabDash.classList.toggle('d-none', !currentUserPerms['View Dashboard']);      
       const tabItems = document.getElementById('t1').parentElement;
-      if (tabItems) tabItems.classList.toggle('d-none', !currentUserPerms['Manage Items']);
-      
+      if (tabItems) tabItems.classList.toggle('d-none', !currentUserPerms['Manage Items']);      
       const tabLocs = document.getElementById('t2').parentElement;
-      if (tabLocs) tabLocs.classList.toggle('d-none', !currentUserPerms['Manage Locations']);
-      
+      if (tabLocs) tabLocs.classList.toggle('d-none', !currentUserPerms['Manage Locations']);      
       const tabLogs = document.getElementById('tabLogs');
-      if (tabLogs) tabLogs.classList.toggle('d-none', !currentUserPerms['View Logs']);
-      
+      if (tabLogs) tabLogs.classList.toggle('d-none', !currentUserPerms['View Logs']);      
       const tabSysLogs = document.getElementById('tabSysLogs');
-      if (tabSysLogs) tabSysLogs.classList.toggle('d-none', !currentUserPerms['View SysLogs']);
-      
+      if (tabSysLogs) tabSysLogs.classList.toggle('d-none', !currentUserPerms['View SysLogs']);      
       const tabUser = document.getElementById('tabUserAccess');
-      if (tabUser) tabUser.classList.toggle('d-none', !currentUserPerms['Manage Users']);
-      
+      if (tabUser) tabUser.classList.toggle('d-none', !currentUserPerms['Manage Users']);      
       const tabTheme = document.getElementById('tabTheme');
       if (tabTheme) tabTheme.classList.toggle('d-none', !currentUserPerms['Manage Theme']);
-
       if (!currentUserPerms['Perform Transactions']) {
           document.getElementById('inlineActionForm').classList.add('hidden');
       } else {
@@ -1555,7 +1526,6 @@ async function fetchData(callback) {
   function applySorts() {
     const isDeployed = document.getElementById('mgmtStateToggle') && document.getElementById('mgmtStateToggle').checked;
     const currentState = isDeployed ? 'deployed' : 'stock';
-
     if (currentSort.item.col !== -1) {
       const key = ["barcode", "make", "model", "category", "minStock", "specs", "img", "status", "total"][currentSort.item.col];
       db.items.sort((a,b) => {
@@ -1641,7 +1611,6 @@ async function fetchData(callback) {
       renderItems(currentLocName);
     }
   }
-
   function getStockBalance(barcode, location = null, subLocation = null, state = 'stock') {
     let balance = 0;
     db.logs.forEach(l => {
@@ -1658,7 +1627,6 @@ async function fetchData(callback) {
             isToValid = true;
             isFromValid = true;
         }
-
         if (!location) {
           if (isToValid) balance += Math.abs(l.quantity);
           if (isFromValid) balance -= Math.abs(l.quantity);
@@ -1673,8 +1641,7 @@ async function fetchData(callback) {
   }
   function renderDashboard() {
     const isDeployed = document.getElementById('mgmtStateToggle') && document.getElementById('mgmtStateToggle').checked;
-    const currentState = isDeployed ? 'deployed' : 'stock';
-    
+    const currentState = isDeployed ? 'deployed' : 'stock';    
     const wordState = isDeployed ? "Deployed" : "Stock";
     document.getElementById('dashGlobalTitle').innerText = `Global ${wordState} Snapshot`;
     document.getElementById('labelUniqueGlobal').innerText = `Unique ${wordState} Items`;
@@ -1682,20 +1649,16 @@ async function fetchData(callback) {
     document.getElementById('labelValueGlobal').innerText = `Total ${wordState} Value`;
     document.getElementById('labelPhysGlobal').innerText = `Physical Spaces ${wordState}`;
     document.getElementById('labelKitGlobal').innerText = `Mobile Kits ${wordState}`;
-
     const lowStockAlerts = [];
     const locationStats = {};
     db.locations.filter(l => l.status === 'Active').forEach(l => {
       locationStats[l.locationName] = { type: l.type, units: 0, value: 0, deployType: l.deployType || 'Physical Space', groups: l.lbacGroups || '' };
-    });
-    
+    });    
     let gUnits = 0, gValue = 0, uItems = 0, pVal = 0, kVal = 0;
-
     const activeItems = db.items.filter(i => i.status === 'Active');    
     activeItems.forEach(itm => {
       const price = parseFloat(itm.price) || 0;
       let itemLocTotal = 0;
-
       for (const locName in locationStats) {
         const bal = getStockBalance(itm.barcode, locName, null, currentState); 
         if (bal > 0) {
@@ -1709,13 +1672,10 @@ async function fetchData(callback) {
           }
         }
       }
-
       if (currentState === 'stock') uItems++;
       else if (itemLocTotal > 0) uItems++;
-
       gUnits += itemLocTotal;
       gValue += (itemLocTotal * price);
-
       const globalStockQty = getStockBalance(itm.barcode, null, null, 'stock');
       if (globalStockQty <= parseFloat(itm.minStock)) {
         lowStockAlerts.push({
@@ -1726,14 +1686,12 @@ async function fetchData(callback) {
           min: itm.minStock
         });
       }
-    });
-    
+    });    
     document.getElementById('statUnique').innerText = uItems.toLocaleString('en-US');
     document.getElementById('statTotalUnits').innerText = gUnits.toLocaleString('en-US');
     document.getElementById('statTotalValue').innerText = appCurrency + gValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     document.getElementById('statPhysValue').innerText = appCurrency + pVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('statKitValue').innerText = appCurrency + kVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    
+    document.getElementById('statKitValue').innerText = appCurrency + kVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});    
     const globalAlertBanner = document.getElementById('globalStockAlert');
     const alertArea = document.getElementById('dashAlertsArea');
     const alertBody = document.getElementById('dashAlertsBody');    
@@ -1840,20 +1798,16 @@ async function fetchData(callback) {
       }
       const isDeployed = document.getElementById('mgmtStateToggle') && document.getElementById('mgmtStateToggle').checked;
       const currentState = isDeployed ? 'deployed' : 'stock';
-      const wordState = isDeployed ? "Deployed" : "Stock";
-      
+      const wordState = isDeployed ? "Deployed" : "Stock";      
       document.getElementById('labelUniqueGroup').innerText = `Unique ${wordState} Items`;
       document.getElementById('labelUnitsGroup').innerText = `Total ${wordState} Units`;
       document.getElementById('labelValueGroup').innerText = `Total ${wordState} Value`;
       document.getElementById('labelPhysGroup').innerText = `Physical Spaces ${wordState}`;
-      document.getElementById('labelKitGroup').innerText = `Mobile Kits ${wordState}`;
-      
+      document.getElementById('labelKitGroup').innerText = `Mobile Kits ${wordState}`;      
       let gUnits = 0, gValue = 0, uItems = 0, pVal = 0, kVal = 0;
-
       db.items.filter(i => i.status === 'Active').forEach(itm => {
           const price = parseFloat(itm.price) || 0;
           let itemLocTotal = 0;
-
           grpLocs.forEach(loc => {
               let bal = getStockBalance(itm.barcode, loc.name, null, currentState);
               if (bal > 0) {
@@ -1862,23 +1816,18 @@ async function fetchData(callback) {
                   else pVal += (bal * price);
               }
           });
-
           if (itemLocTotal > 0) uItems++;
-
           gUnits += itemLocTotal;
           gValue += (itemLocTotal * price);
       });
-
       document.getElementById('grpStatUnique').innerText = uItems.toLocaleString('en-US');
       document.getElementById('grpStatTotalUnits').innerText = gUnits.toLocaleString('en-US');
       document.getElementById('grpStatTotalValue').innerText = appCurrency + gValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
       document.getElementById('grpStatPhysValue').innerText = appCurrency + pVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      document.getElementById('grpStatKitValue').innerText = appCurrency + kVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      
+      document.getElementById('grpStatKitValue').innerText = appCurrency + kVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});      
       let finalHtml = '';
       if (htmlPhys) finalHtml += `<div class="col-12"><h6 class="fw-bold text-muted small mb-2 text-uppercase border-bottom pb-1">Physical Spaces</h6></div>${htmlPhys}`;
-      if (htmlKit) finalHtml += `<div class="col-12 mt-3"><h6 class="fw-bold text-info small mb-2 text-uppercase border-bottom border-info pb-1">Mobile Kits</h6></div>${htmlKit}`;
-      
+      if (htmlKit) finalHtml += `<div class="col-12 mt-3"><h6 class="fw-bold text-info small mb-2 text-uppercase border-bottom border-info pb-1">Mobile Kits</h6></div>${htmlKit}`;      
       statsBlock.classList.remove('hidden');
       container.innerHTML = finalHtml || '<div class="col-12 text-muted small">No locations found for this group.</div>';
   }
@@ -1932,14 +1881,11 @@ async function fetchData(callback) {
     document.getElementById('btnLoadMore').classList.toggle('hidden', logLimit >= sortedLogs.length);
   }
   function loadMoreLogs() { logLimit += 20; renderLogs(); }
-
   function renderRoleMatrix() {
       if (!db.roles || db.roles.length === 0) return;
-      const perms = ['Global Access', 'View Dashboard', 'Manage Items', 'Manage Locations', 'Perform Transactions', 'Perform Audits', 'Export Data', 'View Logs', 'View SysLogs', 'Manage Users', 'Manage Theme'];
-      
+      const perms = ['Global Access', 'View Dashboard', 'Manage Items', 'Manage Locations', 'Perform Transactions', 'Perform Audits', 'Export Data', 'View Logs', 'View SysLogs', 'Manage Users', 'Manage Theme'];      
       let thead = `<tr><th class="text-start">Role Name</th>` + perms.map(p => `<th><div style="writing-mode: vertical-rl; transform: rotate(180deg); padding: 5px; margin: 0 auto; height: 120px; text-align: left;">${p}</div></th>`).join('') + `<th>Save</th></tr>`;
-      document.getElementById('rolesTableHeader').innerHTML = `<tr>${thead}</tr>`;
-      
+      document.getElementById('rolesTableHeader').innerHTML = `<tr>${thead}</tr>`;      
       let tbody = '';
       db.roles.forEach((r, idx) => {
           const isAdmin = r.Role.toLowerCase() === 'admin';
@@ -1952,38 +1898,32 @@ async function fetchData(callback) {
       });
       document.getElementById('rolesTableBody').innerHTML = tbody;
   }
-
   let isEditingRoleMatrix = false;
   function pauseSyncForEditing() {
       isEditingRoleMatrix = true;
   }
-
   function createNewRole() {
       const roleName = prompt("Enter a name for the new custom role (e.g., 'Auditor'):");
       if (!roleName || roleName.trim() === "") return;
-      if (db.roles.some(r => r.Role.toLowerCase() === roleName.trim().toLowerCase())) return alert("Role already exists!");
-      
+      if (db.roles.some(r => r.Role.toLowerCase() === roleName.trim().toLowerCase())) return alert("Role already exists!");      
       let newRole = { Role: roleName.trim() };
       ['Global Access', 'View Dashboard', 'Manage Items', 'Manage Locations', 'Perform Transactions', 'Perform Audits', 'Export Data', 'View Logs', 'View SysLogs', 'Manage Users', 'Manage Theme'].forEach(p => newRole[p] = false);
       db.roles.push(newRole);
       renderRoleMatrix();
       updateRoleDropdown();
   }
-
   async function saveRolePerms(idx, roleName) {
       const checkboxes = document.querySelectorAll(`.role-cb-${idx}`);
       let perms = {};
       checkboxes.forEach(cb => {
           perms[cb.getAttribute('data-perm')] = cb.checked;
       });
-      db.roles[idx] = { Role: roleName, ...perms };
-      
+      db.roles[idx] = { Role: roleName, ...perms };      
       const btn = document.querySelector(`.role-cb-${idx}`).closest('tr').querySelector('button');
       if (btn) {
           btn.innerText = "⏳";
           btn.disabled = true;
       }
-
       try {
           await apiCall('saveOrUpdateRole', { data: { roleName: roleName, perms: perms } });
           isEditingRoleMatrix = false; // Release lock so syncs resume
@@ -1997,7 +1937,6 @@ async function fetchData(callback) {
           alert(err.message);
       }
   }
-
   function updateRoleDropdown() {
       const uRoleSelect = document.getElementById('uRole');
       if (uRoleSelect && db.roles) {
@@ -2006,14 +1945,11 @@ async function fetchData(callback) {
           if (currentVal && db.roles.some(r => r.Role === currentVal)) uRoleSelect.value = currentVal;
       }
   }
-
   function updateMgmtTables() {
     const isDeployed = document.getElementById('mgmtStateToggle') && document.getElementById('mgmtStateToggle').checked;
-    const currentState = isDeployed ? 'deployed' : 'stock';
-      
+    const currentState = isDeployed ? 'deployed' : 'stock';      
     renderRoleMatrix();
     updateRoleDropdown();
-
     const spotCounts = {};
     db.logs.forEach(log => {
       if (log.subLoc) {
@@ -2027,15 +1963,12 @@ async function fetchData(callback) {
         }
       }
     });
-
     document.getElementById('bodyItems').innerHTML = db.items.map(i => {
       const total = getStockBalance(i.barcode, null, null, currentState);
       const criticalClass = (currentState === 'stock' && total <= Number(i.minStock) && i.status === 'Active') ? 'stock-critical' : '';
-      const serialBadge = i.serialized === 'Yes' ? '<span class="badge bg-dark ms-2" style="font-size:0.6rem">SERIALIZED</span>' : '';
-      
+      const serialBadge = i.serialized === 'Yes' ? '<span class="badge bg-dark ms-2" style="font-size:0.6rem">SERIALIZED</span>' : '';      
       const descHtml = i.description ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Desc:</strong> ' + i.description + '</div>' : '';
-      const notesHtml = i.notes ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Notes:</strong> ' + i.notes + '</div>' : '';
-      
+      const notesHtml = i.notes ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Notes:</strong> ' + i.notes + '</div>' : '';      
       return `
       <tr class="${i.status === 'Inactive' ? 'table-secondary' : ''} ${criticalClass}" onclick="editItem('${i.barcode}')" style="cursor: pointer; opacity: ${i.status === 'Inactive' ? '0.5' : '1'};">
         <td><small>${i.barcode}</small></td>
@@ -2051,17 +1984,13 @@ async function fetchData(callback) {
           </button>
         </td>
       </tr>`;
-    }).join('');    
-
+    }).join('');
     document.getElementById('bodyLocs').innerHTML = db.rawLocations.map(l => {
       const sCount = spotCounts[l.locationName] ? spotCounts[l.locationName].size : 0;
       const spotBtnText = sCount > 0 ? `Spots (${sCount})` : 'Spots (0)';      
-      
       const descHtml = l.description ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Desc:</strong> ' + l.description + '</div>' : '';
-      const notesHtml = l.notes ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Notes:</strong> ' + l.notes + '</div>' : '';
-      
-      const hasAccess = currentUserPerms['Global Access'] || db.locations.some(allowed => allowed.locationName === l.locationName);
-      
+      const notesHtml = l.notes ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Notes:</strong> ' + l.notes + '</div>' : '';      
+      const hasAccess = currentUserPerms['Global Access'] || db.locations.some(allowed => allowed.locationName === l.locationName);      
       let invCount = 0;
       if (hasAccess) {
          db.logs.forEach(log => {
@@ -2078,17 +2007,14 @@ async function fetchData(callback) {
          });
       }
       const displayCount = hasAccess ? invCount.toLocaleString('en-US') : '<span title="Restricted Access">🔒</span>';
-      const rowAction = hasAccess ? `editLoc('${l.locationName.replace(/'/g, "\\'")}')` : `alert('Access Denied: You do not have permission to edit this location.')`;
-      
+      const rowAction = hasAccess ? `editLoc('${l.locationName.replace(/'/g, "\\'")}')` : `alert('Access Denied: You do not have permission to edit this location.')`;      
       const buttonsHtml = hasAccess ? `
           <button class="btn btn-sm btn-outline-info w-100 text-nowrap" onclick="event.stopPropagation(); openSpotManager('${l.locationName.replace(/'/g, "\\'")}')">${spotBtnText}</button>
           <button class="btn btn-sm ${l.status === 'Active' ? 'btn-outline-danger' : 'btn-outline-success'} w-100 text-nowrap" onclick="event.stopPropagation(); toggleStatusL('${l.locationName.replace(/'/g, "\\'")}', '${l.type.replace(/'/g, "\\'")}', '${l.status}')">
             ${l.status === 'Active' ? 'Disable' : 'Enable'}
           </button>
       ` : `<span class="badge bg-secondary w-100 py-2">Read Only</span>`;
-
       const rowOpacity = (l.status === 'Inactive') ? '0.4' : (hasAccess ? '1' : '0.65');
-
       return `
       <tr class="${l.status === 'Inactive' ? 'table-secondary' : ''}" onclick="${rowAction}" style="cursor: ${hasAccess ? 'pointer' : 'not-allowed'}; opacity: ${rowOpacity};">
         <td><span class="badge bg-secondary">${l.type}</span></td>
@@ -2105,7 +2031,6 @@ async function fetchData(callback) {
         </td>
       </tr>`;
     }).join('');
-
     let groupMap = {};
     if (db.rawLocations) {
         db.rawLocations.forEach(l => {
@@ -2120,7 +2045,6 @@ async function fetchData(callback) {
             }
         });
     }
-
     const summaryContainer = document.getElementById('locGroupsSummaryCards');
     if (summaryContainer) {
         const groupKeys = Object.keys(groupMap).sort();
@@ -2139,13 +2063,11 @@ async function fetchData(callback) {
             `).join('');
         }
     }
-
     if (document.getElementById('locFormTitle').innerText === "Add New Location") {
         let checkedGroups = [];
         document.querySelectorAll('.l-group-check:checked').forEach(cb => checkedGroups.push(cb.value));
         renderLocGroupsUI(checkedGroups.join(','));
-    }      
-
+    }
     if (db.users && db.users.length > 0) {
         document.getElementById('bodyUsers').innerHTML = db.users.map(u => `
           <tr class="${u.status === 'Inactive' ? 'table-secondary' : ''}" onclick="editUser('${u.email}')" style="cursor: pointer; opacity: ${u.status === 'Inactive' ? '0.5' : '1'};">
@@ -2191,13 +2113,10 @@ async function fetchData(callback) {
       document.getElementById('spotManagerContainer').classList.add('hidden');
       document.getElementById('locTableContainer').classList.remove('hidden');
   }
-  let currentAuditState = 'stock'; // Tracks which state is currently being audited
-
+  let currentAuditState = 'stock';
   function startAudit(locName) {
       if(locName === 'Everywhere') return alert('Cannot audit the Global view. Please select a specific physical location.');      
-      
-      currentAuditState = currentContextState; // Automatically audit whichever tab they are currently viewing
-
+      currentAuditState = currentContextState;
       document.getElementById('itemsContainer').classList.add('hidden');
       document.getElementById('locControlsContainer').classList.add('hidden');
       document.getElementById('auditContainer').classList.remove('hidden');      
@@ -2215,9 +2134,7 @@ async function fetchData(callback) {
               if (q > 0) auditList.push({ item: itm, spot: s, expected: q, missingSerials: [], foundSerials: [] });
           });
       });      
-      
-      let auditTitleColor = currentAuditState === 'deployed' ? 'text-info' : 'text-primary';
-      
+      let auditTitleColor = currentAuditState === 'deployed' ? 'text-info' : 'text-primary';      
       let h = `
       <div class="alert alert-warning border-warning">
           <div class="fw-bold mb-1 ${auditTitleColor}" style="font-size: 1.1rem; text-transform: uppercase;">▶ AUDITING: ${currentAuditState}</div>
@@ -2418,10 +2335,8 @@ async function fetchData(callback) {
       });      
       cancelAudit();
       renderItems(locName); 
-      showSuccess(`${currentAuditState.toUpperCase()} audit submitted successfully.`);      
-
+      showSuccess(`${currentAuditState.toUpperCase()} audit submitted successfully.`);
       const payloadData = adjustments.map(a => ({ ...a, auditState: currentAuditState }));
-
       google.script.run.withSuccessHandler(() => {
           setTimeout(silentSync, 2000);
       }).withFailureHandler((err) => {
@@ -2431,10 +2346,8 @@ async function fetchData(callback) {
   function editItem(bc) {
     const itm = db.items.find(i => i.barcode === bc);
     if(!itm) return;    
-    
     showView('management');
     switchMgmt('item');
-
     document.getElementById('catalogFormTitle').innerText = "Edit Item: " + bc;
     document.getElementById('mBc').value = itm.barcode;
     window.editingBc = itm.barcode;
@@ -2466,7 +2379,6 @@ async function fetchData(callback) {
     saveBtn.innerText = "Update Item";
     saveBtn.setAttribute('onclick', "saveOrUpdateItem('edit')");
     document.getElementById('btnCancelEdit').classList.remove('hidden');    
-    
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   function cancelEditItem() {
@@ -2498,11 +2410,9 @@ async function fetchData(callback) {
   }
   function editLoc(name) {
     const loc = db.locations.find(l => l.locationName === name);
-    if(!loc) return;    
-
+    if(!loc) return;
     showView('management');
     switchMgmt('loc');
-
     document.getElementById('locFormTitle').innerText = "Edit Location: " + name;
     document.getElementById('mLname').value = loc.locationName;
     window.editingLocName = loc.locationName;
@@ -2530,7 +2440,6 @@ async function fetchData(callback) {
     btn.innerText = "Update Location";
     btn.setAttribute('onclick', "saveOrUpdateLoc('edit')");
     document.getElementById('btnCancelEditLoc').classList.remove('hidden');    
-    
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   function cancelEditLoc() {
@@ -2557,10 +2466,8 @@ async function fetchData(callback) {
   function editUser(email) {
     const u = db.users.find(x => x.email === email);
     if(!u) return;
-
     showView('management');
     switchMgmt('user');
-
     document.getElementById('userFormTitle').innerText = "Edit User";
     document.getElementById('uName').value = u.name || "";
     document.getElementById('uEmail').value = u.email;
@@ -2576,8 +2483,7 @@ async function fetchData(callback) {
     const btn = document.getElementById('btnSaveUser');
     btn.innerText = "Update User";
     btn.setAttribute('onclick', "saveOrUpdateUser('edit')");
-    document.getElementById('btnCancelEditUser').classList.remove('hidden');
-    
+    document.getElementById('btnCancelEditUser').classList.remove('hidden');    
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }  
   function cancelEditUser() {
@@ -2706,7 +2612,6 @@ async function fetchData(callback) {
     const sort = document.getElementById('sortSelect').value;    
     const gridStateToggle = document.getElementById('gridStateToggle');
     const gridState = gridStateToggle && gridStateToggle.checked ? 'deployed' : 'stock';
-
     let data = db.locations.filter(loc => loc.status === 'Active').map(loc => {
       let qty = 0, last = null;
       db.logs.forEach(l => {
@@ -2717,14 +2622,12 @@ async function fetchData(callback) {
         } else {
             isIn = ["Deploy-In"].includes(l.type);
             isOut = ["Return-Out", "Consume-Out"].includes(l.type);
-        }
-        
+        }        
         if (l.toLoc === loc.locationName && isIn) { qty += Math.abs(l.quantity); last = l; }
         if (l.fromLoc === loc.locationName && isOut) { qty -= Math.abs(l.quantity); last = l; }
       });
       return { ...loc, qty, last };
-    });    
-
+    });
     let evQty = 0, evLast = null;
     db.logs.forEach(l => {
         const itm = db.items.find(itm => itm.barcode === l.barcode);
@@ -2741,15 +2644,12 @@ async function fetchData(callback) {
           if (isOut) { evQty -= Math.abs(l.quantity); evLast = l; }
         }
     });
-
     data.push({ locationName: "Everywhere", type: "Global", deployType: "Physical Space", qty: evQty, last: evLast });
-
     if (sort === "az") {
       data.sort((a,b) => a.locationName.localeCompare(b.locationName));
     }
     if (sort === "qtyDesc") data.sort((a,b) => b.qty - a.qty);
-    if (sort === "qtyAsc") data.sort((a,b) => a.qty - b.qty);    
-
+    if (sort === "qtyAsc") data.sort((a,b) => a.qty - b.qty);
     const buildCard = (l) => {
       let actionStr = "Added";
       if (l.last) {
@@ -2904,18 +2804,15 @@ async function fetchData(callback) {
     const locName = document.getElementById(target === 'from' ? 'actLoc' : 'actToLoc').value;
     const selectEl = document.getElementById(target === 'from' ? 'actSubLoc' : 'actToSubLoc');    
     const currentVal = selectEl.value;
-    const spots = new Set();
-    
+    const spots = new Set();    
     db.logs.forEach(l => {
        if (l.toLoc === locName && l.subLoc) spots.add(l.subLoc);
        if (l.fromLoc === locName && l.subLoc) spots.add(l.subLoc);       
-    });
-    
+    });    
     let options = "";    
     let defStock = getStockBalance(activeBc, locName, "", currentItemContextState);
     let defLabel = defStock > 0 ? `Default (No Specific Spot) [Stock: ${defStock}]` : `Default (No Specific Spot)`;
-    options += `<option value="Default">${defLabel}</option>`;
-    
+    options += `<option value="Default">${defLabel}</option>`;    
     Array.from(spots).sort().forEach(spot => {
         let stk = getStockBalance(activeBc, locName, spot, currentItemContextState);
         let label = stk > 0 ? `${spot} [Stock: ${stk}]` : spot;
@@ -2923,7 +2820,6 @@ async function fetchData(callback) {
     });    
     options += `<option value="NEW_SPOT">+ Add New Spot/Bin...</option>`;
     selectEl.innerHTML = options;    
-    
     if (Array.from(selectEl.options).some(o => o.value === currentVal)) {
         selectEl.value = currentVal;
     } else {
@@ -2945,7 +2841,6 @@ async function fetchData(callback) {
     db.logs.filter(l => l.barcode === barcode && l.serial).forEach(l => {
       const s = l.serial.toUpperCase();
       if (!serials[s]) serials[s] = 0;
-
       let isToValid = false;
       let isFromValid = false;
       if (state === 'stock') {
@@ -2958,7 +2853,6 @@ async function fetchData(callback) {
           isToValid = true;
           isFromValid = true;
       }
-
       if (isToValid && l.toLoc === location && (l.subLoc || "") === subLoc) serials[s] += Math.abs(l.quantity);
       if (isFromValid && l.fromLoc === location && (l.subLoc || "") === subLoc) serials[s] -= Math.abs(l.quantity);
     });
@@ -3002,16 +2896,13 @@ async function fetchData(callback) {
       const locName = parts[0];
       const subLoc = parts[1];
       const locObj = db.locations.find(l => l.locationName === locName);
-      if (!locObj && !['Admin', 'Sub-Admin'].includes(currentUserRole)) return;
-      
+      if (!locObj && !['Admin', 'Sub-Admin'].includes(currentUserRole)) return;      
       const stockQty = getStockBalance(bc, locName, subLoc, 'stock');
-      const depQty = getStockBalance(bc, locName, subLoc, 'deployed');
-      
+      const depQty = getStockBalance(bc, locName, subLoc, 'deployed');      
       const locType = locObj ? locObj.type : 'Unknown';
       const safeK = locName.replace(/'/g, "\\'");
       const safeType = locType.replace(/'/g, "\\'");
       const displayLabel = subLoc ? `${getLocLabel(locName)} (${subLoc})` : getLocLabel(locName);
-
       if(stockQty > 0) {
         visibleStockTotal += stockQty;
         hStock += `<span class="badge stock-badge p-2 d-flex align-items-center" onclick="viewLoc('${safeK}', '${safeType}')">
@@ -3026,7 +2917,6 @@ async function fetchData(callback) {
               </span>`;
       }
     });
-
     document.getElementById('detStock').innerHTML = hStock || '<span class="text-muted small">No stock in authorized locations.</span>';
     const depCont = document.getElementById('detDeployedContainer');
     if (hDep) {
@@ -3158,22 +3048,17 @@ async function fetchData(callback) {
     }
     let hist = last ? `<b>Last Transaction:</b><br>${Math.abs(last.quantity)} ${last.quantity > 0 ? "added to" : "removed from"} ${last.quantity > 0 ? getLocLabel(last.toLoc) : getLocLabel(last.fromLoc)} on ${fmtTime(last.timestamp)}<br>By: ${getUserDisplayName(last.userEmail)}` : "No history.";
     document.getElementById('detUpdate').innerHTML = hist;
-
     switchItemTab(currentContextState);
   }
-
   let currentItemContextState = 'stock';
   function switchItemTab(tab) {
     currentItemContextState = tab;
     document.getElementById('itemTabStock').classList.toggle('active', tab === 'stock');
-    document.getElementById('itemTabDeployed').classList.toggle('active', tab === 'deployed');
-    
+    document.getElementById('itemTabDeployed').classList.toggle('active', tab === 'deployed');    
     document.getElementById('stockActionButtons').classList.toggle('hidden', tab !== 'stock');
-    document.getElementById('deployedActionButtons').classList.toggle('hidden', tab !== 'deployed');
-    
+    document.getElementById('deployedActionButtons').classList.toggle('hidden', tab !== 'deployed');    
     document.getElementById('actionNotesContainer').classList.add('hidden');
-    document.getElementById('actNotes').value = "";
-    
+    document.getElementById('actNotes').value = "";    
     if (tab === 'deployed') {
         document.getElementById('toLocContainer').classList.add('hidden');
         document.getElementById('toSubLocContainer').classList.add('hidden');
@@ -3184,13 +3069,11 @@ async function fetchData(callback) {
         document.getElementById('toSubLocContainer').classList.add('hidden');
         document.getElementById('btnMove').innerText = 'MOVE';
         document.getElementById('btnDeploy').innerText = 'DEPLOY';
-    }
-    
+    }    
     updateAvailableSpots('from');
     updateAvailableSpots('to');
     updateAvailableSerials();
   }
-
   function handleDeployClick() {
     const toCont = document.getElementById('toLocContainer');
     if (toCont.classList.contains('hidden')) {
@@ -3201,7 +3084,6 @@ async function fetchData(callback) {
       submitInline('Deploy');
     }
   }
-
   function handleReturnClick() {
     const toCont = document.getElementById('toLocContainer');
     if (toCont.classList.contains('hidden')) {
@@ -3212,7 +3094,6 @@ async function fetchData(callback) {
       submitInline('Return');
     }
   }
-
   function handleConsumeClick() {
     const notesCont = document.getElementById('actionNotesContainer');
     if (notesCont.classList.contains('hidden')) {
@@ -3222,7 +3103,6 @@ async function fetchData(callback) {
       submitInline('Consume');
     }
   }
-
   function handleMoveClick() {
     const toCont = document.getElementById('toLocContainer');
     if (toCont.classList.contains('hidden')) {
@@ -3246,9 +3126,7 @@ async function fetchData(callback) {
     if (toSubLoc === "NEW_SPOT") toSubLoc = document.getElementById('actNewToSpot').value.trim();
     if (toSubLoc === "Default") toSubLoc = "";    
     const notesVal = document.getElementById('actNotes').value.trim();
-
     if (action === 'Consume' && !notesVal) { showError("Reason / Notes field is required when consuming or permanently removing a deployed item."); return; }
-
     let qty = 0;
     let serialsArray = [];
     if (document.getElementById('actSubLoc').value === "NEW_SPOT" && !fromSubLoc) { showError("Please enter a name for the new From Spot/Bin."); return; }
@@ -3377,7 +3255,6 @@ async function fetchData(callback) {
     cancelEditItem();
     cancelEditLoc();
     cancelEditUser();
-
     if(v === 'inventory') {
       history.pushState({ view: 'grid' }, "");
       showGrid(true); 
@@ -3451,24 +3328,19 @@ async function fetchData(callback) {
       if (activeTab.id === 't1' || activeTab.id === 't2') updateMgmtTables();
     }
   }
-
   function switchMgmt(t, isBack = false) { 
     window.scrollTo(0, 0);
     if (!isBack) history.pushState({ view: 'mgmt', tab: t }, "");
     ['mDash','mItem','mLoc','mLog', 'mSysLog', 'mUser', 'mTheme'].forEach(id => document.getElementById(id).classList.add('hidden'));
     ['t0','t1','t2','t3', 't4', 't5', 't6'].forEach(id => document.getElementById(id).classList.remove('active'));    
-    
     cancelEditItem();
     cancelEditLoc();
     cancelEditUser();
-
     const tgl = document.getElementById('mgmtStateToggleContainer');
     const tglInput = document.getElementById('mgmtStateToggle');
     if (tglInput) tglInput.checked = false;
-
     if (t === 'dash' || t === 'item' || t === 'loc') tgl.classList.remove('hidden');
     else tgl.classList.add('hidden');
-
     if(t === 'dash') { 
       document.getElementById('mDash').classList.remove('hidden'); 
       document.getElementById('t0').classList.add('active'); 
@@ -3589,13 +3461,11 @@ async function fetchData(callback) {
       if (!barcodeVal) {
           alert("Error: Barcode is a required field.");
           return;
-      }
-      
+      }      
       if (mode === 'add') {
           const isDuplicate = db.items.some(i => i.barcode.toLowerCase() === barcodeVal.toLowerCase());
           if (isDuplicate) return alert("An item with this barcode already exists in the catalog.");
       }
-
       if (mode === 'edit' && window.editingBc && window.editingBc !== barcodeVal) {
           const stock = getStockBalance(window.editingBc);
           if (stock > 0) {
@@ -3654,13 +3524,11 @@ async function fetchData(callback) {
   }
   async function saveOrUpdateLoc(mode) {
       const newLocName = document.getElementById('mLname').value.trim();
-      if (!newLocName) return alert("Location Name is required.");
-      
+      if (!newLocName) return alert("Location Name is required.");      
       if (mode === 'add') {
           const isDuplicate = db.locations.some(l => l.locationName.toLowerCase() === newLocName.toLowerCase());
           if (isDuplicate) return alert("A location with this exact name already exists. Please choose a different name.");
       }
-
       if (mode === 'edit' && window.editingLocName && window.editingLocName !== newLocName) {
           let totalStock = 0;
           db.logs.forEach(l => {
@@ -3681,7 +3549,6 @@ async function fetchData(callback) {
       const file = fileInput.files[0];
       let checkedGroups = [];
       document.querySelectorAll('.l-group-check:checked').forEach(cb => checkedGroups.push(cb.value));
-
       if (!currentUserPerms['Global Access']) {
           if (checkedGroups.length === 0) {
               btn.disabled = false;
@@ -3696,7 +3563,6 @@ async function fetchData(callback) {
               return alert("Safety Net: You created/selected a new Access Group that is not currently assigned to your User Profile. You must include at least one Access Group you already own to maintain access to this location.");
           }
       }
-
       let payload = {
           oldName: (mode === 'edit') ? window.editingLocName : null,
           name: newLocName,
@@ -3876,19 +3742,15 @@ async function fetchData(callback) {
           container.innerHTML = '<small class="text-muted">No groups exist yet. Create one below.</small>';
           return;
       }
-
       const hasFullAccess = currentUserPerms['Global Access'];
       const userLocsLower = currentUserLocations.map(s => s.toLowerCase());
-
       container.innerHTML = Array.from(allGroups).sort().map(g => {
           const isChecked = assigned.includes(g.toLowerCase()) ? 'checked' : '';
-          const safeVal = g.replace(/"/g, '&quot;');
-          
+          const safeVal = g.replace(/"/g, '&quot;');          
           const canEdit = hasFullAccess || userLocsLower.includes(g.toLowerCase());
           const disabledAttr = canEdit ? '' : 'disabled';
           const labelClass = canEdit ? 'text-dark' : 'text-muted opacity-50';
           const lockIcon = canEdit ? '' : ' <span title="Restricted Access">🔒</span>';
-
           return `
             <div class="form-check py-1 border-bottom">
               <input class="form-check-input l-group-check" type="checkbox" value="${safeVal}" id="lgrp_${safeVal}" ${isChecked} ${disabledAttr}>
@@ -3995,7 +3857,6 @@ async function fetchData(callback) {
       if (l.action === "Created" || l.action === "Enabled") badgeClass = "bg-success";
       if (l.action === "Updated" || l.action === "Renamed") badgeClass = "bg-primary";
       if (l.action === "Deleted" || l.action === "Disabled") badgeClass = "bg-danger";
-
       return `<tr onclick="showSysLogDetails(${index})" style="cursor:pointer;" title="Click to view details">
           <td class="text-muted fw-bold"><small>${index + 1}</small></td>
           <td><small class="text-muted">${fmtTime(l.timestamp)}</small></td>
@@ -4007,22 +3868,17 @@ async function fetchData(callback) {
     }).join('');
     document.getElementById('btnLoadMoreSys').classList.toggle('hidden', sysLogLimit >= sortedLogs.length);
   }
-
   function loadMoreSysLogs() { sysLogLimit += 20; renderSysLogs(); }
-
   function showSysLogDetails(index) {
       const sortedLogs = [...db.sysLogs].reverse();
       const l = sortedLogs[index];
-      if(!l) return;
-      
+      if(!l) return;      
       let detailsHtml = l.details.split('|').map(d => `<div class="mb-2 pb-2 border-bottom text-dark">👉 ${d.trim()}</div>`).join('');
       if (!l.details || l.details === "Saved without changes") detailsHtml = `<div class="text-muted fst-italic">${l.details || "No additional details recorded."}</div>`;
-
       let badgeClass = "bg-secondary";
       if (l.action === "Created" || l.action === "Enabled") badgeClass = "bg-success";
       if (l.action === "Updated" || l.action === "Renamed") badgeClass = "bg-primary";
       if (l.action === "Deleted" || l.action === "Disabled") badgeClass = "bg-danger";
-
       const html = `
           <div class="d-flex justify-content-between mb-3 border-bottom pb-2">
               <div><small class="text-muted d-block">Performed By</small><strong class="text-dark">${getUserDisplayName(l.userEmail)}</strong> <br><small class="text-muted">${l.userEmail}</small></div>
@@ -4042,7 +3898,6 @@ async function fetchData(callback) {
       const modal = new bootstrap.Modal(document.getElementById('sysLogModal'));
       modal.show();
   }
-
   function exportSysLogCsv() {
     const limit = parseInt(document.getElementById('exportSysLogRows').value) || 100;
     const sortedLogs = [...db.sysLogs].reverse().slice(0, limit);
