@@ -606,9 +606,9 @@
         <a href="#deploy-drive" class="nav-link">1. Drive Setup</a>
         <a href="#deploy-oauth" class="nav-link">2. Google Login Setup</a>
         <a href="#deploy-sheet" class="nav-link">3. Database Setup</a>
-        <a href="#deploy-script" class="nav-link">4. API Setup</a>
-        <a href="#deploy-frontend" class="nav-link">5. UI Hosting</a>        
-        
+        <a href="#deploy-payload" class="nav-link">4. Payload Vault</a>
+        <a href="#deploy-script" class="nav-link">5. API Setup</a>
+        <a href="#deploy-frontend" class="nav-link">6. UI Shell Hosting</a>        
         <div class="sidebar-heading">Security &amp; IT</div>
         <a href="#it-compliance" class="nav-link">IT Compliance &amp; Recovery</a>        
         <div class="sidebar-heading">Help</div>
@@ -635,6 +635,7 @@
         <h2>UI &amp; Navigation Features</h2>
         <p>The IMS is built as a Single Page Application, meaning it operates more like a native app on your phone than a traditional website. It is packed with quality-of-life features:</p>
         <ul>
+          <li><strong>Deep Linking (URL Hashes):</strong> The app automatically updates your browser's URL as you navigate. You can safely bookmark, copy, and share links to specific sections (e.g., <code>site.com/#dashboard</code>) or specific items/locations (e.g., <code>site.com/#item-12345</code>). When a logged-in user clicks your link, they will be teleported straight to that view.</li>
           <li><strong>Sticky Header &amp; Search:</strong> The top navigation and Global Search Bar are permanently "sticky". No matter how far down you scroll in a long list of items, the search bar and navigation buttons remain instantly accessible at the top of your screen.</li>
           <li><strong>Smart Navigation &amp; Auto-Scroll:</strong> Whenever you click a search result, open a location, or switch between management tabs, the app automatically wipes the previous forms clean and snaps your screen back to the top so you are perfectly oriented.</li>
           <li><strong>Loading Screen:</strong> When you boot the app, it downloads your custom Theme, pulls your permissions, and fetches the entire inventory database to your device for lightning-fast usage.</li>
@@ -913,6 +914,7 @@
           <li><strong>Title:</strong> The full name of your platform (e.g., "Inventory Management System"). Displays in the browser tab and on desktop web views.</li>
           <li><strong>Short Title:</strong> An abbreviation (e.g., "IMS") used on small mobile phone screens where space is tight.</li>
           <li><strong>Use Short Title on Login?:</strong> Toggle this to "Yes" if you want the big login screen to say "IMS Login" instead of "Inventory Management System Login".</li>
+          <li><strong>Login Screen Message:</strong> An optional text field that appears directly above the Google Sign-in button. Perfect for internal company notices, IT helpdesk instructions, or disclaimer text.</li>
           <li><strong>Currency Symbol:</strong> Set this to $, €, £, or any symbol. It automatically formats all financial math across the app.</li>
           <li><strong>Footer Text:</strong> The small copyright text at the very bottom of the app.</li>
           <li><strong>Admin Contact:</strong> The email address shown to users if they hit the "Access Denied" screen, telling them who to contact for access.</li>
@@ -998,36 +1000,45 @@
           </li>
         </ol>
       </section>
-      <section id="deploy-script" class="doc-section">
-        <h2>Deployment Step 4: API Setup</h2>
-        <p>Now we attach the brain to the database.</p>
+      <section id="deploy-payload" class="doc-section">
+        <h2>Deployment Step 4: The Payload Vault</h2>
+        <p>For maximum security, IMS uses a <strong>Dynamic Injection Architecture</strong>.  The actual application code is never hosted publicly. Instead, it is kept in a secure vault on Google's servers and only sent to users who successfully log in.</p>
         <ol>
-          <li>While still looking at your Google Sheet, click <strong>Extensions &gt; Apps Script</strong> at the top.</li>
-          <li>A new window will open. Erase all the default code in the editor.</li>
-          <li>Open the <code>Code.gs</code> file that was provided to you, copy all of the text inside it, and paste it into the editor.</li>
-          <li>Click the 💾 <strong>Save</strong> icon (disk icon).</li>
+          <li>While looking at your Google Sheet, click <strong>Extensions &gt; Apps Script</strong> at the top.</li>
+          <li>Click the <strong>+</strong> icon next to "Files" on the left and select <strong>HTML</strong>. Name the file exactly <code>payload</code>.</li>
+          <li>Open the <code>payload.html</code> file provided to you, copy everything inside, and paste it into this new file. This file contains 90% of the application's CSS, HTML, and Javascript.</li>
+          <li>Click the 💾 <strong>Save</strong> icon.</li>
+        </ol>
+      </section>
+      <section id="deploy-script" class="doc-section">
+        <h2>Deployment Step 5: API Setup</h2>
+        <p>Now we attach the API logic to serve the data and the vault.</p>
+        <ol>
+          <li>In Apps Script, click on the <code>Code.gs</code> file on the left sidebar. Erase the default text.</li>
+          <li>Open the <code>Code.gs</code> file that was provided to you, copy all of the text, and paste it into the editor.</li>
+          <li>Click the 💾 <strong>Save</strong> icon.</li>
           <li>In the top right corner, click the blue <strong>Deploy</strong> button, then select <strong>New deployment</strong>.</li>
           <li>Click the gear icon next to "Select type" and choose <strong>Web App</strong>.</li>
           <li>Fill out the form:
             <ul>
-              <li><strong>Description:</strong> IMS v1</li>
+              <li><strong>Description:</strong> IMS Production v1</li>
               <li><strong>Execute as:</strong> Me (Your Email)</li>
               <li><strong>Who has access:</strong> Anyone</li>
             </ul>
           </li>
           <li>Click <strong>Deploy</strong>. You will be asked to Authorize Access. Click "Review Permissions", select your Google account, click "Advanced" at the bottom, and click "Go to project (unsafe)". Allow the permissions.</li>
           <li>Once finished, it will give you a <strong>Web App URL</strong> (it starts with <code>https://script.google.com/macros/s/...</code>).<br>
-            <span class="text-danger fw-bold">CRITICAL:</span> Ensure the URL you copy ends in <code>/exec</code> and NOT <code>/dev</code>. Copy this <code>/exec</code> URL to your notepad!
+            <span class="text-danger fw-bold">CRITICAL:</span> Ensure the URL you copy ends in <code>/exec</code>. Copy this URL to your notepad!
           </li>
         </ol>
       </section>
       <section id="deploy-frontend" class="doc-section">
-        <h2>Deployment Step 5: UI Hosting</h2>
-        <p>The user interface is a single file called <code>index.html</code>. Because the database and API are fully hosted by Google, this HTML file can be hosted anywhere on the internet for free.</p>
+        <h2>Deployment Step 6: UI Shell Hosting</h2>
+        <p>The only file you host publicly is <code>index.html</code>. This is a lightweight "Shell" that handles Google Auth and requests the secure code from your API.</p>
         
         <div class="callout mb-4 border-primary">
-          <strong>Crucial Final Link:</strong> Before hosting the file, open your <code>index.html</code> file in a text editor (like Notepad on Windows or TextEdit on Mac). Use your computer's Find tool (Ctrl+F or Cmd+F) to search for the text: <code>const GAS_URL =</code>.<br><br>
-          Replace the web address inside the quotes with the <strong>Web App URL</strong> you copied in Step 4. Save the file. Your UI is now officially connected to your database!
+          <strong>Crucial Final Link:</strong> Before hosting the file, open your <code>index.html</code> file in a text editor. Search for the text: <code>var GAS_URL =</code>.<br><br>
+          Replace the web address inside the quotes with the <strong>Web App URL</strong> you copied in Step 5. Save the file.
         </div>
         <div class="position-relative tabs-scroll-wrapper">
           <button class="tab-scroll-btn left-arrow" id="scrollLeftBtn" onclick="scrollTabs(-150)">◀</button>
@@ -1049,9 +1060,7 @@
               <li>On the left sidebar, click <strong>Pages</strong>.</li>
               <li>Under "Build and deployment", set the Source to <strong>Deploy from a branch</strong>.</li>
               <li>Under "Branch", select <code>main</code> and click <strong>Save</strong>.</li>
-              <li>Wait 1-2 minutes. Refresh the page, and GitHub will provide you with a live URL where your app is now hosted! 
-                <br><span class="text-muted small">Example: <code>https://yourusername.github.io/ims-app/</code></span>
-              </li>
+              <li>Wait 1-2 minutes. Refresh the page, and GitHub will provide you with a live URL where your app is now hosted!</li>
             </ol>
           </div>
           <div class="tab-pane fade" id="gh-cli" role="tabpanel">
@@ -1059,30 +1068,22 @@
             <ol>
               <li>Create a new repository on GitHub.</li>
               <li>Open your terminal and navigate to the folder containing your <code>index.html</code> file.</li>
-              <li>Run the following commands:
-                <pre class="bg-dark text-light p-3 rounded mt-2"><code>git init
-git add index.html
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/yourusername/your-repo.git
-git push -u origin main</code></pre>
-              </li>
+              <li>Run standard git init, add, commit, and push commands to upload to your <code>main</code> branch.</li>
               <li>Go to your repository settings on GitHub, navigate to <strong>Pages</strong>, and set the branch to <code>main</code> to deploy.</li>
             </ol>
           </div>
           <div class="tab-pane fade" id="hosting" role="tabpanel">
             <h4>Deploying to Standard Web Hosting (cPanel, GoDaddy, HostGator)</h4>
             <ol>
-              <li>Log in to your hosting provider's dashboard and open the <strong>File Manager</strong> (usually found in cPanel).</li>
-              <li>Navigate to your <code>public_html</code> directory (or the specific folder for your domain/subdomain).</li>
+              <li>Log in to your hosting provider's dashboard and open the <strong>File Manager</strong>.</li>
+              <li>Navigate to your <code>public_html</code> directory.</li>
               <li>Click <strong>Upload</strong> and select your <code>index.html</code> file.</li>
-              <li>That's it! Navigate to your custom domain in a web browser, and the app will instantly load.</li>
             </ol>
           </div>
         </div>        
         <h3 class="mt-5">Finalizing the Setup</h3>
         <p>Go to the URL where your app is hosted. Because you already placed your Google Client ID into your Database Template tab in Step 3, the Google Login button will appear immediately!</p>
-        <p><strong>The very first user to log into a completely blank database is automatically granted the Admin role.</strong> Once you are logged in, click the Management button in the top right to start exploring your new system!</p>
+        <p><strong>The very first user to log into a completely blank database is automatically granted the Admin role.</strong></p>
       </section>
       <section id="it-compliance" class="doc-section mb-5">
         <h2>IT Compliance &amp; Data Integrity</h2>
@@ -1103,6 +1104,14 @@ git push -u origin main</code></pre>
           <li>Open the Google Sheet.</li>
           <li>Click <strong>File &gt; Version history &gt; See version history</strong>.</li>
           <li>Select a timestamp from before the corruption occurred and click <strong>Restore this version</strong>. The Web App will immediately return to normal operation.</li>
+        </ul>
+        
+        <h3>3. Dynamic Code Injection &amp; Obfuscation</h3>
+        <p>The IMS utilizes a zero-trust front-end architecture. If a user views the source code of the public URL, they will only see a lightweight shell containing the login button.</p>
+        <ul>
+          <li>Proprietary logic, API structures, internal layouts, and operational workflows are securely stored on Google servers inside <code>payload.html</code>.</li>
+        <li>The payload is <strong>only injected into the browser's memory</strong> if the user passes strict backend Google OAuth authentication.</li>
+        <li>This ensures malicious actors cannot scrape, reverse-engineer, or map out the internal capabilities of your inventory system prior to authentication.</li>
         </ul>
         
       </section>
@@ -1128,8 +1137,12 @@ git push -u origin main</code></pre>
           <span class="text-muted small">The system authentication engine is strictly case-insensitive but enforces exact role matching. If a user is assigned an unknown or misspelled role directly in the Google Sheet (e.g., "Supervisor", "Read-Only", "viewerrr"), the system will automatically trigger a <strong>Security Failsafe</strong>. The user's login token will be rejected, and they will be permanently locked out with an "Access Denied" screen until an Admin assigns a valid role from the dropdown menu in the UI.</span>
         </div>
         <div class="callout border-warning">
-          <strong class="text-warning">5. If you edit the Apps Script, you MUST create a New Deployment.</strong><br>
-          <span class="text-muted small">If you ever open the <code>Code.gs</code> file to edit the backend code, simply clicking the "Save" icon is not enough. Google caches the API. You must click <strong>Deploy &gt; Manage Deployments &gt; Edit (Pencil Icon) &gt; New Version &gt; Deploy</strong> for your code changes to actually go live.</span>
+          <strong class="text-warning">5. If you edit the Apps Script (Code or Payload), you MUST create a New Deployment.</strong><br>
+          <span class="text-muted small">If you ever edit <code>Code.gs</code> or <code>payload.html</code>, simply clicking the "Save" icon is not enough. Google caches the API. You must click <strong>Deploy &gt; Manage Deployments &gt; Edit (Pencil Icon) &gt; New Version &gt; Deploy</strong> for your code changes to actually go live.</span>
+        </div>
+        <div class="callout border-warning mb-3">
+          <strong class="text-warning">6. Duplicating variables between the Shell and the Payload will break the app.</strong><br>
+          <span class="text-muted small">Because <code>index.html</code> (the Shell) and <code>payload.html</code> (the Vault) ultimately run in the same browser window, you cannot declare global variables (like <code>let appCurrency</code> or <code>const GAS_URL</code>) in both places. If you do, the browser will throw an "already declared" error and fail to boot. Keep logic strictly separated.</span>
         </div>
       </section>
       <section id="faq" class="doc-section">
@@ -1234,15 +1247,17 @@ git push -u origin main</code></pre>
         <h6 class="fw-bold mt-4" style="color: var(--accent);">3. Data Collection, Privacy, CCPA &amp; GDPR Compliance</h6>
         <p>In compliance with the California Consumer Privacy Act (CCPA), the General Data Protection Regulation (GDPR), and applicable state laws, we disclose the following regarding data processing:</p>
         <ul>
-          <li><strong>Identity Data &amp; Legal Basis:</strong> We collect your email address exclusively via secure Google Workspace OAuth. The legal basis for this processing is legitimate operational interest for system authentication, role-based access control, and security auditing.</li>
+          <li><strong>Identity Data & Legal Basis:</strong> We collect your email address exclusively via secure Google Workspace OAuth. The legal basis for this processing is legitimate operational interest for system authentication, role-based access control, and security auditing.</li>
           <li><strong>Activity Data:</strong> Interactions (e.g., checking items in/out, moving assets) are permanently logged with your email and a timestamp to maintain a secure chain of custody.</li>
+          <li><strong>Local Device Storage (Cookies/Cache):</strong> The Application strictly uses essential local browser storage (<code>localStorage</code>) to store your active authentication tokens, theme preferences, and consent flags. We do not use cross-site tracking cookies or analytics pixels.</li>
           <li><strong>User Rights (GDPR/CCPA):</strong> You retain the right to request access to, rectification of, or erasure (Right to be Forgotten) of your personal data. Note that erasure of immutable audit logs may be legally restricted by The Company's legitimate compliance or security requirements.</li>
           <li><strong>Third-Party Sharing:</strong> Zero user or inventory data is sold, monetized, or shared with external third parties. All data is securely contained within The Company's Google Workspace infrastructure.</li>
         </ul>
         <h6 class="fw-bold mt-4" style="color: var(--accent);">4. Prohibited Data &amp; Sensitive Information</h6>
         <p>The Application is designed exclusively for standard physical inventory tracking and is <strong>NOT</strong> compliant with HIPAA, FERPA, or PCI-DSS standard out-of-the-box. Users are strictly prohibited from entering, uploading, or storing highly sensitive regulated data within any text field, note, or image upload. This includes, but is not limited to: Protected Health Information (PHI), Personally Identifiable Information (PII) of minors, Social Security Numbers, or primary payment card details.</p>
-        <h6 class="fw-bold mt-4" style="color: var(--accent);">5. System Security &amp; Acceptable Use</h6>
-        <p>Access to the backend infrastructure is strictly restricted. You agree to interface with The Application solely through the provided front-end User Interface. You agree not to reverse engineer, scrape, bypass security protocols, or intentionally disrupt the API. You are solely responsible for maintaining the security of your Google account credentials.</p>
+        <h6 class="fw-bold mt-4" style="color: var(--accent);">5. System Security & Acceptable Use</h6>
+        <p>Access to the backend infrastructure is strictly restricted. The Application utilizes a Dynamic Injection Architecture; proprietary operational code is only securely served to your device upon successful authentication. You agree to interface with The Application solely through the provided front-end User Interface. You agree not to reverse engineer, scrape, bypass security protocols, or intentionally disrupt the API.</p>
+        <p><strong>Note on Browser History:</strong> The Application uses URL deep-linking for navigation. Internal asset barcodes and location names may be saved to your local device's browser history. You are solely responsible for maintaining the physical security of your device and your Google account credentials.</p>
         <h6 class="fw-bold mt-4" style="color: var(--accent);">6. Disclaimer of Warranties ("As-Is" Provision)</h6>
         <p>The Application is provided strictly "AS IS" and "AS AVAILABLE" without any warranties of any kind, whether express, implied, or statutory. Jack Vu expressly disclaims any implied warranties of merchantability, fitness for a particular purpose, non-infringement, or guarantee of continuous, error-free operation.</p>
         <h6 class="fw-bold mt-4" style="color: var(--accent);">7. Limitation of Liability &amp; Indemnification</h6>
