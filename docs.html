@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
-<head>
+<html lang="en" data-theme="light"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IMS Documentation</title>
@@ -575,7 +574,7 @@
         <span>🔍 Search...</span>
         <span class="shortcut-key">⌘K</span>
       </div>
-      <button class="btn btn-sm btn-outline-primary w-100 fw-bold" onclick="window.print()" style="border-color: var(--accent); color: var(--accent); transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='var(--accent)'; this.style.color='white'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--accent)'">
+      <button class="btn btn-sm btn-outline-primary w-100 fw-bold" onclick="window.print()" style="border-color: var(--accent); color: var(--accent); transition: background-color 0.2s; background-color: transparent;" onmouseover="this.style.backgroundColor='var(--accent)'; this.style.color='white'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--accent)'">
         📄 Save as PDF
       </button>
     </div>
@@ -602,7 +601,7 @@
         <a href="#manage-users" class="nav-link">Managing Users</a>        
         <div class="sidebar-heading">System Engine</div>
         <a href="#sync-engine" class="nav-link">Background Sync Engine</a>
-        <a href="#theming" class="nav-link active">Theme &amp; Branding</a>        
+        <a href="#theming" class="nav-link">Theme &amp; Branding</a>        
         <div class="sidebar-heading">Deployment Setup</div>
         <a href="#deploy-drive" class="nav-link">1. Drive Setup</a>
         <a href="#deploy-oauth" class="nav-link">2. Google Login Setup</a>
@@ -614,7 +613,7 @@
         <a href="#it-compliance" class="nav-link">IT Compliance &amp; Recovery</a>        
         <div class="sidebar-heading">Help</div>
         <a href="#mistakes" class="nav-link text-warning">Common Mistakes to Avoid</a>
-        <a href="#faq" class="nav-link text-danger">Troubleshooting &amp; FAQ</a>
+        <a href="#faq" class="nav-link text-danger active">Troubleshooting &amp; FAQ</a>
         <a href="#" class="nav-link" onclick="showLegalModal(event)">Terms &amp; Privacy Policy</a>
       </nav>
     </div>    
@@ -636,8 +635,8 @@
         <h2>UI &amp; Navigation Features</h2>
         <p>The IMS is built as a Single Page Application, meaning it operates more like a native app on your phone than a traditional website. It is packed with quality-of-life features:</p>
         <ul>
-          <li><strong>Sticky Header & Search:</strong> The top navigation and Global Search Bar are permanently "sticky". No matter how far down you scroll in a long list of items, the search bar and navigation buttons remain instantly accessible at the top of your screen.</li>
-          <li><strong>Smart Navigation & Auto-Scroll:</strong> Whenever you click a search result, open a location, or switch between management tabs, the app automatically wipes the previous forms clean and snaps your screen back to the top so you are perfectly oriented.</li>
+          <li><strong>Sticky Header &amp; Search:</strong> The top navigation and Global Search Bar are permanently "sticky". No matter how far down you scroll in a long list of items, the search bar and navigation buttons remain instantly accessible at the top of your screen.</li>
+          <li><strong>Smart Navigation &amp; Auto-Scroll:</strong> Whenever you click a search result, open a location, or switch between management tabs, the app automatically wipes the previous forms clean and snaps your screen back to the top so you are perfectly oriented.</li>
           <li><strong>Loading Screen:</strong> When you boot the app, it downloads your custom Theme, pulls your permissions, and fetches the entire inventory database to your device for lightning-fast usage.</li>
           <li><strong>The "Home" Button:</strong> Clicking the App Logo or App Title in the top left corner will instantly return you to the main Locations Grid.</li>
           <li><strong>Dark / Light Mode Toggle:</strong> Near the top right is a ☀️/🌙 switch. Clicking this repaints the app into a dark mode to reduce eye strain. The floating "Back to Top" arrow also dynamically adjusts its color to match your theme.</li>
@@ -668,7 +667,7 @@
           <span class="text-muted small">When you deploy a brand-new, completely blank database, <strong>the very first Google account to log into the app is permanently and automatically granted the Admin role.</strong> Do not share your live URL with employees or testers until you have successfully logged in yourself to claim the Admin seat!</span>
         </div>
         <p>IMS utilizes a <strong>Dynamic Role-Based Access Control (RBAC)</strong> engine. Instead of hardcoding permissions, Admins can create unlimited custom roles and instantly modify their capabilities using the visual matrix in the Users tab.</p>
-        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Role+Manager+Screenshot+Here" class="doc-screenshot w-100" alt="Role Manager Matrix">
+        <img src="docs/rolemanager.png" class="doc-screenshot w-100" alt="Role Manager Matrix">
         
         <h3 class="mt-4">The Admin Safety Net</h3>
         <p>To prevent accidental system lockouts, the core <strong>Admin</strong> role is hardcoded with a permanent safety net.</p>
@@ -686,7 +685,7 @@
         <p>If a user's role does not have the <strong>Global Access</strong> permission checked, they are subjected to strict LBAC filters. If an Admin does not explicitly assign them to a Location, that location literally does not exist to them in the app. It will not appear on their dashboard, in their grid, or in their transaction dropdowns.</p>
         <h3>Access Groups</h3>
         <p>To make assigning locations easier, Admins can create "Access Groups" (e.g., <i>West Coast</i>, <i>Arizona</i>). When editing a location, you can tag it with a group. When assigning a user, you can assign them the entire group with one click, instantly granting them access to all locations bearing that tag.</p>
-        <img src="https://dummyimage.com/800x300/eef2f3/34495e.png&text=Insert+LBAC+Assignment+Screenshot+Here" class="doc-screenshot w-100" alt="LBAC Assignment">
+        <img src="docs/lbacassignment.png" class="doc-screenshot w-100" alt="LBAC Assignment">
         
         <h3>Visibility Without Vulnerability (Management Tab)</h3>
         <p>In the <strong>Locations Management Tab</strong>, the system displays <em>all</em> locations to users with the 'Manage Locations' permission, even ones they don't explicitly own. This is a deliberate design choice to prevent users from unknowingly creating duplicate locations with slightly different names.</p>
@@ -698,9 +697,9 @@
       <section id="dashboard" class="doc-section">
         <h2>Dashboard &amp; Global State Toggle</h2>
         <p>The Management view features a unified <strong>State Toggle (Stock vs Deployed)</strong> at the top right of the screen. Flipping this switch instantly recalculates the entire dashboard, the Items catalog, and the Locations catalog to reflect the chosen state.</p>
-        <img src="https://dummyimage.com/800x200/eef2f3/34495e.png&text=Insert+State+Toggle+Screenshot+Here" class="doc-screenshot w-100" alt="State Toggle">
+        <img src="docs/statetoggle.png" class="doc-screenshot w-100" alt="State Toggle">
         <p>The Dashboard provides a real-time financial and operational snapshot based on the active toggle:</p>
-        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Dashboard+Screenshot+Here" class="doc-screenshot w-100" alt="IMS Dashboard Snapshot">
+        <img src="docs/dashboard.png" class="doc-screenshot w-100" alt="IMS Dashboard Snapshot">
         <ul>
           <li><strong>Global Snapshot:</strong> <i>(Requires Global Access permission)</i>. Shows total unit counts and financial valuations across the entire company. Breaks down values by Physical Spaces vs Mobile Kits.</li>
           <li><strong>Location Groups Snapshot:</strong> Allows you to select an Access Group from a dropdown (e.g., "Arizona") and instantly recalculate the financial valuations and unit counts strictly for assets within that region.</li>
@@ -720,7 +719,7 @@
         <div class="callout border-primary">
           <strong>Dual-State Locations:</strong> Inside every location, inventory is strictly separated into two tabs: <strong>Stock Inventory</strong> (items sitting on a shelf ready to be used) and <strong>Deployed Assets</strong> (items currently in use or active at that location).
         </div>
-        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Location+Detail+Screenshot+Here" class="doc-screenshot w-100" alt="Location Detail">
+        <img src="docs/locationdetail.png" class="doc-screenshot w-100" alt="Location Detail">
         <ul>
           <li><strong>Global "Everywhere" Location:</strong> At the end of the Physical Spaces grid is a special blue 🌎 card called "Everywhere". This is a system-generated master view. Clicking it will show you every single item across your entire company in one massive list.</li>
           <li><strong>Sorting:</strong> When viewing a location, use the dropdown in the top right to sort items alphabetically (A-Z, Z-A) or by Quantity (High-Low).</li>
@@ -728,7 +727,7 @@
           <li><strong>Image Zoom (Lightbox):</strong> If you click on an item's main image on its Detail Page, it will pop out into a high-resolution Lightbox overlay. Click the background to close it.</li>
           <li><strong>Quick Edit Shortcut:</strong> If your role has 'Manage Items' or 'Manage Locations' permission, you will see a small "✎ Edit" button under the image on detail pages. Clicking this instantly teleports you directly to the Management form for that specific entity, saving you time!</li>
         </ul>
-        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Item+Detail+Screenshot+Here" class="doc-screenshot w-100 mb-4" alt="Item Details">
+        <img src="docs/itemdetail.png" class="doc-screenshot w-100 mb-4" alt="Item Details">
         <h3>Global Search Engine</h3>
         <p>The Search Bar at the top of the app is incredibly powerful. As you type, the app searches through Barcodes, Make, Model, Descriptions, Notes, and Serial Numbers. Matches are highlighted in yellow. Click any result to jump directly to that item.</p>        
         <div class="callout py-2 my-3 border-warning">
@@ -743,7 +742,7 @@
       <section id="transactions" class="doc-section">
         <h2>Asset Lifecycle (Move, Deploy, Return, Consume)</h2>
         <p>To execute a transaction, go to the Item Detail page. At the bottom, you will find the Action Form, which is split into two tabs depending on the item's current state.</p>
-        <img src="https://dummyimage.com/800x300/eef2f3/34495e.png&text=Insert+Action+Form+Screenshot+Here" class="doc-screenshot w-100 mb-4" alt="Action Form">
+        <img src="docs/itemactionstock.png" class="doc-screenshot w-100 mb-4" alt="Action Form"><div><img src="docs/itemactiondeploy.png" class="doc-screenshot" alt="Documentation Image">
         <ul class="mb-4">
           <li><strong>Stock Actions:</strong> 
             <ul>
@@ -774,11 +773,11 @@
           <strong>Hardware Scanner Support!</strong><br>
           If you have a physical USB or Bluetooth barcode scanner gun, it works natively with this app! Just click inside the Search Bar or Serial Input box and pull the trigger. The app's rapid-stroke engine will automatically capture the scan and drop to a new line without requiring you to hit 'Enter'.
         </div>
-      </section>
+      </div></section>
       <section id="audits" class="doc-section">
         <h2>Performing Audits</h2>
         <p>Audits are true-ups of physical stock compared to what the system expects. <i>(Requires Permission: <strong>Perform Audits</strong>)</i></p>
-        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Audit+Screen+Screenshot+Here" class="doc-screenshot w-100" alt="Audit Screen">
+        <img src="docs/audit.png" class="doc-screenshot w-100" alt="Audit Screen">
         <ol>
           <li>Navigate to a Location. <strong>Important:</strong> Select either the "Stock Inventory" tab or the "Deployed Assets" tab first, depending on what you intend to count.</li>
           <li>Click the yellow <strong>Audit</strong> button in the top right. The audit will lock into whatever mode you selected (Stock or Deployed) to prevent mixed counting.</li>
@@ -807,7 +806,7 @@
           <li>
             <strong>Barcode (Required):</strong> The most important field. Must be completely unique (e.g., a UPC code or internal SKU). The system will block the creation of duplicates.
             <div class="mt-2 p-2 rounded" style="background: rgba(99, 102, 241, 0.05); border-left: 3px solid var(--accent);">
-              <span class="small fw-bold" style="color: var(--accent);">Admin Override & Database Cascade:</span><br>
+              <span class="small fw-bold" style="color: var(--accent);">Admin Override &amp; Database Cascade:</span><br>
               <span class="text-muted small">By default, once an item is created, the barcode is permanently locked to preserve database integrity. However, <strong>Admins</strong> have the exclusive ability to edit existing barcodes. If an Admin changes a barcode, the backend engine automatically cascades this change throughout the entire database, updating all historical transaction logs to match the new barcode so no historical data is orphaned. <em>Note: If the item has active stock, the system will prompt you for a final confirmation before initiating the cascade.</em></span>
             </div>
           </li>
@@ -836,7 +835,7 @@
           <li>
             <strong>Location Name:</strong> The name of the space (e.g., Warehouse A, Production Truck 1). Must be completely unique.
             <div class="mt-2 p-2 rounded" style="background: rgba(99, 102, 241, 0.05); border-left: 3px solid var(--accent);">
-              <span class="small fw-bold" style="color: var(--accent);">Admin Override & Database Cascade:</span><br>
+              <span class="small fw-bold" style="color: var(--accent);">Admin Override &amp; Database Cascade:</span><br>
               <span class="text-muted small">Like Barcodes, Location Names are locked for standard users once created. <strong>Admins</strong> have the exclusive ability to rename existing locations. Renaming a location automatically triggers a database cascade, rewriting all historical transaction logs to reflect the new name. <em>Note: If the location currently holds active inventory, the system will warn you before proceeding.</em></span>
             </div>
           </li>
@@ -875,7 +874,7 @@
         <h2>Management: Users</h2>
         <p><i>Requires Permission: <strong>Manage Users</strong></i></p>
         <p>The Users tab controls who can log in. If an email is not in this list, they will hit an "Access Denied" screen.</p>
-        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Users+Table+Screenshot+Here" class="doc-screenshot w-100" alt="Users Management">
+        <img src="docs/users.png" class="doc-screenshot w-100" alt="Users Management">
         <div class="callout border-info mb-4">
           <strong class="text-info">Security Hierarchy Enforcement</strong><br>
           <span class="text-muted small">While Sub-Admins have access to this tab to manage Managers, Operators, and Viewers, they are strictly prohibited by the API from creating new Admins/Sub-Admins, or modifying/disabling existing Admins/Sub-Admins. Only a full Admin can manage protected top-level roles. Furthermore, Admins cannot accidentally or maliciously demote or disable other Admins.</span>
@@ -907,7 +906,7 @@
         <h2>Administration: Theme &amp; Branding</h2>
         <p><i>Requires Permission: <strong>Manage Theme</strong></i></p>
         <p>The Theme tab allows Admins to completely white-label the software without ever touching code. Here is a breakdown of every field:</p>
-        <img src="https://dummyimage.com/800x400/eef2f3/34495e.png&text=Insert+Theme+Settings+Screenshot+Here" class="doc-screenshot w-100" alt="Theme Settings">
+        <img src="docs/themes.png" class="doc-screenshot w-100" alt="Theme Settings">
         <ul>
           <li><strong>Company Name:</strong> Legal entity name. This is automatically injected into the dynamically generated Legal/Privacy Modal in the footer.</li>
           <li><strong>Developer Name:</strong> Name of the primary architect (injected into the Legal Modal).</li>
