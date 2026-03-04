@@ -474,8 +474,16 @@
   </div>
   <div id="viewManagement" class="hidden">
     <div class="card p-4">
-      <div class="mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
         <button class="btn btn-sm btn-link p-0 text-decoration-none fw-bold text-uppercase" onclick="history.back()">← Back</button>
+        <div class="switch-container hidden" id="mgmtStateToggleContainer">
+          <span class="small fw-bold" style="font-size:0.7rem;">STOCK</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="mgmtStateToggle" onchange="refreshMgmtState()">
+            <span class="slider"></span>
+          </label>
+          <span class="small fw-bold text-info" style="font-size:0.7rem;">DEPLOYED</span>
+        </div>
       </div>      
       <div class="position-relative tabs-scroll-wrapper mb-4">
         <button class="tab-scroll-btn left-arrow" id="scrollLeftBtn" onclick="scrollTabs(-150)">&#9664;</button>
@@ -507,78 +515,41 @@
           </div>
         </div>
         <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDashGlobal" aria-expanded="true">
-            <h6 class="fw-bold text-uppercase letter-spacing-1 text-muted small m-0">Global Snapshot</h6>
-            <span class="text-muted fw-bold toggle-icon">▼</span>
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0" id="dashGlobalTitle">Global Stock Snapshot</h6>
+            <span class="text-primary fw-bold toggle-icon">▼</span>
         </div>
         <div id="collapseDashGlobal" class="collapse show">
-            <h6 class="fw-bold text-primary mb-2 small text-uppercase">Global Stock</h6>
             <div class="row g-3 mb-3">
               <div class="col-md-4">
                 <div class="stat-card stat-bg-1 shadow-sm h-100">
-                  <p>Unique Stock Items</p>
-                  <h3 id="statUniqueStock">0</h3>
+                  <p id="labelUniqueGlobal">Unique Stock Items</p>
+                  <h3 id="statUnique">0</h3>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="stat-card stat-bg-2 shadow-sm h-100">
-                  <p>Total Stock Units</p>
-                  <h3 id="statTotalStockUnits">0</h3>
+                  <p id="labelUnitsGlobal">Total Stock Units</p>
+                  <h3 id="statTotalUnits">0</h3>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="stat-card stat-bg-3 shadow-sm h-100">
-                  <p>Total Stock Value</p>
-                  <h3 id="statTotalStockValue">$0.00</h3>
+                  <p id="labelValueGlobal">Total Stock Value</p>
+                  <h3 id="statTotalValue">$0.00</h3>
                 </div>
               </div>
             </div>
             <div class="row g-3 mb-4">
               <div class="col-md-6">
                 <div class="stat-card stat-bg-4 shadow-sm h-100">
-                  <p>Physical Spaces Stock</p>
-                  <h3 id="statPhysStockVal">$0.00</h3>
+                  <p id="labelPhysGlobal">Physical Spaces Stock</p>
+                  <h3 id="statPhysValue">$0.00</h3>
                 </div>
               </div>
               <div class="col-md-6">
                 <div class="stat-card stat-bg-5 shadow-sm h-100">
-                  <p>Mobile Kits Stock</p>
-                  <h3 id="statKitStockVal">$0.00</h3>
-                </div>
-              </div>
-            </div>
-            
-            <h6 class="fw-bold text-info mb-2 small text-uppercase mt-4">Global Deployed</h6>
-            <div class="row g-3 mb-3">
-              <div class="col-md-4">
-                <div class="stat-card stat-bg-1 shadow-sm h-100" style="opacity: 0.9;">
-                  <p>Unique Deployed Items</p>
-                  <h3 id="statUniqueDep">0</h3>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="stat-card stat-bg-2 shadow-sm h-100" style="opacity: 0.9;">
-                  <p>Total Deployed Units</p>
-                  <h3 id="statTotalDepUnits">0</h3>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <div class="stat-card stat-bg-3 shadow-sm h-100" style="opacity: 0.9;">
-                  <p>Total Deployed Value</p>
-                  <h3 id="statTotalDepValue">$0.00</h3>
-                </div>
-              </div>
-            </div>
-            <div class="row g-3 mb-4">
-              <div class="col-md-6">
-                <div class="stat-card stat-bg-4 shadow-sm h-100" style="opacity: 0.9;">
-                  <p>Physical Spaces Deployed</p>
-                  <h3 id="statPhysDepVal">$0.00</h3>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="stat-card stat-bg-5 shadow-sm h-100" style="opacity: 0.9;">
-                  <p>Mobile Kits Deployed</p>
-                  <h3 id="statKitDepVal">$0.00</h3>
+                  <p id="labelKitGlobal">Mobile Kits Stock</p>
+                  <h3 id="statKitValue">$0.00</h3>
                 </div>
               </div>
             </div>
@@ -592,74 +563,37 @@
                 <option value="">Select an Access Group to view snapshot...</option>
             </select>            
             <div id="dashGroupStats" class="hidden">
-              <h6 class="fw-bold text-primary mb-2 small text-uppercase">Group Stock</h6>
               <div class="row g-3 mb-3">
                 <div class="col-md-4">
                   <div class="stat-card stat-bg-1 shadow-sm h-100">
-                    <p>Unique Stock Items</p>
-                    <h3 id="grpStatUniqueStock">0</h3>
+                    <p id="labelUniqueGroup">Unique Stock Items</p>
+                    <h3 id="grpStatUnique">0</h3>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="stat-card stat-bg-2 shadow-sm h-100">
-                    <p>Total Stock Units</p>
-                    <h3 id="grpStatTotalStockUnits">0</h3>
+                    <p id="labelUnitsGroup">Total Stock Units</p>
+                    <h3 id="grpStatTotalUnits">0</h3>
                   </div>
                 </div>
                 <div class="col-md-4">
                   <div class="stat-card stat-bg-3 shadow-sm h-100">
-                    <p>Total Stock Value</p>
-                    <h3 id="grpStatTotalStockValue">$0.00</h3>
+                    <p id="labelValueGroup">Total Stock Value</p>
+                    <h3 id="grpStatTotalValue">$0.00</h3>
                   </div>
                 </div>
               </div>
               <div class="row g-3 mb-4">
                 <div class="col-md-6">
                   <div class="stat-card stat-bg-4 shadow-sm h-100">
-                    <p>Physical Spaces Stock</p>
-                    <h3 id="grpStatPhysStockVal">$0.00</h3>
+                    <p id="labelPhysGroup">Physical Spaces Stock</p>
+                    <h3 id="grpStatPhysValue">$0.00</h3>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="stat-card stat-bg-5 shadow-sm h-100">
-                    <p>Mobile Kits Stock</p>
-                    <h3 id="grpStatKitStockVal">$0.00</h3>
-                  </div>
-                </div>
-              </div>
-              
-              <h6 class="fw-bold text-info mb-2 small text-uppercase">Group Deployed</h6>
-              <div class="row g-3 mb-3">
-                <div class="col-md-4">
-                  <div class="stat-card stat-bg-1 shadow-sm h-100" style="opacity: 0.9;">
-                    <p>Unique Deployed Items</p>
-                    <h3 id="grpStatUniqueDep">0</h3>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="stat-card stat-bg-2 shadow-sm h-100" style="opacity: 0.9;">
-                    <p>Total Deployed Units</p>
-                    <h3 id="grpStatTotalDepUnits">0</h3>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="stat-card stat-bg-3 shadow-sm h-100" style="opacity: 0.9;">
-                    <p>Total Deployed Value</p>
-                    <h3 id="grpStatTotalDepValue">$0.00</h3>
-                  </div>
-                </div>
-              </div>
-              <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                  <div class="stat-card stat-bg-4 shadow-sm h-100" style="opacity: 0.9;">
-                    <p>Physical Spaces Deployed</p>
-                    <h3 id="grpStatPhysDepVal">$0.00</h3>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="stat-card stat-bg-5 shadow-sm h-100" style="opacity: 0.9;">
-                    <p>Mobile Kits Deployed</p>
-                    <h3 id="grpStatKitDepVal">$0.00</h3>
+                    <p id="labelKitGroup">Mobile Kits Stock</p>
+                    <h3 id="grpStatKitValue">$0.00</h3>
                   </div>
                 </div>
               </div>
@@ -1583,81 +1517,67 @@ async function fetchData(callback) {
     return balance;
   }
   function renderDashboard() {
-    let globalUnits = 0;
-    let globalValue = 0;
-    let physValue = 0;
-    let depValue = 0;
+    const isDeployed = document.getElementById('mgmtStateToggle') && document.getElementById('mgmtStateToggle').checked;
+    const currentState = isDeployed ? 'deployed' : 'stock';
+    
+    const wordState = isDeployed ? "Deployed" : "Stock";
+    document.getElementById('dashGlobalTitle').innerText = `Global ${wordState} Snapshot`;
+    document.getElementById('labelUniqueGlobal').innerText = `Unique ${wordState} Items`;
+    document.getElementById('labelUnitsGlobal').innerText = `Total ${wordState} Units`;
+    document.getElementById('labelValueGlobal').innerText = `Total ${wordState} Value`;
+    document.getElementById('labelPhysGlobal').innerText = `Physical Spaces ${wordState}`;
+    document.getElementById('labelKitGlobal').innerText = `Mobile Kits ${wordState}`;
+
     const lowStockAlerts = [];
     const locationStats = {};
     db.locations.filter(l => l.status === 'Active').forEach(l => {
       locationStats[l.locationName] = { type: l.type, units: 0, value: 0, deployType: l.deployType || 'Physical Space', groups: l.lbacGroups || '' };
     });
-    let globalStockUnits = 0, globalStockValue = 0, uniqueStockItems = 0, stockPhysVal = 0, stockKitVal = 0;
-    let globalDepUnits = 0, globalDepValue = 0, uniqueDepItems = 0, depPhysVal = 0, depKitVal = 0;
+    
+    let gUnits = 0, gValue = 0, uItems = 0, pVal = 0, kVal = 0;
 
-    const activeItems = db.items.filter(i => i.status === 'Active');    
-    activeItems.forEach(itm => {
-      const price = parseFloat(itm.price) || 0;
-      let itemGlobalStock = 0;
-      let itemGlobalDep = 0;
+    const activeItems = db.items.filter(i => i.status === 'Active');    
+    activeItems.forEach(itm => {
+      const price = parseFloat(itm.price) || 0;
+      let itemLocTotal = 0;
 
-      for (const locName in locationStats) {
-        const stockAtLoc = getStockBalance(itm.barcode, locName, null, 'stock'); 
-        const deployedAtLoc = getStockBalance(itm.barcode, locName, null, 'deployed');
-        const totalAtLoc = stockAtLoc + deployedAtLoc;
-        
-        if (totalAtLoc > 0) {
-          locationStats[locName].units += totalAtLoc;
-          locationStats[locName].value += (totalAtLoc * price);
-        }
-        if (stockAtLoc > 0) {
-          itemGlobalStock += stockAtLoc;
-          if (locationStats[locName].deployType === 'Mobile Kit' || locationStats[locName].deployType === 'Deployable') {
-            stockKitVal += (stockAtLoc * price);
-          } else {
-            stockPhysVal += (stockAtLoc * price);
-          }
-        }
-        if (deployedAtLoc > 0) {
-          itemGlobalDep += deployedAtLoc;
-          if (locationStats[locName].deployType === 'Mobile Kit' || locationStats[locName].deployType === 'Deployable') {
-            depKitVal += (deployedAtLoc * price);
-          } else {
-            depPhysVal += (deployedAtLoc * price);
-          }
-        }
-      }
+      for (const locName in locationStats) {
+        const bal = getStockBalance(itm.barcode, locName, null, currentState); 
+        if (bal > 0) {
+          locationStats[locName].units += bal;
+          locationStats[locName].value += (bal * price);
+          itemLocTotal += bal;          
+          if (locationStats[locName].deployType === 'Mobile Kit' || locationStats[locName].deployType === 'Deployable') {
+            kVal += (bal * price);
+          } else {
+            pVal += (bal * price);
+          }
+        }
+      }
 
-      uniqueStockItems++; // Count all active items for the global stock catalog
-      if (itemGlobalDep > 0) uniqueDepItems++;
+      if (currentState === 'stock') uItems++;
+      else if (itemLocTotal > 0) uItems++;
 
-      globalStockUnits += itemGlobalStock;
-      globalStockValue += (itemGlobalStock * price);
-      globalDepUnits += itemGlobalDep;
-      globalDepValue += (itemGlobalDep * price);
+      gUnits += itemLocTotal;
+      gValue += (itemLocTotal * price);
 
-      if (itemGlobalStock <= parseFloat(itm.minStock)) {
-        lowStockAlerts.push({
-          bc: itm.barcode,
-          category: itm.category,
-          name: `${itm.make} ${itm.model}`,
-          onHand: itemGlobalStock,
-          min: itm.minStock
-        });
-      }
-    });
-    
-    document.getElementById('statUniqueStock').innerText = uniqueStockItems;
-    document.getElementById('statTotalStockUnits').innerText = globalStockUnits.toLocaleString('en-US');
-    document.getElementById('statTotalStockValue').innerText = appCurrency + globalStockValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('statPhysStockVal').innerText = appCurrency + stockPhysVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('statKitStockVal').innerText = appCurrency + stockKitVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    
-    document.getElementById('statUniqueDep').innerText = uniqueDepItems;
-    document.getElementById('statTotalDepUnits').innerText = globalDepUnits.toLocaleString('en-US');
-    document.getElementById('statTotalDepValue').innerText = appCurrency + globalDepValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('statPhysDepVal').innerText = appCurrency + depPhysVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('statKitDepVal').innerText = appCurrency + depKitVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      if (currentState === 'stock' && itemLocTotal <= parseFloat(itm.minStock)) {
+        lowStockAlerts.push({
+          bc: itm.barcode,
+          category: itm.category,
+          name: `${itm.make} ${itm.model}`,
+          onHand: itemLocTotal,
+          min: itm.minStock
+        });
+      }
+    });
+    
+    document.getElementById('statUnique').innerText = uItems.toLocaleString('en-US');
+    document.getElementById('statTotalUnits').innerText = gUnits.toLocaleString('en-US');
+    document.getElementById('statTotalValue').innerText = appCurrency + gValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('statPhysValue').innerText = appCurrency + pVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('statKitValue').innerText = appCurrency + kVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    
     const globalAlertBanner = document.getElementById('globalStockAlert');
     const alertArea = document.getElementById('dashAlertsArea');
     const alertBody = document.getElementById('dashAlertsBody');    
@@ -1762,50 +1682,42 @@ async function fetchData(callback) {
               }
           }
       }
-      let grpUniqueStock = 0, grpTotalStockUnits = 0, grpTotalStockValue = 0, grpPhysStockVal = 0, grpKitStockVal = 0;
-      let grpUniqueDep = 0, grpTotalDepUnits = 0, grpTotalDepValue = 0, grpPhysDepVal = 0, grpKitDepVal = 0;
+      const isDeployed = document.getElementById('mgmtStateToggle') && document.getElementById('mgmtStateToggle').checked;
+      const currentState = isDeployed ? 'deployed' : 'stock';
+      const wordState = isDeployed ? "Deployed" : "Stock";
+      
+      document.getElementById('labelUniqueGroup').innerText = `Unique ${wordState} Items`;
+      document.getElementById('labelUnitsGroup').innerText = `Total ${wordState} Units`;
+      document.getElementById('labelValueGroup').innerText = `Total ${wordState} Value`;
+      document.getElementById('labelPhysGroup').innerText = `Physical Spaces ${wordState}`;
+      document.getElementById('labelKitGroup').innerText = `Mobile Kits ${wordState}`;
+      
+      let gUnits = 0, gValue = 0, uItems = 0, pVal = 0, kVal = 0;
 
       db.items.filter(i => i.status === 'Active').forEach(itm => {
           const price = parseFloat(itm.price) || 0;
-          let itemGrpStock = 0;
-          let itemGrpDep = 0;
+          let itemLocTotal = 0;
 
           grpLocs.forEach(loc => {
-              let stk = getStockBalance(itm.barcode, loc.name, null, 'stock');
-              let dep = getStockBalance(itm.barcode, loc.name, null, 'deployed');
-              
-              if (stk > 0) {
-                  itemGrpStock += stk;
-                  if (loc.type === 'Mobile Kit' || loc.type === 'Deployable') grpKitStockVal += (stk * price);
-                  else grpPhysStockVal += (stk * price);
-              }
-              if (dep > 0) {
-                  itemGrpDep += dep;
-                  if (loc.type === 'Mobile Kit' || loc.type === 'Deployable') grpKitDepVal += (dep * price);
-                  else grpPhysDepVal += (dep * price);
+              let bal = getStockBalance(itm.barcode, loc.name, null, currentState);
+              if (bal > 0) {
+                  itemLocTotal += bal;
+                  if (loc.type === 'Mobile Kit' || loc.type === 'Deployable') kVal += (bal * price);
+                  else pVal += (bal * price);
               }
           });
 
-          if (itemGrpStock > 0) grpUniqueStock++;
-          if (itemGrpDep > 0) grpUniqueDep++;
+          if (itemLocTotal > 0) uItems++;
 
-          grpTotalStockUnits += itemGrpStock;
-          grpTotalStockValue += (itemGrpStock * price);
-          grpTotalDepUnits += itemGrpDep;
-          grpTotalDepValue += (itemGrpDep * price);
+          gUnits += itemLocTotal;
+          gValue += (itemLocTotal * price);
       });
 
-      document.getElementById('grpStatUniqueStock').innerText = grpUniqueStock.toLocaleString('en-US');
-      document.getElementById('grpStatTotalStockUnits').innerText = grpTotalStockUnits.toLocaleString('en-US');
-      document.getElementById('grpStatTotalStockValue').innerText = appCurrency + grpTotalStockValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      document.getElementById('grpStatPhysStockVal').innerText = appCurrency + grpPhysStockVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      document.getElementById('grpStatKitStockVal').innerText = appCurrency + grpKitStockVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      
-      document.getElementById('grpStatUniqueDep').innerText = grpUniqueDep.toLocaleString('en-US');
-      document.getElementById('grpStatTotalDepUnits').innerText = grpTotalDepUnits.toLocaleString('en-US');
-      document.getElementById('grpStatTotalDepValue').innerText = appCurrency + grpTotalDepValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      document.getElementById('grpStatPhysDepVal').innerText = appCurrency + grpPhysDepVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-      document.getElementById('grpStatKitDepVal').innerText = appCurrency + grpKitDepVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('grpStatUnique').innerText = uItems.toLocaleString('en-US');
+      document.getElementById('grpStatTotalUnits').innerText = gUnits.toLocaleString('en-US');
+      document.getElementById('grpStatTotalValue').innerText = appCurrency + gValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('grpStatPhysValue').innerText = appCurrency + pVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('grpStatKitValue').innerText = appCurrency + kVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
       
       let finalHtml = '';
       if (htmlPhys) finalHtml += `<div class="col-12"><h6 class="fw-bold text-muted small mb-2 text-uppercase border-bottom pb-1">Physical Spaces</h6></div>${htmlPhys}`;
@@ -1865,6 +1777,9 @@ async function fetchData(callback) {
   }
   function loadMoreLogs() { logLimit += 20; renderLogs(); }
   function updateMgmtTables() {
+    const isDeployed = document.getElementById('mgmtStateToggle') && document.getElementById('mgmtStateToggle').checked;
+    const currentState = isDeployed ? 'deployed' : 'stock';
+      
     const spotCounts = {};
     db.logs.forEach(log => {
       if (log.subLoc) {
@@ -1880,8 +1795,8 @@ async function fetchData(callback) {
     });
 
     document.getElementById('bodyItems').innerHTML = db.items.map(i => {
-      const total = getStockBalance(i.barcode);
-      const criticalClass = (total <= Number(i.minStock) && i.status === 'Active') ? 'stock-critical' : '';
+      const total = getStockBalance(i.barcode, null, null, currentState);
+      const criticalClass = (currentState === 'stock' && total <= Number(i.minStock) && i.status === 'Active') ? 'stock-critical' : '';
       const serialBadge = i.serialized === 'Yes' ? '<span class="badge bg-dark ms-2" style="font-size:0.6rem">SERIALIZED</span>' : '';
       
       const descHtml = i.description ? '<div class="text-muted mt-1" style="font-size:0.75rem; line-height: 1.2;"><strong>Desc:</strong> ' + i.description + '</div>' : '';
@@ -1916,8 +1831,16 @@ async function fetchData(callback) {
       let invCount = 0;
       if (hasAccess) {
          db.logs.forEach(log => {
-           if (log.toLoc === l.locationName) invCount += log.quantity;
-           if (log.fromLoc === l.locationName) invCount -= Math.abs(log.quantity);
+           let isIn = false, isOut = false;
+           if (currentState === 'stock') {
+               isIn = ["In", "Move-In", "Return-In", "Audit-In"].includes(log.type);
+               isOut = ["Out", "Move-Out", "Deploy-Out", "Audit-Out"].includes(log.type);
+           } else {
+               isIn = ["Deploy-In"].includes(log.type);
+               isOut = ["Return-Out", "Consume-Out"].includes(log.type);
+           }
+           if (log.toLoc === l.locationName && isIn) invCount += Math.abs(log.quantity);
+           if (log.fromLoc === l.locationName && isOut) invCount -= Math.abs(log.quantity);
          });
       }
       const displayCount = hasAccess ? invCount.toLocaleString('en-US') : '<span title="Restricted Access">🔒</span>';
@@ -3283,6 +3206,14 @@ async function fetchData(callback) {
         }
     }
   });  
+  function refreshMgmtState() {
+    const activeTab = document.querySelector('#mgmtTabs .nav-link.active');
+    if (activeTab) {
+      if (activeTab.id === 't0') renderDashboard();
+      if (activeTab.id === 't1' || activeTab.id === 't2') updateMgmtTables();
+    }
+  }
+
   function switchMgmt(t, isBack = false) { 
     window.scrollTo(0, 0);
     if (!isBack) history.pushState({ view: 'mgmt', tab: t }, "");
@@ -3292,6 +3223,10 @@ async function fetchData(callback) {
     cancelEditItem();
     cancelEditLoc();
     cancelEditUser();
+
+    const tgl = document.getElementById('mgmtStateToggleContainer');
+    if (t === 'dash' || t === 'item' || t === 'loc') tgl.classList.remove('hidden');
+    else tgl.classList.add('hidden');
 
     if(t === 'dash') { 
       document.getElementById('mDash').classList.remove('hidden'); 
