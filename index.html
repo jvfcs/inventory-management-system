@@ -114,10 +114,10 @@
     #actSerialsIn, #saScanInput { text-transform: uppercase; }
     .tabs-scroll-wrapper { position: relative; width: 100%; max-width: 100%; }
     .hide-scroll {
-      display: flex; flex-wrap: nowrap; overflow-x: auto;
-      scrollbar-width: none; -ms-overflow-style: none;
-      scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
-    }
+      display: flex; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
+      scrollbar-width: none; -ms-overflow-style: none;
+      scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+    }
     .hide-scroll::-webkit-scrollbar { display: none; }
     .tab-scroll-btn {
       position: absolute; top: 0; bottom: 1px; width: 32px;
@@ -170,7 +170,7 @@
     [data-bs-theme="dark"] .card, [data-bs-theme="dark"] .loc-card, [data-bs-theme="dark"] .item-card, [data-bs-theme="dark"] .item-row { background-color: var(--dark-card) !important; border-color: rgba(255,255,255,0.05); }
     [data-bs-theme="dark"] .bg-white { background-color: var(--dark-card) !important; color: var(--dark-text) !important; }
     [data-bs-theme="dark"] .bg-light { background-color: rgba(255,255,255,0.05) !important; color: var(--dark-text) !important; }
-    [data-bs-theme="dark"] .table-light { background-color: rgba(255,255,255,0.05); color: var(--dark-text); border-bottom: 1px solid rgba(255,255,255,0.1); }
+    [data-bs-theme="dark"] .table-light, [data-bs-theme="dark"] .table-light th, [data-bs-theme="dark"] .table-light td { background-color: rgba(255,255,255,0.05) !important; color: var(--dark-text) !important; border-bottom: 1px solid rgba(255,255,255,0.1); }
     [data-bs-theme="dark"] .table-secondary { background-color: rgba(0,0,0,0.5) !important; color: rgba(255,255,255,0.5); }
     [data-bs-theme="dark"] .stock-critical > td { background-color: #4a191e !important; color: #fff !important; }
     [data-bs-theme="dark"] .border, [data-bs-theme="dark"] .border-top, [data-bs-theme="dark"] .border-bottom { border-color: rgba(255,255,255,0.1) !important; }
@@ -621,47 +621,97 @@
         </div>
       </div>
       <div id="mItem" class="hidden">
-        <div class="row">
-          <div class="col-lg-4 mb-4">
-            <h6 class="fw-bold mb-3" id="catalogFormTitle">Add to Catalog</h6>
-            <div class="input-group mb-2">
- 	    <input type="text" id="mBc" class="form-control" placeholder="Barcode (Required)">
-  	    <button id="btnScanBc" class="btn btn-outline-primary px-3 fs-5" type="button" onclick="startCamera('mBc')" title="Scan Barcode">📷</button>
-	    </div>
-            <input type="text" id="mMake" class="form-control mb-2" placeholder="Make">
-            <input type="text" id="mModel" class="form-control mb-2" placeholder="Model">
-            <select id="mCat" class="form-select mb-2">
-              <option value="" disabled selected>Select Category</option>
-              <option value="Access Control">Access Control</option>
-              <option value="Accessories">Accessories</option>
-              <option value="Cable">Cable</option>
-              <option value="CCTV">CCTV</option>
-              <option value="Intrusion">Intrusion</option>
-              <option value="Office Supplies">Office Supplies</option>
-              <option value="Tools">Tools</option>
-              <option value="Other">Other</option>
-            </select>            
-            <select id="mSerialized" class="form-select mb-2 text-primary fw-bold">
-              <option value="No">Tracking: Bulk Quantity</option>
-              <option value="Yes">Tracking: Individual Serials</option>
-            </select>
-            <textarea id="mDesc" class="form-control mb-2" placeholder="Description" rows="2"></textarea>
-            <input type="text" id="mPrice" class="form-control mb-2" placeholder="Unit Price (e.g. $1,500.00)" onblur="formatCurrencyInput(this)">
-            <input type="number" id="mMin" class="form-control mb-2" placeholder="Min Stock">
-            <input type="text" id="mSpecs" class="form-control mb-2" placeholder="Tech Specs URL">
-            <input type="text" id="mImg" class="form-control mb-2" placeholder="Image URL (Optional)">            
-            <label class="small fw-bold mb-0">Image Upload (Overrides URL)</label>
-            <small class="text-muted d-block mb-1" style="font-size: 0.7rem;">PNG, JPG, or JPEG only</small>
-            <img id="mImgPreview" class="hidden mb-2 border rounded shadow-sm" style="max-width: 100px; max-height: 100px; object-fit: cover;">
-            <input type="file" id="mImgFile" class="form-control mb-2" accept=".png, .jpg, .jpeg">            
-            <textarea id="mNotes" class="form-control mb-3" placeholder="Notes" rows="2"></textarea>            
-            <button class="btn btn-primary w-100 mb-2" id="btnSaveItem" onclick="saveOrUpdateItem('add')">Save Item</button>
-            <button class="btn btn-outline-secondary w-100 hidden" id="btnCancelEdit" onclick="cancelEditItem()">Cancel Edit</button>
-          </div>
-          <div class="col-lg-8">
-            <h6 class="fw-bold mb-3">Catalog (Click Headers to Sort)</h6>
-            <div class="bg-light p-2 rounded border">
-               <table class="table table-sm table-hover bg-white m-0">
+        <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseItemForm" aria-expanded="true">
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0" id="catalogFormTitle">Add to Catalog</h6>
+            <span class="text-primary fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseItemForm" class="collapse show">
+            <div class="card p-3 bg-light shadow-sm mb-4 border">
+              <div class="row g-3">
+                <div class="col-md-3">
+                  <label class="small fw-bold text-muted mb-1">Barcode (Required)</label>
+                  <div class="input-group">
+                    <input type="text" id="mBc" class="form-control" placeholder="Barcode">
+                    <button id="btnScanBc" class="btn btn-outline-primary px-3 fs-5" type="button" onclick="startCamera('mBc')" title="Scan Barcode">📷</button>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <label class="small fw-bold text-muted mb-1">Make</label>
+                  <input type="text" id="mMake" class="form-control" placeholder="Make">
+                </div>
+                <div class="col-md-3">
+                  <label class="small fw-bold text-muted mb-1">Model</label>
+                  <input type="text" id="mModel" class="form-control" placeholder="Model">
+                </div>
+                <div class="col-md-3">
+                  <label class="small fw-bold text-muted mb-1">Category</label>
+                  <select id="mCat" class="form-select">
+                    <option value="" disabled selected>Select Category</option>
+                    <option value="Access Control">Access Control</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Cable">Cable</option>
+                    <option value="CCTV">CCTV</option>
+                    <option value="Intrusion">Intrusion</option>
+                    <option value="Office Supplies">Office Supplies</option>
+                    <option value="Tools">Tools</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                
+                <div class="col-md-3">
+                  <label class="small fw-bold text-muted mb-1">Tracking Type</label>
+                  <select id="mSerialized" class="form-select text-primary fw-bold">
+                    <option value="No">Bulk Quantity</option>
+                    <option value="Yes">Individual Serials</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="small fw-bold text-muted mb-1">Unit Price</label>
+                  <input type="text" id="mPrice" class="form-control" placeholder="$0.00" onblur="formatCurrencyInput(this)">
+                </div>
+                <div class="col-md-3">
+                  <label class="small fw-bold text-muted mb-1">Min Stock</label>
+                  <input type="number" id="mMin" class="form-control" placeholder="Threshold">
+                </div>
+                <div class="col-md-3">
+                  <label class="small fw-bold text-muted mb-1">Tech Specs URL</label>
+                  <input type="text" id="mSpecs" class="form-control" placeholder="https://...">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="small fw-bold text-muted mb-1">Description</label>
+                  <textarea id="mDesc" class="form-control" placeholder="Description" rows="2"></textarea>
+                </div>
+                <div class="col-md-6">
+                  <label class="small fw-bold text-muted mb-1">Notes</label>
+                  <textarea id="mNotes" class="form-control" placeholder="Notes" rows="2"></textarea>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="small fw-bold text-muted mb-1">Image URL (Optional)</label>
+                  <input type="text" id="mImg" class="form-control" placeholder="Image URL">
+                </div>
+                <div class="col-md-6">
+                  <label class="small fw-bold text-muted mb-1">Image Upload (Overrides URL) - <span style="font-size:0.7rem;">PNG, JPG</span></label>
+                  <input type="file" id="mImgFile" class="form-control" accept=".png, .jpg, .jpeg">
+                  <img id="mImgPreview" class="hidden mt-2 border rounded shadow-sm" style="max-width: 100px; max-height: 100px; object-fit: cover;">
+                </div>
+
+                <div class="col-12 mt-3 d-flex gap-2 justify-content-end border-top pt-3">
+                  <button class="btn btn-outline-secondary hidden px-4 fw-bold" id="btnCancelEdit" onclick="cancelEditItem()">Cancel</button>
+                  <button class="btn btn-primary px-4 fw-bold" id="btnSaveItem" onclick="saveOrUpdateItem('add')">Save Item</button>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseItemTable" aria-expanded="true">
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-secondary small m-0">Catalog</h6>
+            <span class="text-secondary fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseItemTable" class="collapse show mb-5">
+            <div class="table-responsive bg-light p-2 rounded border w-100">
+               <table class="table table-sm table-hover bg-white m-0 w-100">
                  <thead>
                    <tr>
                      <th class="sortable" onclick="sortMgmt('item', 0)">Barcode</th>
@@ -673,50 +723,91 @@
                  <tbody id="bodyItems"></tbody>
                </table>
             </div>
-          </div>
         </div>
       </div>
       <div id="mLoc" class="hidden">
-        <div class="row">
-          <div class="col-lg-4 mb-4">
-            <h6 class="fw-bold mb-3" id="locFormTitle">Add New Location</h6>
-            <input type="text" id="mLname" class="form-control mb-2" placeholder="Location Name">
-            <select id="mLtype" class="form-select mb-3">
-              <option value="" disabled selected>Select Category</option>
-              <option value="Events">Events</option>
-              <option value="Golf Cart">Golf Cart</option>
-              <option value="Office">Office</option>
-              <option value="Storage Case">Storage Case</option>
-              <option value="Storage Room">Storage Room</option>
-              <option value="Other">Other</option>
-            </select>            
-            <select id="mDeployType" class="form-select mb-2 text-primary fw-bold" onchange="toggleDeployLoc()">
-              <option value="Physical Space">Type: Physical Space</option>
-              <option value="Mobile Kit">Type: Mobile Kit</option>
-            </select>
-            <input type="text" id="mDeployLoc" class="form-control mb-2 hidden" placeholder="Deployment Location (e.g. Site Name)">            
-            <label class="fw-bold small mb-1 text-primary mt-1">Access Groups (LBAC)</label>
-            <div id="locGroupChecklist" class="border border-primary rounded p-2 mb-2 bg-white shadow-sm" style="max-height: 120px; overflow-y: auto;">
+        <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseLocForm" aria-expanded="true">
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0" id="locFormTitle">Add New Location</h6>
+            <span class="text-primary fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseLocForm" class="collapse show">
+            <div class="card p-3 bg-light shadow-sm mb-4 border">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="small fw-bold text-muted mb-1">Location Name</label>
+                  <input type="text" id="mLname" class="form-control" placeholder="e.g. Warehouse A">
                 </div>
-            <div class="input-group input-group-sm mb-3">
-                <input type="text" id="newLocGroupIn" class="form-control border-primary" placeholder="Create new group tag...">
-                <button class="btn btn-primary fw-bold" type="button" onclick="addNewGroupTag()">Add</button>
+                <div class="col-md-4">
+                  <label class="small fw-bold text-muted mb-1">Category</label>
+                  <select id="mLtype" class="form-select">
+                    <option value="" disabled selected>Select Category</option>
+                    <option value="Events">Events</option>
+                    <option value="Golf Cart">Golf Cart</option>
+                    <option value="Office">Office</option>
+                    <option value="Storage Case">Storage Case</option>
+                    <option value="Storage Room">Storage Room</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="small fw-bold text-muted mb-1">Deployment Type</label>
+                  <select id="mDeployType" class="form-select text-primary fw-bold" onchange="toggleDeployLoc()">
+                    <option value="Physical Space">Physical Space</option>
+                    <option value="Mobile Kit">Mobile Kit</option>
+                  </select>
+                </div>
+                
+                <div class="col-md-12 hidden" id="mDeployLocContainer">
+                  <label class="small fw-bold text-info mb-1">Deployment Location</label>
+                  <input type="text" id="mDeployLoc" class="form-control border-info" placeholder="Site Name (e.g. Desert Festival)">
+                </div>
+
+                <div class="col-md-6">
+                  <label class="small fw-bold text-muted mb-1">Description</label>
+                  <textarea id="mLDesc" class="form-control" placeholder="Description" rows="2"></textarea>
+                </div>
+                <div class="col-md-6">
+                  <label class="small fw-bold text-muted mb-1">Notes</label>
+                  <textarea id="mLNotes" class="form-control" placeholder="Notes" rows="2"></textarea>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="small fw-bold text-muted mb-1">Image URL (Optional)</label>
+                  <input type="text" id="mLImg" class="form-control" placeholder="Image URL">
+                </div>
+                <div class="col-md-6">
+                  <label class="small fw-bold text-muted mb-1">Image Upload (Overrides URL) - <span style="font-size:0.7rem;">PNG, JPG</span></label>
+                  <input type="file" id="mLImgFile" class="form-control" accept=".png, .jpg, .jpeg">
+                  <img id="mLImgPreview" class="hidden mt-2 border rounded shadow-sm" style="max-width: 100px; max-height: 100px; object-fit: cover;">
+                </div>
+
+                <div class="col-12 mt-2">
+                   <div class="border border-primary rounded p-2 bg-white shadow-sm">
+                       <label class="fw-bold small mb-2 text-primary border-bottom pb-1 d-block">Access Groups (LBAC)</label>
+                       <div id="locGroupChecklist" style="max-height: 150px; overflow-y: auto;"></div>
+                       <div class="input-group input-group-sm mt-2">
+                           <input type="text" id="newLocGroupIn" class="form-control border-primary" placeholder="Create new group tag...">
+                           <button class="btn btn-primary fw-bold" type="button" onclick="addNewGroupTag()">Add</button>
+                       </div>
+                   </div>
+                </div>
+
+                <div class="col-12 mt-3 d-flex gap-2 justify-content-end border-top pt-3">
+                  <button class="btn btn-outline-secondary hidden px-4 fw-bold" id="btnCancelEditLoc" onclick="cancelEditLoc()">Cancel</button>
+                  <button class="btn btn-primary px-4 fw-bold" id="btnSaveLoc" onclick="saveOrUpdateLoc('add')">Create Location</button>
+                </div>
+              </div>
             </div>
-            <textarea id="mLDesc" class="form-control mb-2" placeholder="Description" rows="2"></textarea>
-            <input type="text" id="mLImg" class="form-control mb-2" placeholder="Image URL (Optional)">
-            <label class="small fw-bold mb-0">Image Upload (Overrides URL)</label>
-            <small class="text-muted d-block mb-1" style="font-size: 0.7rem;">PNG, JPG, or JPEG only</small>
-            <img id="mLImgPreview" class="hidden mb-2 border rounded shadow-sm" style="max-width: 100px; max-height: 100px; object-fit: cover;">
-            <input type="file" id="mLImgFile" class="form-control mb-2" accept=".png, .jpg, .jpeg">
-            <textarea id="mLNotes" class="form-control mb-3" placeholder="Notes" rows="2"></textarea>            
-            <button class="btn btn-primary w-100 mb-2" id="btnSaveLoc" onclick="saveOrUpdateLoc('add')">Create Location</button>
-            <button class="btn btn-outline-secondary w-100 hidden" id="btnCancelEditLoc" onclick="cancelEditLoc()">Cancel Edit</button>
-          </div>          
-          <div class="col-lg-8">
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseLocTable" aria-expanded="true">
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-secondary small m-0">Locations Directory</h6>
+            <span class="text-secondary fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseLocTable" class="collapse show mb-5">
             <div id="locTableContainer">
-                <h6 class="fw-bold mb-3">Locations (Click Headers to Sort)</h6>
-                <div class="table-responsive bg-light p-2 rounded border">
-                   <table class="table table-sm table-hover bg-white m-0">
+                <div class="table-responsive bg-light p-2 rounded border w-100 mb-4">
+                   <table class="table table-sm table-hover bg-white m-0 w-100">
                      <thead>
                        <tr>
                          <th class="sortable" onclick="sortMgmt('loc', 0)">Type</th>
@@ -728,18 +819,15 @@
                      <tbody id="bodyLocs"></tbody>
                    </table>
                 </div>
-            </div>            
-            <div id="locGroupsSummaryContainer" class="mt-4 mb-4">
-                <h6 class="fw-bold mb-3 border-bottom pb-2">Access Group Summary</h6>
-                <div class="row g-2" id="locGroupsSummaryCards"></div>
-            </div>
-            <div id="spotManagerContainer" class="hidden">
+            </div>                    
+            
+            <div id="spotManagerContainer" class="hidden mb-4">
               <div class="d-flex justify-content-between align-items-center mb-3">
                   <h6 class="fw-bold m-0" id="spotManagerTitle">Manage Spots</h6>
                   <button class="btn btn-sm btn-outline-secondary" onclick="closeSpotManager()">← Back to Locations</button>
               </div>
               <div class="table-responsive bg-light p-2 rounded border">
-                  <table class="table table-sm table-hover bg-white m-0">
+                  <table class="table table-sm table-hover bg-white m-0 w-100">
                       <thead>
                           <tr><th>Spot / Bin Name</th><th class="text-end">Actions</th></tr>
                       </thead>
@@ -747,7 +835,11 @@
                   </table>
               </div>
             </div>
-          </div>
+            
+            <div id="locGroupsSummaryContainer" class="mt-4 mb-4 pt-3 border-top">
+                <h6 class="fw-bold text-uppercase letter-spacing-1 text-muted small mb-3">Access Group Summary</h6>
+                <div class="row g-2" id="locGroupsSummaryCards"></div>
+            </div>
         </div>
       </div>
       <div id="mLog" class="hidden">
@@ -802,74 +894,83 @@
         </div>
       </div>
       <div id="mUser" class="hidden">
-        <div class="card p-3 bg-light shadow-sm mb-4 border">
-          <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-            <h6 class="fw-bold m-0 text-primary" id="userFormTitle">Add New User</h6>
-          </div>
-          <div class="row g-3 align-items-start">
-            <div class="col-md-4">
-              <label class="small fw-bold text-muted mb-1">Full Name (Optional)</label>
-              <input type="text" id="uName" class="form-control" placeholder="e.g. Jane Doe">
-            </div>
-            <div class="col-md-4">
-              <label class="small fw-bold text-muted mb-1">Email Address (Required)</label>
-              <input type="email" id="uEmail" class="form-control" placeholder="user@domain.com">
-            </div>
-            <div class="col-md-4">
-              <label class="small fw-bold text-muted mb-1">Access Role</label>
-              <select id="uRole" class="form-select text-primary fw-bold" onchange="updateRoleDescription()">
-              </select>
-            </div>
-            
-            <div class="col-12 mt-1">
-              <div id="roleDesc" class="small text-muted px-2 py-1 bg-white rounded border hidden"></div>
-            </div>
+        <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseUserForm" aria-expanded="true">
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0" id="userFormTitle">Add New User</h6>
+            <span class="text-primary fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseUserForm" class="collapse show">
+            <div class="card p-3 bg-light shadow-sm mb-4 border">
+              <div class="row g-3 align-items-start">
+                <div class="col-md-4">
+                  <label class="small fw-bold text-muted mb-1">Full Name (Optional)</label>
+                  <input type="text" id="uName" class="form-control" placeholder="e.g. Jane Doe">
+                </div>
+                <div class="col-md-4">
+                  <label class="small fw-bold text-muted mb-1">Email Address (Required)</label>
+                  <input type="email" id="uEmail" class="form-control" placeholder="user@domain.com">
+                </div>
+                <div class="col-md-4">
+                  <label class="small fw-bold text-muted mb-1">Access Role</label>
+                  <select id="uRole" class="form-select text-primary fw-bold" onchange="updateRoleDescription()">
+                  </select>
+                </div>
+                
+                <div class="col-12 mt-1">
+                  <div id="roleDesc" class="small text-muted px-2 py-1 bg-white rounded border hidden"></div>
+                </div>
 
-            <div class="col-12 mt-2 hidden" id="uLocationsContainer">
-               <div class="border border-primary rounded p-2 bg-white shadow-sm">
-                   <label class="fw-bold small mb-2 text-primary border-bottom pb-1 d-block">Assign Locations (LBAC)</label>
-                   <div id="uLocationsList" style="max-height: 200px; overflow-y: auto;"></div>
-               </div>
+                <div class="col-12 mt-2 hidden" id="uLocationsContainer">
+                   <div class="border border-primary rounded p-2 bg-white shadow-sm">
+                       <label class="fw-bold small mb-2 text-primary border-bottom pb-1 d-block">Assign Locations (LBAC)</label>
+                       <div id="uLocationsList" style="max-height: 200px; overflow-y: auto;"></div>
+                   </div>
+                </div>
+                
+                <div class="col-12 mt-3 d-flex gap-2 justify-content-end border-top pt-3">
+                  <button class="btn btn-outline-secondary hidden px-4 fw-bold" id="btnCancelEditUser" onclick="cancelEditUser()">Cancel</button>
+                  <button class="btn btn-primary px-4 fw-bold" id="btnSaveUser" onclick="saveOrUpdateUser('add')">Add User</button>
+                </div>
+              </div>
             </div>
-            
-            <div class="col-12 mt-3 d-flex gap-2 justify-content-end border-top pt-3">
-              <button class="btn btn-outline-secondary hidden px-4 fw-bold" id="btnCancelEditUser" onclick="cancelEditUser()">Cancel</button>
-              <button class="btn btn-primary px-4 fw-bold" id="btnSaveUser" onclick="saveOrUpdateUser('add')">Add User</button>
-            </div>
-          </div>
         </div>
 
-        <div class="mb-5">
-          <h6 class="fw-bold mb-3">System Access Management</h6>
-          <div class="table-responsive bg-light p-2 rounded border w-100">
-             <table class="table table-sm table-hover bg-white m-0 w-100">
-               <thead>
-                 <tr>
-                   <th class="sortable" onclick="sortMgmt('user', 0)">Name</th>
-                   <th class="sortable" onclick="sortMgmt('user', 1)">Role</th>
-                   <th class="sortable" onclick="sortMgmt('user', 2)">Last Login</th>
-                   <th class="sortable centered-col" onclick="sortMgmt('user', 3)">Actions</th>
-                 </tr>
-               </thead>
-               <tbody id="bodyUsers"></tbody>
-             </table>
-          </div>
+        <div class="d-flex justify-content-between align-items-center mb-3 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseUserTable" aria-expanded="true">
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-secondary small m-0">System Access Management</h6>
+            <span class="text-secondary fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseUserTable" class="collapse show mb-5">
+            <div class="table-responsive bg-light p-2 rounded border w-100">
+               <table class="table table-sm table-hover bg-white m-0 w-100">
+                 <thead>
+                   <tr>
+                     <th class="sortable" onclick="sortMgmt('user', 0)">Name</th>
+                     <th class="sortable" onclick="sortMgmt('user', 1)">Role</th>
+                     <th class="sortable" onclick="sortMgmt('user', 2)">Last Login</th>
+                     <th class="sortable centered-col" onclick="sortMgmt('user', 3)">Actions</th>
+                   </tr>
+                 </thead>
+                 <tbody id="bodyUsers"></tbody>
+               </table>
+            </div>
         </div>
 
-        <div id="roleManagerContainer" class="border-top pt-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="m-0 text-primary fw-bold">Dynamic Role Manager</h5>
-            <button class="btn btn-sm btn-outline-primary fw-bold" onclick="createNewRole()">+ New Custom Role</button>
-          </div>
-          <div class="alert alert-info small py-2 mb-3 shadow-sm border-info">Check the boxes below to instantly grant or revoke capabilities across the entire system.</div>
-          <div class="table-responsive w-100 bg-white rounded border">
-            <table class="table table-sm table-bordered align-middle text-center w-100 m-0" style="font-size: 0.85rem;">
-              <thead class="table-light" id="rolesTableHeader">
-              </thead>
-              <tbody id="rolesTableBody">
-              </tbody>
-            </table>
-          </div>
+        <div class="d-flex justify-content-between align-items-center mb-3 border-top pt-4 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseRoleManager" aria-expanded="true">
+            <h6 class="fw-bold text-uppercase letter-spacing-1 text-primary small m-0">Dynamic Role Manager</h6>
+            <span class="text-primary fw-bold toggle-icon">▼</span>
+        </div>
+        <div id="collapseRoleManager" class="collapse show">
+            <div class="d-flex justify-content-end mb-3">
+              <button class="btn btn-sm btn-outline-primary fw-bold" onclick="createNewRole()">+ New Custom Role</button>
+            </div>
+            <div class="alert alert-info small py-2 mb-3 shadow-sm border-info">Check the boxes below to instantly grant or revoke capabilities across the entire system.</div>
+            <div class="table-responsive w-100 bg-white rounded border">
+              <table class="table table-sm table-bordered align-middle text-center w-100 m-0" style="font-size: 0.85rem;">
+                <thead class="table-light" id="rolesTableHeader">
+                </thead>
+                <tbody id="rolesTableBody">
+                </tbody>
+              </table>
+            </div>
         </div>
       </div>
       <div id="mTheme" class="hidden">
@@ -2366,7 +2467,7 @@ async function fetchData(callback) {
   }
   function toggleDeployLoc() {
     const type = document.getElementById('mDeployType').value;
-    document.getElementById('mDeployLoc').classList.toggle('hidden', type !== 'Mobile Kit' && type !== 'Deployable');
+    document.getElementById('mDeployLocContainer').classList.toggle('hidden', type !== 'Mobile Kit' && type !== 'Deployable');
   }
   function editLoc(name) {
     const loc = db.locations.find(l => l.locationName === name);
