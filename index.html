@@ -291,13 +291,13 @@
         <div id="collapsePhysical" class="collapse show">
             <div id="locationGridPhysical" class="dynamic-grid mb-4"></div>
         </div>        
-        <div id="deployableSection" class="hidden">
-          <div class="d-flex justify-content-between align-items-center mt-4 mb-3 border-bottom border-info pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDeployable" aria-expanded="true">
-              <h6 class="fw-bold text-info m-0">Mobile Kits</h6>
-              <span class="text-info fw-bold toggle-icon">▼</span>
-          </div>
-          <div id="collapseDeployable" class="collapse show">
-              <div id="locationGridDeployable" class="dynamic-grid"></div>
+        <div id="deployableSection" class="hidden w-100">
+          <div class="d-flex w-100 justify-content-between align-items-center mt-4 mb-3 border-bottom border-info pb-2 collapse-toggle" style="cursor:pointer;" data-bs-toggle="collapse" data-bs-target="#collapseDeployable" aria-expanded="true">
+              <h6 class="fw-bold text-info m-0">Mobile Kits</h6>
+              <span class="text-info fw-bold toggle-icon">▼</span>
+          </div>
+          <div id="collapseDeployable" class="collapse show w-100">
+              <div id="locationGridDeployable" class="dynamic-grid mb-4"></div>
           </div>
         </div>
       </div>
@@ -381,14 +381,22 @@
             <div id="detUpdate" class="meta-text border-top pt-2 mt-2"></div>
           </div>
         </div>        
-        <div class="mt-4 mb-1 small fw-bold text-muted text-uppercase">Stock Locations</div>
-        <div id="detStock" class="mb-3 d-flex flex-wrap gap-2"></div>
-        <div id="detDeployedContainer" class="hidden">
-          <div class="mb-1 small fw-bold text-muted text-uppercase">Deployed Locations</div>
-          <div id="detDeployed" class="mb-3 d-flex flex-wrap gap-2"></div>
-        </div>
-        <div id="detSerialList" class="mb-4 hidden"></div>        
-        <div id="inlineActionForm" class="mt-4 border-top pt-3 hidden">
+        <div class="mt-3 mb-1 small fw-bold text-muted text-uppercase" style="font-size: 0.7rem;">Stock Locations</div>
+        <div id="detStock" class="mb-2 d-flex flex-wrap gap-2"></div>
+        <div id="detDeployedContainer" class="hidden">
+          <div class="mt-2 mb-1 small fw-bold text-muted text-uppercase" style="font-size: 0.7rem;">Deployed Locations</div>
+          <div id="detDeployed" class="mb-2 d-flex flex-wrap gap-2"></div>
+        </div>
+        <div id="detSerialList" class="mb-2 hidden"></div>        
+        <div id="inlineActionForm" class="mt-3 hidden">
+          <ul class="nav nav-tabs mb-3" id="itemActionTabs">
+            <li class="nav-item">
+              <a class="nav-link active fw-bold py-2" id="itemTabStock" onclick="switchItemTab('stock')">Stock Actions</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold py-2" id="itemTabDeployed" onclick="switchItemTab('deployed')">Deployed Actions</a>
+            </li>
+          </ul>
           <div id="errorMsg" class="alert alert-danger py-2 px-3 small mb-3 hidden fw-bold"></div>
           <div id="successMsg" class="alert alert-success py-2 px-3 small mb-3 hidden fw-bold"></div>          
           <div class="row g-2 align-items-end mb-3">
@@ -1518,12 +1526,17 @@ async function fetchData(callback) {
   }
   let currentContextState = 'stock'; // Tracks if the user is viewing Stock or Deployed assets
 
-  function switchLocTab(tab) {
-    currentContextState = tab;
-    document.getElementById('tabStock').classList.toggle('active', tab === 'stock');
-    document.getElementById('tabDeployed').classList.toggle('active', tab === 'deployed');
-    renderItems(currentLocName);
-  }
+  function switchLocTab(tab) {
+    currentContextState = tab;
+    document.getElementById('tabStock').classList.toggle('active', tab === 'stock');
+    document.getElementById('tabDeployed').classList.toggle('active', tab === 'deployed');
+    
+    if (!document.getElementById('auditContainer').classList.contains('hidden')) {
+      startAudit(currentLocName);
+    } else {
+      renderItems(currentLocName);
+    }
+  }
 
   function getStockBalance(barcode, location = null, subLocation = null, state = 'stock') {
     let balance = 0;
@@ -2791,19 +2804,18 @@ async function fetchData(callback) {
       const displayLabel = subLoc ? `${getLocLabel(locName)} (${subLoc})` : getLocLabel(locName);
 
       if(stockQty > 0) {
-        visibleStockTotal += stockQty;
-        hStock += `<span class="badge stock-badge p-2 m-1 d-flex align-items-center" onclick="viewLoc('${safeK}', '${safeType}')">
-                <span class="me-2">${displayLabel}:</span> 
-                <span class="text-primary fs-6">${stockQty.toLocaleString('en-US')}</span>
-              </span>`;
-      }
-      if(depQty > 0) {
-        visibleDepTotal += depQty;
-        hDep += `<span class="badge stock-badge border-info p-2 m-1 d-flex align-items-center" onclick="viewLoc('${safeK}', '${safeType}')">
-                <span class="me-2 text-info">${displayLabel}:</span> 
-                <span class="text-dark fs-6">${depQty.toLocaleString('en-US')}</span>
-              </span>`;
-      }
+        visibleStockTotal += stockQty;
+        hStock += `<span class="badge stock-badge p-2 d-flex align-items-center" onclick="viewLoc('${safeK}', '${safeType}')">
+                <span class="me-2">${displayLabel}:</span> 
+                <span class="text-primary fs-6">${stockQty.toLocaleString('en-US')}</span>
+              </span>`;
+      }
+      if(depQty > 0) {
+        hDep += `<span class="badge stock-badge border-info p-2 d-flex align-items-center" onclick="viewLoc('${safeK}', '${safeType}')">
+                <span class="me-2 text-info">${displayLabel}:</span> 
+                <span class="text-dark fs-6">${depQty.toLocaleString('en-US')}</span>
+              </span>`;
+      }
     });
 
     document.getElementById('detStock').innerHTML = hStock || '<span class="text-muted small">No stock in authorized locations.</span>';
@@ -2936,15 +2948,37 @@ async function fetchData(callback) {
        notesEl.classList.add('hidden');
     }
     let hist = last ? `<b>Last Transaction:</b><br>${Math.abs(last.quantity)} ${last.quantity > 0 ? "added to" : "removed from"} ${last.quantity > 0 ? getLocLabel(last.toLoc) : getLocLabel(last.fromLoc)} on ${fmtTime(last.timestamp)}<br>By: ${getUserDisplayName(last.userEmail)}` : "No history.";
-    document.getElementById('detUpdate').innerHTML = hist;
+    document.getElementById('detUpdate').innerHTML = hist;
 
-    document.getElementById('stockActionButtons').classList.toggle('hidden', currentContextState !== 'stock');
-    document.getElementById('deployedActionButtons').classList.toggle('hidden', currentContextState === 'stock');
-    document.getElementById('actionNotesContainer').classList.add('hidden');
-    document.getElementById('actNotes').value = "";
-  }
+    switchItemTab(currentContextState);
+  }
 
-  function handleDeployClick() {
+  let currentItemContextState = 'stock';
+  function switchItemTab(tab) {
+    currentItemContextState = tab;
+    document.getElementById('itemTabStock').classList.toggle('active', tab === 'stock');
+    document.getElementById('itemTabDeployed').classList.toggle('active', tab === 'deployed');
+    
+    document.getElementById('stockActionButtons').classList.toggle('hidden', tab !== 'stock');
+    document.getElementById('deployedActionButtons').classList.toggle('hidden', tab !== 'deployed');
+    
+    document.getElementById('actionNotesContainer').classList.add('hidden');
+    document.getElementById('actNotes').value = "";
+    
+    if (tab === 'deployed') {
+        document.getElementById('toLocContainer').classList.add('hidden');
+        document.getElementById('toSubLocContainer').classList.add('hidden');
+        document.getElementById('btnReturn').innerText = 'RETURN TO STOCK';
+        document.getElementById('btnConsume').innerText = 'CONSUME / REMOVE';
+    } else {
+        document.getElementById('toLocContainer').classList.add('hidden');
+        document.getElementById('toSubLocContainer').classList.add('hidden');
+        document.getElementById('btnMove').innerText = 'MOVE';
+        document.getElementById('btnDeploy').innerText = 'DEPLOY';
+    }
+  }
+
+  function handleDeployClick() {
     const toCont = document.getElementById('toLocContainer');
     if (toCont.classList.contains('hidden')) {
       toCont.classList.remove('hidden');
