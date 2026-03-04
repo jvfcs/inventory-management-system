@@ -38,9 +38,9 @@
     }
     ::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
     * { scrollbar-width: none !important; -ms-overflow-style: none !important; box-sizing: border-box; }    
-    html { overflow-x: clip !important; -webkit-text-size-adjust: 100%; touch-action: manipulation; }
-    body { overflow-x: clip !important; width: 100%; position: relative; margin: 0; padding: 0; background-color: var(--light-bg); color: var(--light-text); padding-bottom: 50px; font-family: sans-serif; transition: background-color 0.3s ease, color 0.3s ease; -webkit-touch-callout: none; -webkit-font-smoothing: antialiased; }
-    #appContainer { width: 100%; max-width: 100vw; position: relative; }
+    html { -webkit-text-size-adjust: 100%; touch-action: manipulation; background-color: var(--light-bg); }
+    body { width: 100%; position: relative; margin: 0; padding: 0; background-color: var(--light-bg); color: var(--light-text); font-family: sans-serif; transition: background-color 0.3s ease, color 0.3s ease; -webkit-touch-callout: none; -webkit-font-smoothing: antialiased; }
+    #appContainer { width: 100%; max-width: 100%; position: relative; }
     @media screen and (max-width: 768px) {
       input.form-control, select.form-select, textarea.form-control, input[type="text"], input[type="number"], input[type="email"] { font-size: 16px !important; }
       .row { margin-left: 0 !important; margin-right: 0 !important; width: 100% !important; max-width: 100%; display: flex; flex-wrap: wrap; }
@@ -169,6 +169,7 @@
       box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
     }
     #gdprBanner.visible { transform: translateY(0); }
+    body.modal-open #gdprBanner { display: none !important; }
     .modal { z-index: 10700 !important; }
     .modal-backdrop { z-index: 10650 !important; }
     .modal { z-index: 10700 !important; }
@@ -205,7 +206,7 @@
     .collapse-toggle[aria-expanded="true"] .toggle-icon { transform: rotate(180deg); }
     .toggle-icon { display: inline-block; transition: transform 0.2s ease; }    
     #syncIndicator { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.75); color: white; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; z-index: 9999; opacity: 0; transition: opacity 0.5s; pointer-events: none; display: flex; align-items: center; gap: 8px; }
-    #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #f4f7f6; z-index: 1045; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.3s ease; }
+    #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: 100dvh; background-color: var(--light-bg); z-index: 1045; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.3s ease; }
     [data-bs-theme="dark"] #loadingOverlay { background-color: #121212; }    
     .table-warning { transition: background-color 0.3s ease; }
     [data-bs-theme="dark"] .table-warning { --bs-table-bg: rgba(255, 193, 7, 0.15); --bs-table-hover-bg: rgba(255, 193, 7, 0.25); color: var(--dark-text) !important; }
@@ -230,7 +231,7 @@
         <button class="btn btn-danger fw-bold w-100" onclick="stopCamera()">Close Camera</button>
     </div>
 </div>
-<div id="loginOverlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 1040; display: flex; align-items: center; justify-content: center;">
+<div id="loginOverlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: 100dvh; background: var(--light-bg); z-index: 1040; display: flex; align-items: center; justify-content: center;">
   <div class="card p-4 shadow-sm text-center" style="max-width: 400px; width: 90%;">
     <img id="loginLogo" src="" alt="" style="width:300px; height:300px; object-fit:contain; margin: 0 auto; opacity: 0; transition: opacity 0.5s;" class="mb-3">
     <h3 id="loginTitle" class="fw-bold text-primary mb-3">Login</h3>    
