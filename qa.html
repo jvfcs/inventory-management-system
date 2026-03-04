@@ -200,15 +200,24 @@
       if (t.currencySymbol) appCurrency = t.currencySymbol;
       if (t.defaultImgUrl) appDefaultImg = t.defaultImgUrl;
       if (t.adminContact) document.getElementById('accessDeniedMsg').innerText = `You do not have permission to view the IMS. Please contact ${t.adminContact} to request access.`;
+      const sortCats = (str) => {
+          let arr = str.split(',').map(s => s.trim()).filter(s => s);
+          arr.sort((a,b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
+          const otherIdx = arr.findIndex(x => x.toLowerCase() === 'other');
+          if (otherIdx > -1) arr.push(arr.splice(otherIdx, 1)[0]); // Move 'Other' to end
+          return arr;
+      };
+
       const mCat = document.getElementById('mCat');
       if (mCat && t.itemCategories) {
           mCat.innerHTML = '<option value="" disabled selected>Select Category</option>' + 
-              t.itemCategories.split(',').map(s => s.trim()).filter(s => s).map(c => `<option value="${c}">${c}</option>`).join('');
+              sortCats(t.itemCategories).map(c => `<option value="${c}">${c}</option>`).join('');
       }
+      
       const mLtype = document.getElementById('mLtype');
       if (mLtype && t.locationCategories) {
           mLtype.innerHTML = '<option value="" disabled selected>Select Category</option>' + 
-              t.locationCategories.split(',').map(s => s.trim()).filter(s => s).map(c => `<option value="${c}">${c}</option>`).join('');
+              sortCats(t.locationCategories).map(c => `<option value="${c}">${c}</option>`).join('');
       }
       if (t.googleClientId) {
           const googleDiv = document.getElementById('g_id_onload');
