@@ -664,20 +664,25 @@
       <section id="roles" class="doc-section">
         <h2>Roles &amp; Permissions (Dynamic RBAC)</h2>        
         <div class="callout border-danger mb-4">
-          <strong class="text-danger">⚠️ The "First Login" Security Trap (Admin Bootstrapping)</strong><br>
-          <span class="text-muted small">When you deploy a brand-new, completely blank database, <strong>the very first Google account to log into the app is permanently and automatically granted the Admin role.</strong> Do not share your live URL with employees or testers until you have successfully logged in yourself to claim the Admin seat!</span>
-        </div>
         <p>IMS utilizes a <strong>Dynamic Role-Based Access Control (RBAC)</strong> engine. Instead of hardcoding permissions, Admins can create unlimited custom roles and instantly modify their capabilities using the visual matrix in the Users tab.</p>
         <img src="docs/rolemanager.png" class="doc-screenshot w-100" alt="Role Manager Matrix">
         
-        <h3 class="mt-4">The Admin Safety Net</h3>
-        <p>To prevent accidental system lockouts, the core <strong>Admin</strong> role is hardcoded with a permanent safety net.</p>
+        <h3 class="mt-4">The Admin Safety Net & Self-Editing Lockout</h3>
+        <p>To prevent accidental system lockouts and privilege escalation, the core <strong>Admin</strong> role is hardcoded with a permanent safety net, backed by API-level enforcements.</p>
         <ul>
           <li>The Admin role cannot have its permissions unchecked in the matrix.</li>
           <li>Only the core Admin can assign the Admin role to another user.</li>
           <li>Only the core Admin can disable or demote another Admin.</li>
+          <li><strong>Self-Editing Lockout:</strong> No user (not even an Admin) can edit their own role's permission matrix. This prevents rogue users from granting themselves unauthorized access.</li>
         </ul>
         
+        <h3 class="mt-4">Manage Users vs. Manage Roles</h3>
+        <p>For strict enterprise compliance, assigning users to locations is completely separated from defining what those users can do.</p>
+        <ul>
+            <li><strong>Manage Users:</strong> Allows a user to add/disable employees and assign them to existing roles and existing LBAC groups. (Perfect for HR or Warehouse Managers).</li>
+            <li><strong>Manage Roles:</strong> Allows a user to fundamentally alter the security matrix, granting or revoking system-wide capabilities like "Export Data" or "Perform Transactions". (Should be restricted to IT/System Admins).</li>
+        </ul>
+
         <h3 class="mt-4">Global Access vs. LBAC</h3>
         <p>In the Role Matrix, the very first checkbox is <strong>Global Access</strong>. If this is checked, the user bypasses all location restrictions and can see/manage the entire company's inventory. If this is unchecked, the user is subject to Location-Based Access Control (LBAC) and must be explicitly assigned to specific locations or groups by an Admin.</p>
       </section>
@@ -922,6 +927,7 @@
           <li><strong>Default 'No Image' Graphic:</strong> If an item doesn't have a photo, the app generates a gray "No Image" box. You can replace that with a custom branded placeholder by pasting an image URL here.</li>
           <li><strong>Google Client ID &amp; Drive Folder ID:</strong> The critical connection strings required for Google Login and Image Uploads.</li>
           <li><strong>Sync Interval:</strong> How often the Background Sync Engine silently pings the database (in seconds). Default is 15.</li>
+          <li><strong>Idle Timeout (Minutes):</strong> A security feature that automatically wipes the user's session and kicks them back to the login screen if no mouse movement, scrolling, or typing is detected for X minutes. Set to 0 to disable.</li>
           <li><strong>Light Mode / Dark Mode Palettes:</strong> Define Primary Brand Colors, Background Colors, Card Colors, and Text Colors for both display modes. When a user toggles the sun/moon icon, the app repaints itself instantly using these rules.</li>
         </ul>
       </section>
@@ -1011,12 +1017,20 @@
         </ol>
       </section>
       <section id="deploy-script" class="doc-section">
-        <h2>Deployment Step 5: API Setup</h2>
-        <p>Now we attach the API logic to serve the data and the vault.</p>
+        <h2>Deployment Step 5: API Setup & External Auth</h2>
+        <p>Now we attach the API logic to serve the data. Because this system uses enterprise-grade cryptographic token verification, <strong>you must explicitly grant Google Apps Script permission to talk to Google's external OAuth servers.</strong></p>
         <ol>
           <li>In Apps Script, click on the <code>Code.gs</code> file on the left sidebar. Erase the default text.</li>
           <li>Open the <code>Code.gs</code> file that was provided to you, copy all of the text, and paste it into the editor.</li>
           <li>Click the 💾 <strong>Save</strong> icon.</li>
+          <li><strong>AUTHORIZE EXTERNAL REQUESTS (CRITICAL STEP):</strong> 
+            <ul>
+                <li>Scroll to the very bottom of the code and temporarily paste this code: <br><code>function forceAuth() { UrlFetchApp.fetch("https://google.com"); }</code></li>
+                <li>At the top toolbar of the editor, click the dropdown next to "Debug", select <strong>forceAuth</strong>, and click <strong>Run</strong>.</li>
+                <li>A popup will say "Authorization Required". Click <strong>Review Permissions</strong> &gt; Select your account &gt; Click <strong>Advanced</strong> &gt; Click <strong>Go to project (unsafe)</strong> &gt; Click <strong>Allow</strong>.</li>
+                <li>Your script is now legally allowed to verify login tokens! <i>(You can now delete the temporary forceAuth function and save again).</i></li>
+            </ul>
+          </li>
           <li>In the top right corner, click the blue <strong>Deploy</strong> button, then select <strong>New deployment</strong>.</li>
           <li>Click the gear icon next to "Select type" and choose <strong>Web App</strong>.</li>
           <li>Fill out the form:
@@ -1026,7 +1040,7 @@
               <li><strong>Who has access:</strong> Anyone</li>
             </ul>
           </li>
-          <li>Click <strong>Deploy</strong>. You will be asked to Authorize Access. Click "Review Permissions", select your Google account, click "Advanced" at the bottom, and click "Go to project (unsafe)". Allow the permissions.</li>
+          <li>Click <strong>Deploy</strong>.</li>
           <li>Once finished, it will give you a <strong>Web App URL</strong> (it starts with <code>https://script.google.com/macros/s/...</code>).<br>
             <span class="text-danger fw-bold">CRITICAL:</span> Ensure the URL you copy ends in <code>/exec</code>. Copy this URL to your notepad!
           </li>
@@ -1087,33 +1101,26 @@
       </section>
       <section id="it-compliance" class="doc-section mb-5">
         <h2>IT Compliance &amp; Data Integrity</h2>
-        <p><i>Target Audience: Infrastructure / IT Administrators</i></p>
-        <p>For organizations undergoing internal audits or strict compliance reviews, the IMS architecture is designed to enforce an <strong>Immutable Ledger</strong>. However, this is only legally valid if the underlying Google Workspace infrastructure is secured correctly.</p>
+        <p><i>Target Audience: Infrastructure / IT Administrators & Compliance Auditors</i></p>
+        <p>For organizations undergoing SOC-2 internal audits or strict compliance reviews, the IMS architecture is designed with multiple layers of enterprise security. </p>
         
-        <h3>1. Securing the Underlying Database (Crucial)</h3>
-        <p>The Google Sheet acts as the raw database. <strong>Do not give IMS App Admins "Editor" access to the Google Sheet.</strong></p>
-        <ul>
-          <li>The Google Apps Script is deployed to "Execute as: Me" (The IT Root Owner). This means the Web App inherently has permission to write to the database, even if the user logging into the frontend does not.</li>
-          <li>To preserve strict immutability, the Google Sheet should only be shared with standard Admins as <strong>Viewers</strong>, or not shared with them at all. If a standard Admin has "Editor" access to the Google Sheet, they can bypass the Web App, open the sheet, and manually delete rows from the <code>SystemAudit</code> or <code>Log</code> tabs, defeating the entire security model.</li>
-        </ul>
+        <h3>1. Cryptographic Identity Verification (Anti-Spoofing)</h3>
+        <p>The backend API operates on a Zero-Trust model. The frontend does not simply pass an email address to request data. Instead, it passes the raw, encrypted JSON Web Token (JWT) generated by Google upon login. On every single API request, the backend independently pings Google's OAuth 2.0 servers to mathematically verify the cryptographic signature of the token before executing any database reads or writes.</p>
         
+        <h3>2. Concurrency Locks (Double-Spend Protection)</h3>
+        <p>To prevent database corruption resulting from asynchronous race conditions (e.g., two warehouse workers clicking "Deploy" on the exact same item at the exact same millisecond), the API utilizes Google's <code>LockService</code>.  All write-actions are forced into a single-file queue. If a transaction is actively writing to the database, subsequent requests are paused for up to 10 seconds to read the newly updated stock levels before proceeding.</p>
+
+        <h3>3. XSS (Cross-Site Scripting) Sanitization</h3>
+        <p>To prevent malicious payload execution, all user-generated text inputs (Item Notes, Descriptions, Location Names, and Spot names) are passed through a strict client-side HTML sanitizer before being injected into the DOM. This neutralizes executable tags (<code>&lt;script&gt;</code>, <code>&lt;iframe&gt;</code>) while preserving safe string data.</p>
+
+        <h3>4. Securing the Underlying Database (Crucial)</h3>
+        <p>The Google Sheet acts as the raw database. <strong>Do not give IMS App Admins "Editor" access to the Google Sheet.</strong> To preserve the strict immutability of the SysLog and Transaction Logs, the Google Sheet should only be shared with standard Admins as <strong>Viewers</strong>. The Web App operates via a Service Account ("Execute as: Me"), granting it write-access without requiring the user to have native Google Drive write-access.</p>
         
-        <h3>2. Disaster Recovery &amp; Rollbacks</h3>
-        <p>Because the database is a Google Sheet, you have access to enterprise-grade disaster recovery built-in. If a rogue IT Admin accidentally deletes a column or mass-deletes rows, the system will break. You can instantly restore the system without data loss:</p>
-        <ul>
-          <li>Open the Google Sheet.</li>
-          <li>Click <strong>File &gt; Version history &gt; See version history</strong>.</li>
-          <li>Select a timestamp from before the corruption occurred and click <strong>Restore this version</strong>. The Web App will immediately return to normal operation.</li>
-        </ul>
+        <h3>5. Disaster Recovery &amp; Rollbacks</h3>
+        <p>Because the database is a Google Sheet, you have access to enterprise-grade disaster recovery built-in. If a rogue IT Admin accidentally mass-deletes rows, open the Google Sheet, click <strong>File &gt; Version history &gt; See version history</strong>, and restore the document to the exact second before the corruption occurred.</p>
         
-        <h3>3. Dynamic Code Injection &amp; Obfuscation</h3>
-        <p>The IMS utilizes a zero-trust front-end architecture. If a user views the source code of the public URL, they will only see a lightweight shell containing the login button.</p>
-        <ul>
-          <li>Proprietary logic, API structures, internal layouts, and operational workflows are securely stored on Google servers inside <code>payload.html</code>.</li>
-        <li>The payload is <strong>only injected into the browser's memory</strong> if the user passes strict backend Google OAuth authentication.</li>
-        <li>This ensures malicious actors cannot scrape, reverse-engineer, or map out the internal capabilities of your inventory system prior to authentication.</li>
-        </ul>
-        
+        <h3>6. Dynamic Code Injection &amp; Obfuscation</h3>
+        <p>The IMS utilizes a zero-trust front-end architecture. If a user views the source code of the public URL, they will only see a lightweight shell containing the login button. Proprietary operational workflows and API structures are securely stored on Google servers and are <strong>only injected into the browser's memory</strong> if the user passes the JWT authentication.</p>
       </section>
 
       <section id="mistakes" class="doc-section">
@@ -1153,6 +1160,12 @@
           <li>Did you deploy the Apps Script as a "Web App"?</li>
           <li>Is the access level set to "Anyone"?</li>
           <li>Does the URL you pasted into <code>index.html</code> end in <code>/exec</code>? (If it ends in <code>/dev</code>, it will fail for everyone except you).</li>
+        </ul>
+        <h3 class="text-danger mt-4">I'm stuck in an infinite Login Loop / "Session Expired" immediately.</h3>
+        <p>If you successfully sign in with Google, see the loading spinner, but are immediately kicked back to the login screen, your backend API is failing to verify the token.</p>
+        <ul>
+          <li><strong>The UrlFetchApp Error:</strong> The most common cause is that you forgot Step 4 in the API Setup. The Google Apps Script does not have permission to ping the external internet to verify the token. You must create the `forceAuth()` function, run it in the editor, and accept the "External Request" permissions.</li>
+          <li><strong>1-Hour Expiry:</strong> Google cryptographic tokens expire exactly 60 minutes after generation. If you leave the app open in a background tab overnight, your next click will gracefully boot you to the login screen to refresh your token.</li>
         </ul>
         <h3 class="text-danger mt-4">The Google Login button isn't appearing!</h3>
         <p>If the login screen appears but the actual "Sign in with Google" button is missing, your web browser is blocking the script.</p>
