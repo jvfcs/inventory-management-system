@@ -117,7 +117,7 @@
     const response = await fetch(GAS_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: actionName, userEmail: email || 'public', ...payloadData })
+      body: JSON.stringify({ action: actionName, userEmail: email || 'public', userToken: localStorage.getItem('ims_google_token'), ...payloadData })
     });
     const result = await response.json();
     if (result.error) throw new Error(result.error);
@@ -135,6 +135,22 @@
     localStorage.removeItem('ims_google_token');
     window.location.reload(); 
   }
+  // --- ENTERPRISE IDLE TIMEOUT (15 Minutes) ---
+  let idleTimer;
+  function resetIdleTimer() {
+      clearTimeout(idleTimer);
+      // Only run the timer if the user is actively logged in
+      if (localStorage.getItem('ims_google_token')) {
+          idleTimer = setTimeout(() => {
+              alert("Session expired due to inactivity.");
+              signOut();
+          }, 15 * 60 * 1000); // 15 mins = 900,000 ms
+      }
+  }
+  // Listen for human activity across the entire window
+  ['mousemove', 'keydown', 'scroll', 'touchstart', 'click'].forEach(evt => 
+      document.addEventListener(evt, resetIdleTimer, true)
+  );
   async function bootApp(email) {
     document.getElementById('loginOverlay').classList.add('hidden');
     document.getElementById('loadingOverlay').classList.remove('hidden');
