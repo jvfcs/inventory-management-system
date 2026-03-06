@@ -73,9 +73,9 @@
   var GAS_URL = "https://script.google.com/macros/s/AKfycbx7r4PBcx6DubiITzGqB1NAGI_JVy041Kp5MU7u6zxhI51MB_xl9x34TLI0yYuk0xb_3g/exec";
   document.addEventListener("DOMContentLoaded", function() {
     apiCall('getTemplateConfig').then(tConfig => {
-        db.template = tConfig;
-        applyTemplateVars(tConfig);
-    }).catch(e => console.error("🔥 TRUE BACKEND ERROR:", e.message));
+        db.template = tConfig;
+        applyTemplateVars(tConfig);
+    }).catch(e => console.error("🔥 TRUE BACKEND ERROR:", e.message));
     const savedEmail = localStorage.getItem('ims_user_email');
     if (savedEmail) {
         bootApp(savedEmail);
@@ -146,13 +146,17 @@
       apiCall('heartbeat').then(() => localStorage.setItem('ims_last_heartbeat', today)).catch(e => console.warn("Telemetry ping failed."));
     }
     try {
-      const [payloadHtml, initialData] = await Promise.all([
+      const [encryptedPayload, initialData] = await Promise.all([
          apiCall('getSecureApp'),
          apiCall('getInitialData')
       ]);
       window._PRELOADED_DB = initialData; 
+
+      // Phase 2: Intercept and Decrypt using the Proxy URL as the Master Key
+      const decryptedHtml = decryptPayloadBytes(encryptedPayload, GAS_URL);
+
       const temp = document.createElement('div');
-      temp.innerHTML = payloadHtml;
+      temp.innerHTML = decryptedHtml;
       const styles = temp.querySelectorAll('style');
       styles.forEach(s => document.head.appendChild(s));
       const scripts = temp.querySelectorAll('script');
@@ -179,6 +183,17 @@
       document.getElementById('accessDenied').classList.remove('hidden');
       document.getElementById('deniedEmail').innerText = err.message;
     }
+  }
+  function decryptPayloadBytes(base64Str, key) {
+      const binaryStr = atob(base64Str);
+      const keyBytes = new TextEncoder().encode(key);
+      const decryptedBytes = new Uint8Array(binaryStr.length);
+      
+      for (let i = 0; i < binaryStr.length; i++) {
+          decryptedBytes[i] = binaryStr.charCodeAt(i) ^ keyBytes[i % keyBytes.length];
+      }
+      
+      return new TextDecoder().decode(decryptedBytes);
   }
   function applyTemplateVars(t) {
       if (t.appTitle) {
