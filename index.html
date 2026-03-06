@@ -4,7 +4,7 @@
   <base target="_top">
   <title>IMS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#2c3e50">  
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
@@ -28,15 +28,26 @@
     .bg-primary, .btn-primary { background-color: var(--brand-color) !important; border-color: var(--brand-color) !important; color: #fff !important; }
     .btn-outline-primary { color: var(--brand-color) !important; border-color: var(--brand-color) !important; }
     #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--light-bg); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.3s ease; }
-    [data-bs-theme="dark"] #loadingOverlay { background-color: var(--dark-bg); }    
+    [data-bs-theme="dark"] #loadingOverlay { background-color: var(--dark-bg); }
     #gdprBanner { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10500; background: var(--light-bg); border-top: 1px solid rgba(0,0,0,0.1); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-    [data-bs-theme="dark"] #gdprBanner { background: var(--dark-bg); border-top: 1px solid rgba(255,255,255,0.1); }
+    [data-bs-theme="dark"] #gdprBanner { background: var(--dark-bg); border-top: 1px solid rgba(255,255,255,0.1); box-shadow: 0 -4px 15px rgba(0,0,0,0.3); }
     #gdprBanner.visible { transform: translateY(0); }
+    [data-bs-theme="dark"] .gdpr-text { color: var(--dark-text) !important; }
+    @keyframes pulseAlert { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    .animation-pulse { animation: pulseAlert 2s infinite; }
     .modal-backdrop { z-index: 10550 !important; }
     .modal { z-index: 10600 !important; }
   </style>
 </head>
 <body>
+<div id="idleWarningOverlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10700; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px);">
+  <div class="card p-4 shadow-lg text-center" style="max-width: 400px; width: 90%; background: var(--light-card); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;">
+    <div class="mb-2" style="font-size: 3.5rem; line-height: 1;">⏳</div>
+    <h4 class="fw-bold mb-3 text-primary">Inactivity Warning</h4>
+    <p id="idleWarningText" class="mb-4 text-muted" style="font-size: 1rem;"></p>
+    <button id="extendSessionBtn" class="btn btn-primary fw-bold w-100 py-3 fs-5" onclick="extendSession()">I'm still here</button>
+  </div>
+</div>
 <div id="loginOverlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--light-bg); z-index: 10000; display: flex; align-items: center; justify-content: center;">
   <div class="card p-4 shadow-sm text-center" style="max-width: 400px; width: 90%; background: var(--light-card); min-height: 400px; display: flex; flex-direction: column; justify-content: center;">    
     <div id="loginSpinner">
@@ -47,9 +58,8 @@
       <img id="loginLogo" src="" alt="" style="width:300px; height:300px; object-fit:contain; margin: 0 auto; opacity: 0; transition: opacity 0.5s;" class="mb-3">
       <h3 id="loginTitle" class="fw-bold text-primary mb-3">Login</h3> 
       <p id="loginMessage" class="text-muted small mb-4 hidden"></p>       
-      <div id="g_id_onload" data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
       <div class="d-flex justify-content-center" style="min-height: 44px;">
-          <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="sign_in_with" data-size="large" data-logo_alignment="left"></div>
+          <div id="googleSignInBtn"></div>
       </div>
     </div>
   </div>
@@ -64,49 +74,32 @@
     <h2 class="text-danger fw-bold mb-3">Access Denied</h2>
     <p class="text-muted" id="accessDeniedMsg">You do not have permission to view the IMS. Please contact an administrator to request access.</p>
     <p id="deniedEmail" class="fw-bold mt-3 mb-4 text-secondary"></p>
-    
     <div class="border-top pt-4">
         <p class="small text-muted mb-2">Logged in with the wrong account?</p>
         <button class="btn btn-outline-primary fw-bold w-100" onclick="signOut()">Sign In Again</button>
     </div>
   </div>
 </div>
-<div id="gdprBanner" class="p-3">
-  <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-    <div style="font-size: 0.85rem;" class="text-md-start text-center text-muted gdpr-text">
-      <strong>We value your privacy.</strong> This system uses essential browser storage and Google authentication tokens to maintain your session, enforce security roles, and save your theme preferences. We do not track you across the web or sell your data. By continuing to use this application, you consent to our <a href="#" onclick="showLegalModal(event)" style="color: var(--brand-color); font-weight: bold; text-decoration: none;">Privacy Policy & Terms</a>.
-    </div>
-    <button class="btn btn-sm text-white fw-bold text-nowrap px-4" style="background-color: var(--brand-color);" onclick="acceptGDPR()">I Understand & Accept</button>
-  </div>
-</div>
-<div class="modal fade" id="legalModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg">
-    <div class="modal-content bg-white" style="border-radius: 12px;">
-      <div class="modal-header border-bottom">
-        <h5 class="modal-title fw-bold text-primary">Terms & Privacy Policy</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-dark" style="font-size: 0.85rem; line-height: 1.6;" id="legalModalBody"></div>
-      <div class="modal-footer border-top bg-light">
-        <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+<div id="legalContainer"></div>
 <div id="secureAppContainer"></div>
 <script>
-  // Global Shared Variables
   var db = { template: {} };
   var appCurrency = "$";
   var appDefaultImg = "";
-  var appIdleTimeout = 15; // Default 15 minutes
+  var appIdleTimeout = 15;
   var GAS_URL = "https://script.google.com/macros/s/AKfycbxRM7pblum2TVubgCvVQBRWF6FWKkHhtT-2pJuA8kCueVGo8izlXv6BCbNOQPzOH9PqCA/exec";
   document.addEventListener("DOMContentLoaded", function() {
-    checkGDPR();
     apiCall('getTemplateConfig').then(tConfig => {
         db.template = tConfig;
         applyTemplateVars(tConfig);
-    }).catch(e => console.warn("Failed to load pre-boot template."));
+    }).catch(e => {
+        console.error("🔥 CONFIG ERROR:", e.message);
+        document.getElementById('loginOverlay').classList.add('hidden');
+        document.getElementById('loadingOverlay').classList.add('hidden');
+        document.getElementById('accessDenied').classList.remove('hidden');
+        document.getElementById('accessDeniedMsg').innerText = "System Configuration Error";
+        document.getElementById('deniedEmail').innerText = e.message;
+    });
     const savedEmail = localStorage.getItem('ims_user_email');
     if (savedEmail) {
         bootApp(savedEmail);
@@ -129,7 +122,6 @@
     const result = await response.json();
     if (result.error) {
         if (result.error === "SESSION_EXPIRED") {
-            // Google's 1-hour token expired. Quietly log them out so they can click the button again.
             localStorage.removeItem('ims_google_token');
             localStorage.removeItem('ims_user_email');
             window.location.reload();
@@ -151,20 +143,54 @@
     localStorage.removeItem('ims_google_token');
     window.location.reload(); 
   }
-  // --- ENTERPRISE IDLE TIMEOUT ---
-  let idleTimer;
+  let idleWarningTimer;
+  let countdownInterval;
+  let isIdleWarningActive = false;
+  function extendSession() {
+      isIdleWarningActive = false;
+      const overlay = document.getElementById('idleWarningOverlay');
+      if (overlay) overlay.classList.add('hidden');
+      resetIdleTimer(); // Manually restart the background timers
+  }
   function resetIdleTimer() {
-      clearTimeout(idleTimer);
-      if (localStorage.getItem('ims_google_token')) {
-          if (appIdleTimeout > 0) { // 0 means disabled
-              idleTimer = setTimeout(() => {
-                  alert("Session expired due to inactivity.");
-                  signOut();
-              }, appIdleTimeout * 60 * 1000); 
-          }
+      if (isIdleWarningActive) return;
+      clearTimeout(idleWarningTimer);
+      clearInterval(countdownInterval);
+      if (localStorage.getItem('ims_google_token') && appIdleTimeout > 0) {
+          let totalMs = appIdleTimeout * 60 * 1000;
+          let warningMs = Math.min(2 * 60 * 1000, totalMs / 2); 
+          let idleTimeBeforeWarning = totalMs - warningMs;
+          idleWarningTimer = setTimeout(() => {
+              showIdleWarning(warningMs, idleTimeBeforeWarning);
+          }, idleTimeBeforeWarning);
       }
   }
-  // Listen for human activity across the entire window
+  function showIdleWarning(warningMs, idleTimeBeforeWarning) {
+      isIdleWarningActive = true;
+      const overlay = document.getElementById('idleWarningOverlay');
+      if (overlay) overlay.classList.remove('hidden');
+      let timeLeft = Math.floor(warningMs / 1000);
+      let idleMinutes = Math.floor(idleTimeBeforeWarning / 60000);
+      if (idleMinutes < 1) idleMinutes = 1;
+      const textEl = document.getElementById('idleWarningText');
+      const updateText = () => {
+          let min = Math.floor(timeLeft / 60);
+          let sec = Math.floor(timeLeft % 60).toString().padStart(2, '0');
+          if (textEl) {
+              textEl.innerHTML = `You have been idle for over ${idleMinutes} minute${idleMinutes !== 1 ? 's' : ''}.<br><br>Your session will expire in <br><span class="text-danger fw-bold mt-2 d-block" style="font-size: 3rem;">${min}:${sec}</span>`;
+          }
+      };
+      updateText();
+      countdownInterval = setInterval(() => {
+          timeLeft--;
+          if (timeLeft <= 0) {
+              clearInterval(countdownInterval);
+              signOut(); // Time ran out, log them out
+          } else {
+              updateText();
+          }
+      }, 1000);
+  }
   ['mousemove', 'keydown', 'scroll', 'touchstart', 'click'].forEach(evt => 
       document.addEventListener(evt, resetIdleTimer, true)
   );
@@ -172,23 +198,40 @@
     document.getElementById('loginOverlay').classList.add('hidden');
     document.getElementById('loadingOverlay').classList.remove('hidden');
     document.getElementById('loadingOverlay').style.opacity = '1';
+    const lastHeartbeat = localStorage.getItem('ims_last_heartbeat');
+    const today = new Date().toDateString();
+    if (lastHeartbeat !== today) {
+      apiCall('heartbeat').then(() => localStorage.setItem('ims_last_heartbeat', today)).catch(e => console.warn("Telemetry ping failed."));
+    }
     try {
-      const [payloadHtml, initialData] = await Promise.all([
+      const [encryptedPayload, initialData] = await Promise.all([
          apiCall('getSecureApp'),
          apiCall('getInitialData')
       ]);
-      window._PRELOADED_DB = initialData; 
+      window._PRELOADED_DB = initialData;
+      const scriptIdMatch = GAS_URL.match(/\/s\/([a-zA-Z0-9_-]+)/);
+      const masterKey = scriptIdMatch ? scriptIdMatch[1] : GAS_URL;
+      const decryptedHtml = decryptPayloadBytes(encryptedPayload, masterKey);
       const temp = document.createElement('div');
-      temp.innerHTML = payloadHtml;
+      temp.innerHTML = decryptedHtml;
       const styles = temp.querySelectorAll('style');
       styles.forEach(s => document.head.appendChild(s));
       const scripts = temp.querySelectorAll('script');
       scripts.forEach(s => s.remove());
       document.getElementById('secureAppContainer').innerHTML = temp.innerHTML;
-      scripts.forEach(script => {
+      scripts.forEach((script) => {
         const newScript = document.createElement('script');
-        newScript.textContent = script.textContent;
-        document.body.appendChild(newScript);
+        newScript.text = script.text;
+        try {
+          document.body.appendChild(newScript);
+        } catch (e) {
+          console.error("🔥 JAVASCRIPT SYNTAX ERROR IN MOTHERSHIP PAYLOAD 🔥");
+          console.error("The browser refused to execute the payload because of a typo.");
+          console.error(e);
+          console.log("------- COPY THE CODE BELOW TO FIND THE TYPO -------");
+          console.log(script.text);
+          document.getElementById('loadingOverlay').classList.add('hidden');
+        }
       });
     } catch (err) {
       document.getElementById('loadingOverlay').classList.add('hidden');
@@ -196,28 +239,40 @@
       document.getElementById('deniedEmail').innerText = err.message;
     }
   }
-  function applyTemplateVars(t) {
-      if (t.appTitle) {
-          document.title = t.appTitle;
-          const tText = document.getElementById('appTitleText');
-          if (tText) tText.innerText = t.appTitle;
+  function decryptPayloadBytes(base64Str, key) {
+      const binaryStr = atob(base64Str);
+      const keyBytes = new TextEncoder().encode(key);
+      const decryptedBytes = new Uint8Array(binaryStr.length);
+      for (let i = 0; i < binaryStr.length; i++) {
+          decryptedBytes[i] = binaryStr.charCodeAt(i) ^ keyBytes[i % keyBytes.length];
       }
-      const useShort = (t.loginUseShortName && t.loginUseShortName.toLowerCase() === 'yes');
-      const loginStr = (useShort && t.appShortName) ? t.appShortName : (t.appTitle || "IMS");
+      return new TextDecoder().decode(decryptedBytes);
+  }
+  function applyTemplateVars(t) {
+      const appTitle = t.appTitle || "IMS";
+      document.title = appTitle;
+      const tText = document.getElementById('appTitleText');
+      if (tText) tText.innerText = appTitle;
+      const useShort = ((t.loginUseShortName || "")).toLowerCase() === 'yes';
+      const shortName = t.appShortName;
+      const loginStr = (useShort && shortName) ? shortName : appTitle;
       document.getElementById('loginTitle').innerText = loginStr + " Login";
       const loginMsgEl = document.getElementById('loginMessage');
       if (t.loginMessage && t.loginMessage.trim() !== "") {
           loginMsgEl.innerText = t.loginMessage;
           loginMsgEl.classList.remove('hidden');
+      } else {
+          loginMsgEl.classList.add('hidden');
       }
-      if (t.logoUrl) {
+      const logoUrl = t.logoUrl;
+      if (logoUrl) {
           ['loginLogo', 'loadLogo', 'appLogo'].forEach(id => {
               const el = document.getElementById(id);
-              if(el) { el.src = t.logoUrl; el.onload = () => el.style.opacity = '1'; }
+              if(el) { el.src = logoUrl; el.onload = () => el.style.opacity = '1'; }
           });
           let link = document.querySelector("link[rel~='icon']");
           if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
-          link.href = t.logoUrl;
+          link.href = logoUrl;
       }
       if (t.lightTheme) document.documentElement.style.setProperty('--light-theme', t.lightTheme);
       if (t.darkTheme) document.documentElement.style.setProperty('--dark-theme', t.darkTheme);
@@ -230,90 +285,86 @@
       if (t.darkBg) document.documentElement.style.setProperty('--dark-bg', t.darkBg);
       if (t.darkCard) document.documentElement.style.setProperty('--dark-card', t.darkCard);
       if (t.darkText) document.documentElement.style.setProperty('--dark-text', t.darkText);
-      if (t.currencySymbol) appCurrency = t.currencySymbol;
-      if (t.defaultImgUrl) appDefaultImg = t.defaultImgUrl;
-      if (t.idleTimeout !== undefined) appIdleTimeout = parseInt(t.idleTimeout);
-      if (t.adminContact) document.getElementById('accessDeniedMsg').innerText = `You do not have permission to view the IMS. Please contact ${t.adminContact} to request access.`;
+      appCurrency = t.currencySymbol || "$";
+      appDefaultImg = t.defaultImgUrl || "";
+      appIdleTimeout = parseInt(t.idleTimeout) || 15;
+      const adminContact = t.adminContact || t._repEmail;
+      if (adminContact) {
+          const deniedMsg = document.getElementById('accessDeniedMsg');
+          if (deniedMsg) deniedMsg.innerText = `You do not have permission to view the IMS. Please contact ${adminContact} to request access.`;
+      }
       const sortCats = (str) => {
           let arr = str.split(',').map(s => s.trim()).filter(s => s);
           arr.sort((a,b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
           const otherIdx = arr.findIndex(x => x.toLowerCase() === 'other');
-          if (otherIdx > -1) arr.push(arr.splice(otherIdx, 1)[0]); // Move 'Other' to end
+          if (otherIdx > -1) arr.push(arr.splice(otherIdx, 1)[0]); 
           return arr;
       };
-
       const mCat = document.getElementById('mCat');
       if (mCat && t.itemCategories) {
           mCat.innerHTML = '<option value="" disabled selected>Select Category</option>' + 
               sortCats(t.itemCategories).map(c => `<option value="${c}">${c}</option>`).join('');
       }
-      
       const mLtype = document.getElementById('mLtype');
       if (mLtype && t.locationCategories) {
           mLtype.innerHTML = '<option value="" disabled selected>Select Category</option>' + 
               sortCats(t.locationCategories).map(c => `<option value="${c}">${c}</option>`).join('');
       }
       if (t.googleClientId) {
-          const googleDiv = document.getElementById('g_id_onload');
-          googleDiv.setAttribute('data-client_id', t.googleClientId);
           if (window.google && window.google.accounts) {
               window.google.accounts.id.initialize({ client_id: t.googleClientId, callback: handleCredentialResponse });
-              window.google.accounts.id.renderButton(document.querySelector('.g_id_signin'), { theme: "outline", size: "large", type: "standard", shape: "rectangular", logo_alignment: "left" });
+              window.google.accounts.id.renderButton(document.getElementById('googleSignInBtn'), { theme: "outline", size: "large", type: "standard", shape: "rectangular", logo_alignment: "left" });
           }
       }
-      document.getElementById('loginSpinner').classList.add('hidden');
-      document.getElementById('loginContent').classList.remove('hidden');
+      const footerEl = document.getElementById('appFooterText');
+      if (footerEl && t.footerText) footerEl.innerText = t.footerText;
+      if (t.legalSystemHtml) {
+          document.getElementById('legalContainer').innerHTML = t.legalSystemHtml;
+          checkGDPR();
+      }
+      const spin = document.getElementById('loginSpinner');
+      if (spin) spin.classList.add('hidden');
+      const lCont = document.getElementById('loginContent');
+      if (lCont) lCont.classList.remove('hidden');
   }
   function checkGDPR() {
     if (!localStorage.getItem('ims_gdpr_consent')) {
-      setTimeout(() => { document.getElementById('gdprBanner').classList.add('visible'); }, 1000);
+      setTimeout(() => { 
+          const banner = document.getElementById('gdprBanner');
+          if(banner) banner.classList.add('visible'); 
+      }, 1000);
     }
   }
   function acceptGDPR() {
     localStorage.setItem('ims_gdpr_consent', 'true');
-    document.getElementById('gdprBanner').classList.remove('visible');
+    const banner = document.getElementById('gdprBanner');
+    if(banner) banner.classList.remove('visible');
   }
   function showLegalModal(e) {
       if (e) e.preventDefault();      
-      const t = db.template || {};
-      const company = t.companyName || "The Company";
-      const dev = t.developerName || "Jack Vu";
-      const appName = t.appTitle || "Inventory Management System";
-      const contact = t.adminContact || "your system administrator";
-      const contactLink = t.adminContact ? `mailto:${t.adminContact}` : '#';
-      document.getElementById('legalModalBody').innerHTML = `
-        <h6 class="fw-bold" style="color: var(--brand-color);">1. Introduction & Acceptance</h6>
-        <p>This Privacy Policy and Terms of Service govern the use of the ${appName} ("The Application"). By accessing, authenticating, or utilizing this system, you ("The User") agree to be bound by these terms in full. If you do not agree to these terms, you must exit The Application immediately.</p>
-        <h6 class="fw-bold mt-4" style="color: var(--brand-color);">2. Intellectual Property & Ownership</h6>
-        <p>The Application was independently architected, engineered, and developed by <span class="fw-bold">${dev}</span> on personal time. It utilizes open-source UI frameworks (GitHub Pages) and Google Workspace APIs (Apps Script, Sheets, Drive). While the inventory data processed within The Application is the exclusive property of <span class="fw-bold">${company}</span>, the underlying architecture, logic, source code, and design patterns of The Application remain the sole intellectual property of <span class="fw-bold">${dev}</span>, unless otherwise stipulated in a formally executed written agreement.</p>
-        <h6 class="fw-bold mt-4" style="color: var(--brand-color);">3. Data Collection, Privacy, CCPA & GDPR Compliance</h6>
-        <p>In compliance with the California Consumer Privacy Act (CCPA), the General Data Protection Regulation (GDPR), and applicable state laws, we disclose the following regarding data processing:</p>
-        <ul>
-          <li><strong>Identity Data & Legal Basis:</strong> We collect your email address exclusively via secure Google Workspace OAuth. The legal basis for this processing is legitimate operational interest for system authentication, role-based access control, and security auditing.</li>
-          <li><strong>Activity & Audit Data:</strong> Routine interactions (e.g., moving assets) and administrative actions (e.g., role modifications, system configurations) are permanently logged with your email, timestamp, and precise data diffs to maintain an immutable chain of custody and enterprise audit trail.</li>
-          <li><strong>Local Device Storage (Cookies/Cache):</strong> The Application strictly uses essential local browser storage (<code>localStorage</code>) to store your active authentication tokens, theme preferences, and consent flags. We do not use cross-site tracking cookies or analytics pixels.</li>
-          <li><strong>User Rights (GDPR/CCPA):</strong> You retain the right to request access to, rectification of, or erasure (Right to be Forgotten) of your personal data. Note that erasure of immutable audit logs may be legally restricted by <span class="fw-bold">${company}</span>'s legitimate compliance or security requirements.</li>
-          <li><strong>Third-Party Sharing:</strong> Zero user or inventory data is sold, monetized, or shared with external third parties. All data is securely contained within <span class="fw-bold">${company}</span>'s Google Workspace infrastructure.</li>
-        </ul>
-        <h6 class="fw-bold mt-4" style="color: var(--brand-color);">4. Prohibited Data & Sensitive Information</h6>
-        <p>The Application is designed exclusively for standard physical inventory tracking and is <strong>NOT</strong> compliant with HIPAA, FERPA, or PCI-DSS standard out-of-the-box. Users are strictly prohibited from entering, uploading, or storing highly sensitive regulated data within any text field, note, or image upload. This includes, but is not limited to: Protected Health Information (PHI), Personally Identifiable Information (PII) of minors, Social Security Numbers, or primary payment card details.</p>
-        <h6 class="fw-bold mt-4" style="color: var(--accent);">5. System Security & Acceptable Use</h6>
-        <p>Access to the backend infrastructure is strictly restricted. The Application utilizes a Dynamic Injection Architecture; proprietary operational code is only securely served to your device upon successful authentication. Furthermore, the system enforces backend cryptographic token verification (JWT) on all requests to mathematically prevent identity spoofing.</p>
-        <p>You agree to interface with The Application solely through the provided front-end User Interface. You agree not to reverse engineer, scrape, bypass security protocols, or intentionally disrupt the API.</p>
-        <p><strong>Shared Security Responsibility:</strong> The Application may employ an automated idle timeout mechanism that forcibly terminates inactive sessions and wipes local authentication tokens. Additionally, because the system uses URL deep-linking, internal asset names may be saved to your browser history. You are solely responsible for maintaining the physical security of your device, locking your screen, and safeguarding your Google account credentials.</p>
-        <h6 class="fw-bold mt-4" style="color: var(--brand-color);">6. Disclaimer of Warranties ("As-Is" Provision)</h6>
-        <p>The Application is provided strictly "AS IS" and "AS AVAILABLE" without any warranties of any kind, whether express, implied, or statutory. <span class="fw-bold">${dev}</span> expressly disclaims any implied warranties of merchantability, fitness for a particular purpose, non-infringement, or guarantee of continuous, error-free operation.</p>
-        <h6 class="fw-bold mt-4" style="color: var(--brand-color);">7. Limitation of Liability & Indemnification</h6>
-        <p>Under no circumstances shall <span class="fw-bold">${dev}</span> be held liable for any direct, indirect, incidental, consequential, or special damages arising out of or in connection with your use of The Application. This includes, but is not limited to, data loss, inventory discrepancies, business interruption, or financial loss. By using this system, <span class="fw-bold">${company}</span> and its authorized users agree to indemnify and hold harmless <span class="fw-bold">${dev}</span> from any claims, damages, or liabilities resulting from its use.</p>
-        <h6 class="fw-bold mt-4" style="color: var(--brand-color);">8. Modifications & Governing Law</h6>
-        <p>These terms may be updated at any time. Continued use of The Application implies ongoing consent to any revisions. These terms shall be governed by and construed in accordance with the laws of the State of California and the State of Arizona, without regard to conflict of law principles.</p>
-        <h6 class="fw-bold mt-4" style="color: var(--brand-color);">9. Contact & Data Privacy Requests</h6>
-        <p>If you wish to request a record of your data, report a vulnerability, or request the deletion of your user profile in accordance with state or international privacy rights, please contact: <a href="${contactLink}" class="fw-bold" style="color: var(--brand-color);">${contact}</a>.</p>
-      `;      
-      const legalModal = new bootstrap.Modal(document.getElementById('legalModal'));
-      legalModal.show();
+      const modalEl = document.getElementById('legalModal');
+      if (!modalEl) return;
+      const bodyEl = document.getElementById('legalModalBody');
+      const btn1 = document.getElementById('legalCloseBtn');
+      const btn2 = document.getElementById('legalCloseTop');
+      const prompt = document.getElementById('legalScrollPrompt');
+      btn1.disabled = true; btn2.disabled = true;
+      btn1.className = "btn btn-secondary fw-bold";
+      prompt.style.display = "inline-block";
+      const unlockModal = () => {
+          btn1.disabled = false; btn2.disabled = false;
+          prompt.style.display = "none";
+          btn1.classList.replace('btn-secondary', 'btn-success');
+          btn1.innerText = "I Agree & Close";
+      };
+      bodyEl.onscroll = function() {
+          if (bodyEl.scrollTop + bodyEl.clientHeight >= bodyEl.scrollHeight - 15) unlockModal();
+      };
+      setTimeout(() => {
+          if (bodyEl.scrollHeight <= bodyEl.clientHeight + 10) unlockModal();
+      }, 300);
+      new bootstrap.Modal(modalEl).show();
   }
-</script>
 </script>
 </body>
 </html>
