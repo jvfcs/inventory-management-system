@@ -44,6 +44,16 @@
   </style>
 </head>
 <body>
+
+<div id="idleWarningOverlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10700; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px);">
+  <div class="card p-4 shadow-lg text-center" style="max-width: 400px; width: 90%; background: var(--light-card); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;">
+    <div class="mb-2" style="font-size: 3.5rem; line-height: 1;">⏳</div>
+    <h4 class="fw-bold mb-3 text-primary">Inactivity Warning</h4>
+    <p id="idleWarningText" class="mb-4 text-muted" style="font-size: 1rem;"></p>
+    <button id="extendSessionBtn" class="btn btn-primary fw-bold w-100 py-3 fs-5">I'm still here</button>
+  </div>
+</div>
+
 <div id="loginOverlay" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--light-bg); z-index: 10000; display: flex; align-items: center; justify-content: center;">
   <div class="card p-4 shadow-sm text-center" style="max-width: 400px; width: 90%; background: var(--light-card); min-height: 400px; display: flex; flex-direction: column; justify-content: center;">    
     <div id="loginSpinner">
@@ -133,18 +143,72 @@
     localStorage.removeItem('ims_google_token');
     window.location.reload(); 
   }
-  let idleTimer;
-  function resetIdleTimer() {
-      clearTimeout(idleTimer);
-      if (localStorage.getItem('ims_google_token')) {
-          if (appIdleTimeout > 0) { // 0 means disabled
-              idleTimer = setTimeout(() => {
-                  alert("Session expired due to inactivity.");
-                  signOut();
-              }, appIdleTimeout * 60 * 1000); 
+  let idleWarningTimer;
+  let idleLogoutTimer;
+  let countdownInterval;
+  let isIdleWarningActive = false;
+
+  function resetIdleTimer(evt) {
+      // If warning is showing, ignore all mouse/scroll events EXCEPT clicking the button
+      if (isIdleWarningActive) {
+          let isExtendBtn = evt && evt.target && (evt.target.id === 'extendSessionBtn' || evt.target.closest('#extendSessionBtn'));
+          if (isExtendBtn) {
+              isIdleWarningActive = false;
+              const overlay = document.getElementById('idleWarningOverlay');
+              if (overlay) overlay.classList.add('hidden');
+          } else if (evt !== undefined) {
+              return; // Ignore the background event
           }
       }
+
+      clearTimeout(idleWarningTimer);
+      clearTimeout(idleLogoutTimer);
+      clearInterval(countdownInterval);
+
+      if (localStorage.getItem('ims_google_token') && appIdleTimeout > 0) {
+          let totalMs = appIdleTimeout * 60 * 1000;
+          // Warning appears 2 mins before timeout, or halfway through if timeout is extremely short
+          let warningMs = Math.min(2 * 60 * 1000, totalMs / 2); 
+          let idleTimeBeforeWarning = totalMs - warningMs;
+
+          idleWarningTimer = setTimeout(() => {
+              showIdleWarning(warningMs, idleTimeBeforeWarning);
+          }, idleTimeBeforeWarning);
+      }
   }
+
+  function showIdleWarning(warningMs, idleTimeBeforeWarning) {
+      isIdleWarningActive = true;
+      const overlay = document.getElementById('idleWarningOverlay');
+      if (overlay) overlay.classList.remove('hidden');
+      
+      let timeLeft = Math.floor(warningMs / 1000);
+      let idleMinutes = Math.floor(idleTimeBeforeWarning / 60000);
+      if (idleMinutes < 1) idleMinutes = 1; 
+      
+      const textEl = document.getElementById('idleWarningText');
+      
+      const updateText = () => {
+          let min = Math.floor(timeLeft / 60);
+          let sec = Math.floor(timeLeft % 60).toString().padStart(2, '0');
+          if (textEl) {
+              textEl.innerHTML = `You have been idle for over ${idleMinutes} minute${idleMinutes !== 1 ? 's' : ''}.<br><br>Your session will expire in <br><span class="text-danger fw-bold mt-2 d-block" style="font-size: 3rem;">${min}:${sec}</span>`;
+          }
+      };
+      
+      updateText();
+      
+      countdownInterval = setInterval(() => {
+          timeLeft--;
+          if (timeLeft <= 0) {
+              clearInterval(countdownInterval);
+              signOut(); // Time ran out, log them out
+          } else {
+              updateText();
+          }
+      }, 1000);
+  }
+
   ['mousemove', 'keydown', 'scroll', 'touchstart', 'click'].forEach(evt => 
       document.addEventListener(evt, resetIdleTimer, true)
   );
