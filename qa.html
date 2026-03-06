@@ -196,28 +196,25 @@
       return new TextDecoder().decode(decryptedBytes);
   }
   function applyTemplateVars(t) {
-      const cfg = window.SAAS_CONFIG || {};
-      const allowBranding = cfg.allowBranding !== false; // defaults to true
-      const val = (key) => (!allowBranding && cfg[key]) ? cfg[key] : (t[key] || "");
-
-      const appTitle = val('appTitle') || "IMS";
+      const appTitle = t.appTitle || "IMS";
       document.title = appTitle;
       const tText = document.getElementById('appTitleText');
       if (tText) tText.innerText = appTitle;
 
       const useShort = ((t.loginUseShortName || "")).toLowerCase() === 'yes';
-      const shortName = val('appShortName');
+      const shortName = t.appShortName;
       const loginStr = (useShort && shortName) ? shortName : appTitle;
       document.getElementById('loginTitle').innerText = loginStr + " Login";
 
       const loginMsgEl = document.getElementById('loginMessage');
-      const lMsg = val('loginMessage');
-      if (lMsg && lMsg.trim() !== "") {
-          loginMsgEl.innerText = lMsg;
+      if (t.loginMessage && t.loginMessage.trim() !== "") {
+          loginMsgEl.innerText = t.loginMessage;
           loginMsgEl.classList.remove('hidden');
+      } else {
+          loginMsgEl.classList.add('hidden');
       }
 
-      const logoUrl = val('logoUrl');
+      const logoUrl = t.logoUrl;
       if (logoUrl) {
           ['loginLogo', 'loadLogo', 'appLogo'].forEach(id => {
               const el = document.getElementById(id);
@@ -233,6 +230,7 @@
       const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
       const activeColor = currentTheme === 'dark' ? (t.darkTheme || '#58a6ff') : (t.lightTheme || '#0d6efd');
       document.querySelector('meta[name="theme-color"]').setAttribute("content", activeColor);
+      
       if (t.lightBg) document.documentElement.style.setProperty('--light-bg', t.lightBg);
       if (t.lightCard) document.documentElement.style.setProperty('--light-card', t.lightCard);
       if (t.lightText) document.documentElement.style.setProperty('--light-text', t.lightText);
@@ -241,11 +239,14 @@
       if (t.darkText) document.documentElement.style.setProperty('--dark-text', t.darkText);
       
       appCurrency = t.currencySymbol || "$";
-      appDefaultImg = val('defaultImgUrl') || "";
+      appDefaultImg = t.defaultImgUrl || "";
       appIdleTimeout = parseInt(t.idleTimeout) || 15;
       
-      const adminContact = val('adminContact') || cfg.repEmail;
-      if (adminContact) document.getElementById('accessDeniedMsg').innerText = `You do not have permission to view the IMS. Please contact ${adminContact} to request access.`;
+      const adminContact = t.adminContact || t._repEmail;
+      if (adminContact) {
+          const deniedMsg = document.getElementById('accessDeniedMsg');
+          if (deniedMsg) deniedMsg.innerText = `You do not have permission to view the IMS. Please contact ${adminContact} to request access.`;
+      }
       
       const sortCats = (str) => {
           let arr = str.split(',').map(s => s.trim()).filter(s => s);
@@ -270,8 +271,14 @@
               window.google.accounts.id.renderButton(document.getElementById('googleSignInBtn'), { theme: "outline", size: "large", type: "standard", shape: "rectangular", logo_alignment: "left" });
           }
       }
-      document.getElementById('loginSpinner').classList.add('hidden');
-      document.getElementById('loginContent').classList.remove('hidden');
+      
+      const footerEl = document.getElementById('appFooterText');
+      if (footerEl && t.footerText) footerEl.innerText = t.footerText;
+
+      const spin = document.getElementById('loginSpinner');
+      if (spin) spin.classList.add('hidden');
+      const lCont = document.getElementById('loginContent');
+      if (lCont) lCont.classList.remove('hidden');
   }
 </script>
 </script>
