@@ -284,8 +284,8 @@
   function showLegalModal(e) {
       if (e) e.preventDefault();      
       const t = db.template || {};
-      const company = t.companyName || "The Company";
-      const dev = t.developerName || "Jack Vu";
+      const company = (window.SAAS_CONFIG && window.SAAS_CONFIG.companyName) ? window.SAAS_CONFIG.companyName : (t.companyName || "The Company");
+      const dev = (window.SAAS_CONFIG && window.SAAS_CONFIG.developerName) ? window.SAAS_CONFIG.developerName : (t.developerName || "Jack Vu");
       const appName = t.appTitle || "Inventory Management System";
       const contact = t.adminContact || "your system administrator";
       const contactLink = t.adminContact ? `mailto:${t.adminContact}` : '#';
