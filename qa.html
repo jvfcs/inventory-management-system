@@ -4,7 +4,7 @@
   <base target="_top">
   <title>IMS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#2c3e50">  
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
@@ -49,7 +49,7 @@
       <p id="loginMessage" class="text-muted small mb-4 hidden"></p>       
       <div id="g_id_onload"></div>
       <div class="d-flex justify-content-center" style="min-height: 44px;">
-          <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="sign_in_with" data-size="large" data-logo_alignment="left"></div>
+          <div id="googleSignInBtn"></div>
       </div>
     </div>
   </div>
@@ -269,7 +269,7 @@
           googleDiv.setAttribute('data-client_id', t.googleClientId);
           if (window.google && window.google.accounts) {
               window.google.accounts.id.initialize({ client_id: t.googleClientId, callback: handleCredentialResponse });
-              window.google.accounts.id.renderButton(document.querySelector('.g_id_signin'), { theme: "outline", size: "large", type: "standard", shape: "rectangular", logo_alignment: "left" });
+              window.google.accounts.id.renderButton(document.getElementById('googleSignInBtn'), { theme: "outline", size: "large", type: "standard", shape: "rectangular", logo_alignment: "left" });
           }
       }
       document.getElementById('loginSpinner').classList.add('hidden');
