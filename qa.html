@@ -50,7 +50,7 @@
     <div class="mb-2" style="font-size: 3.5rem; line-height: 1;">⏳</div>
     <h4 class="fw-bold mb-3 text-primary">Inactivity Warning</h4>
     <p id="idleWarningText" class="mb-4 text-muted" style="font-size: 1rem;"></p>
-    <button id="extendSessionBtn" class="btn btn-primary fw-bold w-100 py-3 fs-5">I'm still here</button>
+    <button id="extendSessionBtn" class="btn btn-primary fw-bold w-100 py-3 fs-5" onclick="extendSession()">I'm still here</button>
   </div>
 </div>
 
@@ -156,30 +156,26 @@
     window.location.reload(); 
   }
   let idleWarningTimer;
-  let idleLogoutTimer;
   let countdownInterval;
   let isIdleWarningActive = false;
 
-  function resetIdleTimer(evt) {
-      // If warning is showing, ignore all mouse/scroll events EXCEPT clicking the button
-      if (isIdleWarningActive) {
-          let isExtendBtn = evt && evt.target && (evt.target.id === 'extendSessionBtn' || evt.target.closest('#extendSessionBtn'));
-          if (isExtendBtn) {
-              isIdleWarningActive = false;
-              const overlay = document.getElementById('idleWarningOverlay');
-              if (overlay) overlay.classList.add('hidden');
-          } else if (evt !== undefined) {
-              return; // Ignore the background event
-          }
-      }
+  // Dedicated function explicitly attached to the button click
+  function extendSession() {
+      isIdleWarningActive = false;
+      const overlay = document.getElementById('idleWarningOverlay');
+      if (overlay) overlay.classList.add('hidden');
+      resetIdleTimer(); // Manually restart the background timers
+  }
+
+  function resetIdleTimer() {
+      // HARD LOCK: If the warning is visible, instantly ignore all background events.
+      if (isIdleWarningActive) return;
 
       clearTimeout(idleWarningTimer);
-      clearTimeout(idleLogoutTimer);
       clearInterval(countdownInterval);
 
       if (localStorage.getItem('ims_google_token') && appIdleTimeout > 0) {
           let totalMs = appIdleTimeout * 60 * 1000;
-          // Warning appears 2 mins before timeout, or halfway through if timeout is extremely short
           let warningMs = Math.min(2 * 60 * 1000, totalMs / 2); 
           let idleTimeBeforeWarning = totalMs - warningMs;
 
