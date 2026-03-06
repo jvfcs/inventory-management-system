@@ -152,10 +152,9 @@
       ]);
       window._PRELOADED_DB = initialData; 
 
-      // Phase 2: Extract the Script ID to use as the Master Key
+      // RESTORED: Extract Script ID and Decrypt
       const scriptIdMatch = GAS_URL.match(/\/s\/([a-zA-Z0-9_-]+)/);
       const masterKey = scriptIdMatch ? scriptIdMatch[1] : GAS_URL;
-      
       const decryptedHtml = decryptPayloadBytes(encryptedPayload, masterKey);
 
       const temp = document.createElement('div');
@@ -191,11 +190,9 @@
       const binaryStr = atob(base64Str);
       const keyBytes = new TextEncoder().encode(key);
       const decryptedBytes = new Uint8Array(binaryStr.length);
-      
       for (let i = 0; i < binaryStr.length; i++) {
           decryptedBytes[i] = binaryStr.charCodeAt(i) ^ keyBytes[i % keyBytes.length];
       }
-      
       return new TextDecoder().decode(decryptedBytes);
   }
   function applyTemplateVars(t) {
