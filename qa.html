@@ -87,7 +87,7 @@
   var db = { template: {} };
   var appCurrency = "$";
   var appDefaultImg = "";
-  var appIdleTimeout = 15; // Default 15 minutes
+  var appIdleTimeout = 15;
   var GAS_URL = "https://script.google.com/macros/s/AKfycbx7r4PBcx6DubiITzGqB1NAGI_JVy041Kp5MU7u6zxhI51MB_xl9x34TLI0yYuk0xb_3g/exec";
   document.addEventListener("DOMContentLoaded", function() {
     apiCall('getTemplateConfig').then(tConfig => {
@@ -122,11 +122,11 @@
     });
     const result = await response.json();
     if (result.error) {
-        if (result.error === "SESSION_EXPIRED") {
+        if (result.error.includes("SESSION_EXPIRED")) {
             localStorage.removeItem('ims_google_token');
             localStorage.removeItem('ims_user_email');
             window.location.reload();
-            return;
+            return new Promise(() => {}); 
         }
         throw new Error(result.error);
     }
@@ -151,7 +151,7 @@
       isIdleWarningActive = false;
       const overlay = document.getElementById('idleWarningOverlay');
       if (overlay) overlay.classList.add('hidden');
-      resetIdleTimer(); // Manually restart the background timers
+      resetIdleTimer();
   }
   function resetIdleTimer() {
       if (isIdleWarningActive) return;
@@ -188,7 +188,7 @@
           timeLeft--;
           if (timeLeft <= 0) {
               clearInterval(countdownInterval);
-              signOut(); // Time ran out, log them out
+              signOut();
           } else {
               updateText();
           }
