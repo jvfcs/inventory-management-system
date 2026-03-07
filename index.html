@@ -22,7 +22,8 @@
       --dark-bg: #121212; --dark-card: #1e1e1e; --dark-text: #e0e0e0;
     }
     [data-bs-theme="dark"] { --brand-color: var(--dark-theme); }
-    body { background-color: var(--light-bg); color: var(--light-text); font-family: sans-serif; -webkit-touch-callout: none; margin:0; padding:0; height: 100vh; overflow-x: hidden;}
+    html, body { max-width: 100%; overflow-x: hidden; }
+    body { background-color: var(--light-bg); color: var(--light-text); font-family: sans-serif; -webkit-touch-callout: none; margin:0; padding:0; height: 100vh; width: 100%; }
     .hidden { display: none !important; }
     .text-primary { color: var(--brand-color) !important; }
     .bg-primary, .btn-primary { background-color: var(--brand-color) !important; border-color: var(--brand-color) !important; color: #fff !important; }
@@ -150,12 +151,14 @@
       isIdleWarningActive = false;
       const overlay = document.getElementById('idleWarningOverlay');
       if (overlay) overlay.classList.add('hidden');
-      resetIdleTimer(); // Manually restart the background timers
+      resetIdleTimer();
   }
   function resetIdleTimer() {
       if (isIdleWarningActive) return;
       clearTimeout(idleWarningTimer);
       clearInterval(countdownInterval);
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobile) return;
       if (localStorage.getItem('ims_google_token') && appIdleTimeout > 0) {
           let totalMs = appIdleTimeout * 60 * 1000;
           let warningMs = Math.min(2 * 60 * 1000, totalMs / 2); 
@@ -185,7 +188,7 @@
           timeLeft--;
           if (timeLeft <= 0) {
               clearInterval(countdownInterval);
-              signOut(); // Time ran out, log them out
+              signOut();
           } else {
               updateText();
           }
