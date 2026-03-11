@@ -137,6 +137,7 @@
     const payload = JSON.parse(atob(jwt.split('.')[1]));
     localStorage.setItem('ims_user_email', payload.email);
     localStorage.setItem('ims_google_token', jwt);    
+    apiCall('recordLogin').catch(e => console.warn("Login tracking failed."));
     bootApp(payload.email);
   }
   function signOut() {
