@@ -297,7 +297,14 @@
           if (deniedMsg) deniedMsg.innerText = `You do not have permission to view the IMS. Please contact ${adminContact} to request access.`;
       }
       const sortCats = (str) => {
-          let arr = str.split(',').map(s => s.trim()).filter(s => s);
+          let arr;
+          try {
+              arr = JSON.parse(str);
+              if (!Array.isArray(arr)) arr = String(str).split(',');
+          } catch(e) {
+              arr = String(str).split(',');
+          }
+          arr = arr.map(s => String(s).trim()).filter(s => s);
           arr.sort((a,b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
           const otherIdx = arr.findIndex(x => x.toLowerCase() === 'other');
           if (otherIdx > -1) arr.push(arr.splice(otherIdx, 1)[0]); 
@@ -363,9 +370,9 @@
       bodyEl.onscroll = function() {
           if (bodyEl.scrollTop + bodyEl.clientHeight >= bodyEl.scrollHeight - 15) unlockModal();
       };
-      setTimeout(() => {
+      modalEl.addEventListener('shown.bs.modal', function() {
           if (bodyEl.scrollHeight <= bodyEl.clientHeight + 10) unlockModal();
-      }, 300);
+      }, { once: true });
       new bootstrap.Modal(modalEl).show();
   }
 </script>
